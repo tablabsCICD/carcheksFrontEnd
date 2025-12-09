@@ -50,20 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: "AIzaSyB08zheG-9FgBSl3QxHDOrVsBZ52yfsk5s",
-    authDomain: "carcheks-227d4.firebaseapp.com",
-    projectId: "carcheks-227d4",
-    storageBucket: "carcheks-227d4.firebasestorage.app",
-    messagingSenderId: "424737096430",
-    appId: "1:424737096430:android:3501ea08d592239b8829ff",
+    apiKey: 'AIzaSyCiP_NuvqKFv0hYVJcYWCOuodSvAzAi5gI',
+    appId: '1:618448256357:android:40e014cd502315ec3a758c',
+    messagingSenderId: '618448256357',
+    projectId: 'carchecks-f71c0',
+    storageBucket: 'carchecks-f71c0.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: "AIzaSyB08zheG-9FgBSl3QxHDOrVsBZ52yfsk5s",
-    appId: "1:424737096430:android:3501ea08d592239b8829ff",
-    messagingSenderId: '424737096430',
-    projectId: 'carcheks-227d4',
-    storageBucket: 'carcheks-227d4.firebasestorage.app',
-    iosBundleId: 'com.napesoft.carcheks',
+    apiKey: 'AIzaSyCWAMNNJb7nxc7pCAVT19QCpoN_XRztaE8',
+    appId: '1:618448256357:ios:a16efb6651d526bb3a758c',
+    messagingSenderId: '618448256357',
+    projectId: 'carchecks-f71c0',
+    storageBucket: 'carchecks-f71c0.appspot.com',
+    iosBundleId: 'com.example.carcheck',
   );
 }
