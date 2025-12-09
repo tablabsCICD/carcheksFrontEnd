@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "424737096430",
+    "project_id": "carcheks-227d4",
+    "storage_bucket": "carcheks-227d4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:424737096430:android:3501ea08d592239b8829ff",
+        "android_client_info": {
+          "package_name": "com.napesoft.carcheks"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB08zheG-9FgBSl3QxHDOrVsBZ52yfsk5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
