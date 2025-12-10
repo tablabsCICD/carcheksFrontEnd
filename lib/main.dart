@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:carcheks/firebase_options.dart';
 import 'package:carcheks/locator.dart';
 import 'package:carcheks/provider/address_provider.dart';
 import 'package:carcheks/provider/auth_provider.dart';
@@ -28,10 +27,10 @@ import 'package:flutter/services.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 
-
 import 'provider/appointment_provider.dart';
 import 'provider/review_provider.dart';
 import 'provider/user_order_service_provider.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
@@ -78,7 +77,9 @@ Future<void> main() async {
           ChangeNotifierProvider(create: (_) => locator<AppointmentProvider>()),
           ChangeNotifierProvider(create: (_) => locator<ImgProvider>()),
           ChangeNotifierProvider(create: (_) => locator<CartProvider>()),
-          ChangeNotifierProvider(create: (_) => locator<UserOrderServicesProvider>()),
+          ChangeNotifierProvider(
+            create: (_) => locator<UserOrderServicesProvider>(),
+          ),
           ChangeNotifierProvider(create: (_) => locator<ReviewProvider>()),
           ChangeNotifierProvider(create: (_) => locator<PaymentProvider>()),
           ChangeNotifierProvider(create: (_) => locator<SearchProvider>()),
