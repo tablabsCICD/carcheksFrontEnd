@@ -47,13 +47,15 @@ class CustomerDashboard extends StatefulWidget {
 class _CustomerDashboardState extends State<CustomerDashboard> {
   List<ImageCarousel> staticImgList = [
     ImageCarousel(
-        'https://images.pexels.com/photos/35967/mini-cooper-auto-model-vehicle.jpg?cs=srgb&dl=pexels-pixabay-35967.jpg&fm=jpg',
-        " ",
-        " "),
+      'https://images.pexels.com/photos/35967/mini-cooper-auto-model-vehicle.jpg?cs=srgb&dl=pexels-pixabay-35967.jpg&fm=jpg',
+      " ",
+      " ",
+    ),
     ImageCarousel(
-        'https://media.newyorker.com/photos/5c362cbd13070229940300f2/master/w_2560%2Cc_limit/Saval-The-Return-of-the-Garage.jpg',
-        " ",
-        " "),
+      'https://media.newyorker.com/photos/5c362cbd13070229940300f2/master/w_2560%2Cc_limit/Saval-The-Return-of-the-Garage.jpg',
+      " ",
+      " ",
+    ),
   ];
   int _current = 0;
   TextEditingController searchTextController = TextEditingController();
@@ -86,7 +88,11 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
   }
 
   void callApi() async {
-    String myUrl = ApiConstants.GET_NEAR_BY_GARAGES(authProvider.user!.id, AppConstants.CurrentLatitude, AppConstants.CurrentLongtitude);
+    String myUrl = ApiConstants.GET_NEAR_BY_GARAGES(
+      authProvider.user!.id,
+      AppConstants.CurrentLatitude,
+      AppConstants.CurrentLongtitude,
+    );
     log(myUrl);
     vehicleProvider.vehicleListDashboard.clear();
     var req = await http.get(Uri.parse(myUrl));
@@ -101,8 +107,9 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       }
 
       serviceProvider.dashboardServices.clear();
-      serviceProvider.dashboardServices
-          .addAll(dashboard.data!.services!.content!);
+      serviceProvider.dashboardServices.addAll(
+        dashboard.data!.services!.content!,
+      );
 
       garageProvider.dashboardGarageList.clear();
       garageProvider.dashboardGarageList.addAll(dashboard.data!.garages!);
@@ -141,15 +148,9 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               child: getImage(model.user!.imageUrl.toString()),
             ),
           ),
-          const SizedBox(
-            width: 10,
-          ),
-          GetCart(
-            userId: authProvider.user!.id,
-          ),
-          const SizedBox(
-            width: 10,
-          ),
+          const SizedBox(width: 10),
+          GetCart(userId: authProvider.user!.id),
+          const SizedBox(width: 10),
         ],
       ),
       drawer: DrawerWidget(),
@@ -169,34 +170,27 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SvgPicture.asset("assets/svg/location.svg"),
-                    const SizedBox(
-                      width: 10,
-                    ),
+                    const SizedBox(width: 10),
 
                     Expanded(
-                        child: Text(
-                      AppConstants.AddressCon,
-                      maxLines: 2,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 15),
-                    ))
+                      child: Text(
+                        AppConstants.AddressCon,
+                        maxLines: 2,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               selectCardDashbord(),
-              const SizedBox(
-                height: 15,
-              ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
+              const SizedBox(height: 15),
               getImageSlider(),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -205,32 +199,31 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (builder) => GetAllServices(
-                                      vehicle:
-                                          vehicleProvider.selectedUserVehicle,
-                                    )));
-                      },
-                      child: const Text(
-                        "View All",
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 15,
-                            decoration: TextDecoration.underline,
-                            color: ColorResources.PRIMARY_COLOR),
-                      )),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (builder) => GetAllServices(
+                            vehicle: vehicleProvider.selectedUserVehicle,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      "View All",
+                      style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        fontSize: 15,
+                        decoration: TextDecoration.underline,
+                        color: ColorResources.PRIMARY_COLOR,
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               getServices(),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -239,42 +232,42 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   InkWell(
-                      onTap: () {
-                        log(vehicleProvider.selectedUserVehicle!.name
-                            .toString());
-                        log("Selected Vehicle:" +
-                            vehicleProvider.selectedUserVehicle!.name!);
-                        if (vehicleProvider.selectedUserVehicle!.name == "") {
-                          const snackBar = SnackBar(
-                            content: Text('Please select vehicle'),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        } else {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (builder) => NearByStore(
-                                        fromScreen: 'NearByALL',
-                                      )));
-                        }
-                      },
-                      child: const Text(
-                        "View All",
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 15,
-                            decoration: TextDecoration.underline,
-                            color: ColorResources.PRIMARY_COLOR),
-                      )),
+                    onTap: () {
+                      log(vehicleProvider.selectedUserVehicle!.name.toString());
+                      log(
+                        "Selected Vehicle:" +
+                            vehicleProvider.selectedUserVehicle!.name!,
+                      );
+                      if (vehicleProvider.selectedUserVehicle!.name == "") {
+                        const snackBar = SnackBar(
+                          content: Text('Please select vehicle'),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (builder) =>
+                                NearByStore(fromScreen: 'NearByALL'),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      "View All",
+                      style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        fontSize: 15,
+                        decoration: TextDecoration.underline,
+                        color: ColorResources.PRIMARY_COLOR,
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
               getNearByStore(),
-              const SizedBox(
-                height: 15,
-              ),
+              const SizedBox(height: 15),
             ],
           ),
         ),
@@ -313,36 +306,47 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
           items: serviceProvider.imageUrls.map((i) {
             //index++;
             int index = serviceProvider.imageUrls.indexOf(i);
-            return Builder(builder: (BuildContext context) {
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(
-                            serviceProvider.imageUrls[index].image1))),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      child: Center(
-                          child: Text(
-                        serviceProvider.imageUrls[index].title,
-                        style:
-                            const TextStyle(fontSize: 30, color: Colors.white),
-                      )),
-                      width: MediaQuery.of(context).size.width,
+                      fit: BoxFit.fill,
+                      image: NetworkImage(
+                        serviceProvider.imageUrls[index].image1,
+                      ),
                     ),
-                    Text(
-                      serviceProvider.imageUrls[index].subTitle,
-                      style: const TextStyle(fontSize: 20, color: Colors.white),
-                    )
-                  ],
-                ),
-              );
-            });
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        child: Center(
+                          child: Text(
+                            serviceProvider.imageUrls[index].title,
+                            style: const TextStyle(
+                              fontSize: 30,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        width: MediaQuery.of(context).size.width,
+                      ),
+                      Text(
+                        serviceProvider.imageUrls[index].subTitle,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
           }).toList(),
         ),
         Positioned(
@@ -358,7 +362,9 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                   width: 7.0,
                   height: 7.0,
                   margin: const EdgeInsets.symmetric(
-                      vertical: 6.0, horizontal: 4.0),
+                    vertical: 6.0,
+                    horizontal: 4.0,
+                  ),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _current == index
@@ -369,7 +375,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               }).toList(),
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -403,10 +409,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               debugPrint("Rendering service: ${service.name}");
               return SizedBox(
                 width: 150,
-                child: ServiceCard(
-                  service,
-                  cost: false,
-                ),
+                child: ServiceCard(service, cost: false),
               );
             },
           ),
@@ -420,17 +423,20 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       builder: (context, model, child) => Container(
         height: 180,
         child: ListView.builder(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemCount: model.dashboardGarageList
-                .length, //model.garageListNearByUser.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                  height: 170,
-                  width: 160,
-                  margin: const EdgeInsets.all(5),
-                  child: CardStore(model.dashboardGarageList[index]));
-            }),
+          shrinkWrap: true,
+          scrollDirection: Axis.horizontal,
+          itemCount: model
+              .dashboardGarageList
+              .length, //model.garageListNearByUser.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              height: 170,
+              width: 160,
+              margin: const EdgeInsets.all(5),
+              child: CardStore(model.dashboardGarageList[index]),
+            );
+          },
+        ),
       ),
     );
   }
@@ -448,80 +454,88 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
         child: vehicleProvider.isLoading
             ? const Center(child: CircularProgressIndicator())
             : vehicleProvider.vehicleListDashboard.isNotEmpty
-                ? FormBuilderDropdown(
-                    name:
-                        vehicleProvider.vehicleListDashboard[0].name.toString(),
-                    initialValue: vehicleProvider.vehicleListDashboard[0],
-                    isDense: false,
-                    icon: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.directions_car,
-                        color: Colors.black,
-                      ),
-                    ),
-                    decoration: InputDecoration.collapsed(
-                      hintText: "Select Your Vehicle",
-                      filled: true,
-                      hintStyle:
-                          const TextStyle(color: Colors.black, fontSize: 14),
-                      fillColor: Colors.grey[150],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    items: vehicleProvider.vehicleListDashboard
-                        .map((vehicle) => DropdownMenuItem(
-                              value: vehicle,
-                              child: Container(
-                                height: 55,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('${vehicle.vehicleModel}',
-                                        style: const TextStyle(
-                                            color: Colors.black, fontSize: 14)),
-                                    Text('${vehicle.registrationNo}',
-                                        style: const TextStyle(
-                                            color: Colors.black, fontSize: 12)),
-                                    const Divider()
-                                  ],
+            ? FormBuilderDropdown(
+                name: vehicleProvider.vehicleListDashboard[0].name.toString(),
+                initialValue: vehicleProvider.vehicleListDashboard[0],
+                isDense: false,
+                icon: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(Icons.directions_car, color: Colors.black),
+                ),
+                decoration: InputDecoration.collapsed(
+                  hintText: "Select Your Vehicle",
+                  filled: true,
+                  hintStyle: const TextStyle(color: Colors.black, fontSize: 14),
+                  fillColor: Colors.grey[150],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                items: vehicleProvider.vehicleListDashboard
+                    .map(
+                      (vehicle) => DropdownMenuItem(
+                        value: vehicle,
+                        child: Container(
+                          height: 55,
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${vehicle.vehicleModel}',
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
                                 ),
                               ),
-                            ))
-                        .toList(),
-                    onChanged: (vehicle) {
-                      setState(() {
-                        AppConstants.vehicle = vehicle!;
-                        vehicleProvider.selectedUserVehicle = vehicle;
-                      });
-                    },
-                  )
-                : InkWell(
-                    child: const Text('Add Your Vehicle',
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 15,
-                            decoration: TextDecoration.underline,
-                            color: ColorResources.PRIMARY_COLOR)),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AddVehicleInfo(
-                                  isdashboard: true,
-                                )),
-                      );
-                    },
+                              Text(
+                                '${vehicle.registrationNo}',
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const Divider(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (vehicle) {
+                  setState(() {
+                    AppConstants.vehicle = vehicle!;
+                    vehicleProvider.selectedUserVehicle = vehicle;
+                  });
+                },
+              )
+            : InkWell(
+                child: const Text(
+                  'Add Your Vehicle',
+                  style: TextStyle(
+                    fontWeight: FontWeight.normal,
+                    fontSize: 15,
+                    decoration: TextDecoration.underline,
+                    color: ColorResources.PRIMARY_COLOR,
                   ),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddVehicleInfo(isdashboard: true),
+                    ),
+                  );
+                },
+              ),
       ),
     );
   }
 
   void getVehicalData() async {
-    await vehicleProvider.getAllVehicleListByUserIdnew(id: authProvider.user!.id);
+    await vehicleProvider.getAllVehicleListByUserIdnew(
+      id: authProvider.user!.id,
+    );
   }
 }

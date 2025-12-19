@@ -1,37 +1,43 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:carcheks/model/user_table_model.dart';
 import 'package:carcheks/response/auth/loginResponse.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../util/api_constants.dart';
 import 'package:http_parser/http_parser.dart';
 
 extension extString on String {
-  bool get isNotNull{
-    return this!=null;
+  bool get isNotNull {
+    return this != null;
   }
 }
 
-class  AuthProvider extends ChangeNotifier {
+class AuthProvider extends ChangeNotifier {
   UserDetails? userDetails;
   User? user;
   var response;
   bool isLoading = false;
   String dropdownValue = 'English';
 
-  Future<Map<String, dynamic>> loginUsingMobileNumber(String mobileNumber, String password) async {
-    String myUrl = ApiConstants.LOGIN + 'mobileNumber?mobilenumber=${mobileNumber}&password=${password}';
-    print(myUrl);
-    isLoading=true;
+  Future<Map<String, dynamic>> loginUsingMobileNumber(
+    String mobileNumber,
+    String password,
+  ) async {
+    String myUrl =
+        '${ApiConstants.LOGIN}mobileNumber?mobilenumber=$mobileNumber&password=$password';
+    isLoading = true;
     var req = await http.post(Uri.parse(myUrl));
-    isLoading=false;
+    isLoading = false;
     response = json.decode(req.body);
-    print(response);
-    if(response['success']){
+    if (response['success']) {
       var res = LoginResponseResponse.fromJson(response);
       await setUserData(req.body);
       user = null;
@@ -40,12 +46,12 @@ class  AuthProvider extends ChangeNotifier {
     return response;
   }
 
-  Future<User?>getUserDetails() async {
-        LoginResponseResponse? loginResponseResponse =await getUserData();
-    if(loginResponseResponse==null){
+  Future<User?> getUserDetails() async {
+    LoginResponseResponse? loginResponseResponse = await getUserData();
+    if (loginResponseResponse == null) {
       return null;
     }
-    user=loginResponseResponse!.data;
+    user = loginResponseResponse!.data;
     return user;
   }
 
@@ -68,6 +74,7 @@ class  AuthProvider extends ChangeNotifier {
     await preferences.setBool("Garage Owner Already Visited", flag);
     notifyListeners();
   }
+
   setUserId(int id) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     await preferences.setInt("id", id);
@@ -84,19 +91,17 @@ class  AuthProvider extends ChangeNotifier {
     await preferences.setString("userName", uName);
   }
 
-
-
   Future<bool?> getVisitingFlag() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    bool? alreadyVisited = await preferences.getBool("Already Visited") ??
-        false;
+    bool? alreadyVisited =
+        await preferences.getBool("Already Visited") ?? false;
     return alreadyVisited;
   }
 
   Future<bool?> getGarageOwnerVisitingFlag() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    bool? alreadyVisited = await preferences.getBool("Garage Owner Already Visited") ??
-        false;
+    bool? alreadyVisited =
+        await preferences.getBool("Garage Owner Already Visited") ?? false;
     return alreadyVisited;
   }
 
@@ -108,20 +113,19 @@ class  AuthProvider extends ChangeNotifier {
 
   Future<String> setUserData(String data) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    bool isdone=await preferences.setString("jsonData", data);
-    print('the done ${isdone}');
+    bool isdone = await preferences.setString("jsonData", data);
     return data;
   }
 
   Future<LoginResponseResponse?> getUserData() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    String? data= await preferences.getString("jsonData");
-    if(data==null){
+    String? data = await preferences.getString("jsonData");
+    if (data == null) {
       return null;
     }
-    dynamic val=await jsonDecode(data!);
-    LoginResponseResponse loginResponseResponse=LoginResponseResponse.fromJson(val);
-    print('the id is ${loginResponseResponse.data!.id}');
+    dynamic val = await jsonDecode(data!);
+    LoginResponseResponse loginResponseResponse =
+        LoginResponseResponse.fromJson(val);
     return loginResponseResponse;
   }
 
@@ -131,7 +135,10 @@ class  AuthProvider extends ChangeNotifier {
   File? localGarageImg;
 
   final ImagePicker _picker = ImagePicker();
-  Future<String?> pickAndUploadImage(BuildContext context, bool isProfile) async {
+  Future<String?> pickAndUploadImage(
+    BuildContext context,
+    bool isProfile,
+  ) async {
     try {
       ImageSource? source = await _showImageSourceDialog(context);
       if (source == null) return null;
@@ -156,7 +163,10 @@ class  AuthProvider extends ChangeNotifier {
       notifyListeners();
 
       // Upload to backend
-      var request = http.MultipartRequest('POST', Uri.parse(ApiConstants.UPLOAD_IMG));
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(ApiConstants.UPLOAD_IMG),
+      );
       request.files.add(
         await http.MultipartFile.fromPath(
           'profilePicture',
@@ -166,16 +176,13 @@ class  AuthProvider extends ChangeNotifier {
       );
 
       var response = await request.send();
-      print(response.stream);
 
       if (response.statusCode == 200) {
         var responseBody = await response.stream.bytesToString();
-        print(responseBody);
 
         dynamic jsonResponse = json.decode(responseBody);
-        print(jsonResponse);
 
-        String imageUrl = jsonResponse?? '';
+        String imageUrl = jsonResponse ?? '';
 
         if (isProfile) {
           uploadedProfileImg = imageUrl;
@@ -194,9 +201,6 @@ class  AuthProvider extends ChangeNotifier {
       return null;
     }
   }
-
-
-
 
   /// Helper function to show bottom dialog for image source selection
   Future<ImageSource?> _showImageSourceDialog(BuildContext context) async {
@@ -275,9 +279,8 @@ class  AuthProvider extends ChangeNotifier {
     String? zipcode,
     bool? garrageAddress,
   }) async {
-    isLoading=true;
+    isLoading = true;
     String myUrl = ApiConstants.REGISTRATION;
-    print(myUrl);
     Uri uri = Uri.parse(myUrl);
     Map<String, dynamic> data = {
       "addressData": {
@@ -296,42 +299,44 @@ class  AuthProvider extends ChangeNotifier {
         "updated": updated,
         "updatedBy": updated_by,
         "userId": 0,
-        "zipCode": zipcode
+        "zipCode": zipcode,
       },
-      "garrageData": garrage_Owner==true?{
-        "active": true,
-        "addressId": 0,
-        "closingTime": closingTime,
-        "contactNumber": garageMobile,
-        "created": created,
-        "createdBy": created_by,
-        "discription": garageInfo,
-        "emailId": garageEmailId,
-        "imageUrl": garageImg,
-        "latitude": lat,
-        "longitude": long,
-        "name": garageName,
-        "noOfRating": noOfratings,
-        "openingTime": openingTime,
-        "password": "string",
-        "photos1": garageImg,
-        "photos2": garageImg,
-        "photos3": garageImg,
-        "populer": isPopular,
-        "rating": rating,
-        "updated": updated,
-        "updatedBy": updated_by,
-        "usertableId": 0,
-        "verificatiionId": verificationId,
-        "verified": verified,
-        "websiteUrl": website
-      }:null,
+      "garrageData": garrage_Owner == true
+          ? {
+              "active": true,
+              "addressId": 0,
+              "closingTime": closingTime,
+              "contactNumber": garageMobile,
+              "created": created,
+              "createdBy": created_by,
+              "discription": garageInfo,
+              "emailId": garageEmailId,
+              "imageUrl": garageImg,
+              "latitude": lat,
+              "longitude": long,
+              "name": garageName,
+              "noOfRating": noOfratings,
+              "openingTime": openingTime,
+              "password": "string",
+              "photos1": garageImg,
+              "photos2": garageImg,
+              "photos3": garageImg,
+              "populer": isPopular,
+              "rating": rating,
+              "updated": updated,
+              "updatedBy": updated_by,
+              "usertableId": 0,
+              "verificatiionId": verificationId,
+              "verified": verified,
+              "websiteUrl": website,
+            }
+          : null,
       "userData": {
         "active": true,
         "created": created,
         "createdBy": created_by,
         "device_id": '',
-        "emailid":emailid,
+        "emailid": emailid,
         "firstName": first_name,
         "garrage_Owner": garrage_Owner,
         "image_url": image_url,
@@ -343,80 +348,125 @@ class  AuthProvider extends ChangeNotifier {
         "payment_mode": payment_mode,
         "updated": updated,
         "updatedBy": updated_by,
-        "verified": verified
-      }
+        "verified": verified,
+      },
     };
     var body = json.encode(data);
-    print(data);
-    var createResponse = await http.post(uri,
-        headers: {"Content-Type": "application/json"}, body: body);
-    print("${createResponse.statusCode}" + " --- " +
-        createResponse.body.toString());
-    isLoading=false;
+    var createResponse = await http.post(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+    isLoading = false;
     Map<String, dynamic> response = jsonDecode(createResponse.body);
-   if(response['success']==true){
-     var res = UserResponse.fromJson(response);
-     userDetails = res.data;
-     user = userDetails!.userData;
-
-   }
+    if (response['success'] == true) {
+      var res = UserResponse.fromJson(response);
+      userDetails = res.data;
+      user = userDetails!.userData;
+    }
     return response;
   }
 
- updateUser(
-      {bool? active, String? created, String? created_by, String? device_id, String? emailid, String? first_name,
-        String? last_name, bool? garrage_Owner, String? image_url, String? mobilenumber, String? operating_system, int? id, bool? payment_mode, bool? verified,
-        String? updated, String? updated_by,
-      }) async {
-   isLoading=true;
+  updateUser({
+    bool? active,
+    String? created,
+    String? created_by,
+    String? device_id,
+    String? emailid,
+    String? first_name,
+    String? last_name,
+    bool? garrage_Owner,
+    String? image_url,
+    String? mobilenumber,
+    String? operating_system,
+    int? id,
+    bool? payment_mode,
+    bool? verified,
+    String? updated,
+    String? updated_by,
+  }) async {
+    isLoading = true;
     String myUrl = ApiConstants.UPDATE_USER_PROFILE;
+    log('Update URL========= $myUrl');
+    log('Profile URL========= ${user!.imageUrl}');
     Uri uri = Uri.parse(myUrl);
     Map<String, dynamic> data = {
-        "active": active ?? user!.active ,
-        "created": created ?? user!.created,
-        "createdBy": created_by ?? user!.createdBy,
-        "device_id": device_id ?? user!.deviceId,
-        "emailid": emailid ?? user!.emailid,
-        "firstName": first_name?? user!.firstName,
-        "garrage_Owner": garrage_Owner ?? user!.garrageOwner,
-        "id": user!.id ,
-        "image_url": image_url ?? user!.imageUrl,
-        "lastName": last_name?? user!.lastName,
-        "mobilenumber": mobilenumber ?? user!.mobilenumber,
-        "operating_system": operating_system ?? user!.operatingSystem ,
-        "payment_mode": payment_mode ?? user!.paymentMode,
-        "password": user!.password,
-        "updated": updated ?? user!.updatedBy,
-        "updatedBy": updated_by ?? user!.updatedBy ,
-        "verified": verified ?? user!.verified
+      "active": active ?? user!.active,
+      "created": created ?? user!.created,
+      "createdBy": created_by ?? user!.createdBy,
+      "device_id": device_id ?? user!.deviceId,
+      "emailid": emailid ?? user!.emailid,
+      "firstName": first_name ?? user!.firstName,
+      "garrage_Owner": garrage_Owner ?? user!.garrageOwner,
+      "id": user!.id,
+      "image_url": image_url ?? user!.imageUrl,
+      "lastName": last_name ?? user!.lastName,
+      "mobilenumber": mobilenumber ?? user!.mobilenumber,
+      "operating_system": operating_system ?? user!.operatingSystem,
+      "payment_mode": payment_mode ?? user!.paymentMode,
+      "password": user!.password,
+      "updated": updated ?? user!.updatedBy,
+      "updatedBy": updated_by ?? user!.updatedBy,
+      "verified": verified ?? user!.verified,
     };
     var body = json.encode(data);
-    print(data);
-    var createResponse = await http.put(uri,
-        headers: {"Content-Type": "application/json"}, body: body);
-    print("${createResponse.statusCode}" + " --- " +
-        createResponse.body.toString());
-    print(createResponse.body);
-   isLoading=false;
-   if(createResponse.statusCode==200){
-     var response = await json.decode(createResponse.body);
+    var createResponse = await http.put(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+    log("${createResponse.statusCode} --- ${createResponse.body}");
+    isLoading = false;
+    if (createResponse.statusCode == 200) {
+      var response = await json.decode(createResponse.body);
 
-    // var res = UserResponse.fromJson(response);
-     LoginResponseResponse res = LoginResponseResponse.fromJson(response);
-    /* userDetails=null;
+      // var res = UserResponse.fromJson(response);
+      LoginResponseResponse res = LoginResponseResponse.fromJson(response);
+      /* userDetails=null;
      userDetails = res.data;
      user = userDetails!.userData;*/
-     user = res.data;
-   }
+      user = res.data;
+    }
     notifyListeners();
   }
 
-  deleteUser(User user) async {
-    isLoading=true;
-    String myUrl = ApiConstants.DELETE_USER + 'deleteById?id=${user.id}';
-    var req = await http.delete(Uri.parse(myUrl));
-    isLoading=false;
-    response = json.decode(req.body);
-    notifyListeners();
+  Future<bool> deleteAccount(User user, BuildContext context) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      String myUrl = ApiConstants.DELETE_USER(user.id);
+      log("DELETE URL → $myUrl");
+
+      final res = await http.put(Uri.parse(myUrl));
+
+      log("API RESPONSE → ${res.body}");
+
+      final jsonRes = json.decode(res.body);
+
+      if (jsonRes["success"] == true) {
+        /// Clear everything
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
+
+        this.user = null;
+        userDetails = null;
+
+        notifyListeners();
+
+        toast("User deleted successfully");
+
+        return true;
+      }
+
+      return false;
+    } catch (e, st) {
+      log("DELETE ERROR → $e\n$st");
+      toast("Something went wrong. Try again.");
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:carcheks/firebase_options.dart';
 import 'package:carcheks/locator.dart';
 import 'package:carcheks/provider/address_provider.dart';
 import 'package:carcheks/provider/auth_provider.dart';
@@ -33,31 +34,34 @@ import 'provider/user_order_service_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  //LocalNotificationService.initialize();
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp(
-      // options: DefaultFirebaseOptions.currentPlatform,
-    );
-  }
+  // if (Firebase.apps.isEmpty) {
+  //   await Firebase.initializeApp(
+  //     // options: DefaultFirebaseOptions.currentPlatform,
+  //   );
+  // }
 
-  if (Platform.isAndroid) {
-    LocalNotificationService.initialize();
-    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+  // if (Platform.isIOS) {
+  //   //LocalNotificationService.initialize();
+  //   FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
 
-    FirebaseMessaging.onBackgroundMessage(backgroundHandler);
-    FirebaseMessaging.onMessage.listen(backgroundHandler);
-    FirebaseMessaging.onMessageOpenedApp.listen(backgroundHandler);
+  //   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+  //   FirebaseMessaging.onMessage.listen(backgroundHandler);
+  //   FirebaseMessaging.onMessageOpenedApp.listen(backgroundHandler);
 
-    final message = await FirebaseMessaging.instance.getInitialMessage();
-    if (message != null) {
-      LocalNotificationService.createanddisplaynotification(message);
-    }
-    getFCMToken();
-  }
+  //   final message = await FirebaseMessaging.instance.getInitialMessage();
+  //   if (message != null) {
+  //     LocalNotificationService.createanddisplaynotification(message);
+  //   }
+  //   getFCMToken();
+  // }
 
   await setupLocator();
 

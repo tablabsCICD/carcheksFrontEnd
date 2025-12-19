@@ -42,8 +42,9 @@ class _GarageDashboardState extends State<GarageDashboard> {
 
   Future<void> _fetchInitialData() async {
     if (garageProvider.ownGarageList.isNotEmpty) {
-      await serviceProvider
-          .getAppointmentData(garageProvider.ownGarageList[0].id);
+      await serviceProvider.getAppointmentData(
+        garageProvider.ownGarageList[0].id,
+      );
     }
   }
 
@@ -65,8 +66,11 @@ class _GarageDashboardState extends State<GarageDashboard> {
         actions: [
           InkWell(
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.garageOwner_profile,
-                  arguments: true);
+              Navigator.pushNamed(
+                context,
+                AppRoutes.garageOwner_profile,
+                arguments: true,
+              );
             },
             child: getImage(authProvider.user?.imageUrl ?? ""),
           ),
@@ -82,10 +86,17 @@ class _GarageDashboardState extends State<GarageDashboard> {
             const SizedBox(height: 10),
             _buildStatCards(context),
             const SizedBox(height: 20),
-            _sectionHeader(context, "Choose Services", onViewAll: () {
-              Navigator.pushNamed(context, AppRoutes.choose_service,
-                  arguments: true);
-            }),
+            _sectionHeader(
+              context,
+              "Choose Services",
+              onViewAll: () {
+                Navigator.pushNamed(
+                  context,
+                  AppRoutes.choose_service,
+                  arguments: true,
+                );
+              },
+            ),
             const SizedBox(height: 10),
             _buildServiceList(),
           ],
@@ -94,13 +105,18 @@ class _GarageDashboardState extends State<GarageDashboard> {
     );
   }
 
-  Widget _sectionHeader(BuildContext context, String title,
-      {VoidCallback? onViewAll}) {
+  Widget _sectionHeader(
+    BuildContext context,
+    String title, {
+    VoidCallback? onViewAll,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
         if (onViewAll != null)
           InkWell(
             onTap: onViewAll,
@@ -124,19 +140,43 @@ class _GarageDashboardState extends State<GarageDashboard> {
       children: [
         Row(
           children: [
-            _buildStatCard(context, "Requests", Icons.local_car_wash,
-                Colors.orange, stats.numberOfRequest ?? 0, "All"),
-            _buildStatCard(context, "In Progress", Icons.tire_repair,
-                Colors.green, stats.workInProgress ?? 0, "In Progress"),
+            _buildStatCard(
+              context,
+              "Requests",
+              Icons.local_car_wash,
+              Colors.orange,
+              stats.numberOfRequest ?? 0,
+              "All",
+            ),
+            _buildStatCard(
+              context,
+              "In Progress",
+              Icons.tire_repair,
+              Colors.green,
+              stats.workInProgress ?? 0,
+              "In Progress",
+            ),
           ],
         ),
         const SizedBox(height: 10),
         Row(
           children: [
-            _buildStatCard(context, "New", Icons.battery_alert, Colors.blue,
-                stats.newAppointment ?? 0, "New Arrival"),
-            _buildStatCard(context, "Pending", Icons.car_repair, Colors.pink,
-                stats.pending ?? 0, "Pending"),
+            _buildStatCard(
+              context,
+              "New",
+              Icons.battery_alert,
+              Colors.blue,
+              stats.newAppointment ?? 0,
+              "New Arrival",
+            ),
+            _buildStatCard(
+              context,
+              "Pending",
+              Icons.car_repair,
+              Colors.pink,
+              stats.pending ?? 0,
+              "Pending",
+            ),
           ],
         ),
       ],
@@ -160,8 +200,9 @@ class _GarageDashboardState extends State<GarageDashboard> {
         ),
         child: Card(
           elevation: 4,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           color: Colors.white,
           child: Container(
             height: 150,
@@ -186,10 +227,7 @@ class _GarageDashboardState extends State<GarageDashboard> {
                 const SizedBox(height: 5),
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: color,
-                  ),
+                  style: TextStyle(fontSize: 14, color: color),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -228,7 +266,7 @@ class _GarageDashboardState extends State<GarageDashboard> {
                       color: Colors.black12,
                       blurRadius: 6,
                       offset: Offset(0, 4),
-                    )
+                    ),
                   ],
                 ),
                 child: Column(
@@ -241,13 +279,13 @@ class _GarageDashboardState extends State<GarageDashboard> {
                       ),
                       child: hasImage
                           ? Image.network(
-                        service.photosUrl,
-                        height: 140,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            _buildDefaultServiceIcon(),
-                      )
+                              service.photosUrl,
+                              height: 130,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  _buildDefaultServiceIcon(),
+                            )
                           : _buildDefaultServiceIcon(),
                     ),
 
@@ -261,6 +299,7 @@ class _GarageDashboardState extends State<GarageDashboard> {
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -283,8 +322,7 @@ class _GarageDashboardState extends State<GarageDashboard> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                            ColorResources.PRIMARY_COLOR,
+                            backgroundColor: ColorResources.PRIMARY_COLOR,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -311,14 +349,16 @@ class _GarageDashboardState extends State<GarageDashboard> {
     );
   }
 
-
   Widget _buildDefaultServiceIcon() {
     return Container(
       width: double.infinity,
       height: 100,
       color: Colors.grey.shade200,
-      child:
-          const Icon(Icons.build_circle_outlined, size: 50, color: Colors.grey),
+      child: const Icon(
+        Icons.build_circle_outlined,
+        size: 50,
+        color: Colors.grey,
+      ),
     );
   }
 }
