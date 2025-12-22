@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:carcheks/util/app_constants.dart';
 
 class ApiConstants {
@@ -28,24 +30,24 @@ class ApiConstants {
   static String ALL_VEHICLE =
       "${ApiConstants.BASE_URL}/VehicleType/VehicleType/getAll";
   static String GET_NEAR_BY_GARAGES(userId, lat, long) =>
-      "${ApiConstants.BASE_URL}/api/getnearbyGaragesbyuserId?usertableId=${userId}&latitude=${lat}&longitude=${long}";
+      "${ApiConstants.BASE_URL}/api/getnearbyGaragesbyuserId?usertableId=$userId&latitude=$lat&longitude=$long";
   static String GET_ALL_CITY = "${ApiConstants.BASE_URL}/api/city/getAll";
   static String saveBidding = "${ApiConstants.BASE_URL}/api/bidding/save";
   static String cartGetByUserId(userId) =>
-      "${ApiConstants.BASE_URL}/api/CartCotroller/getByUserId?userId=${userId}";
+      "${ApiConstants.BASE_URL}/api/CartCotroller/getByUserId?userId=$userId";
   static String saveCart = "${ApiConstants.BASE_URL}/api/CartCotroller/save";
   static String removeCart(cartId) =>
-      '${ApiConstants.BASE_URL}/api/CartCotroller/deleteById?id=${cartId}';
+      '${ApiConstants.BASE_URL}/api/CartCotroller/deleteById?id=$cartId';
   static String allVehicleType =
       "${ApiConstants.BASE_URL}/VehicleType/VehicleType/getAll";
   static String allVehicleManufacturer =
       "${ApiConstants.BASE_URL}/VehicleManufacturer/GarageServices/getAll";
   static String getVehiclesByUserId(userId) =>
-      "${ApiConstants.BASE_URL}/Vehicle/user/getbyuserid?id=${userId}";
+      "${ApiConstants.BASE_URL}/Vehicle/user/getbyuserid?id=$userId";
   static String updateVehicle =
       "${ApiConstants.BASE_URL}/Vehicle/Vehicle/update";
   static String deleteVehicle(id) =>
-      "${ApiConstants.BASE_URL}/Vehicle/Vehicle/deleteById?id=${id}";
+      "${ApiConstants.BASE_URL}/Vehicle/Vehicle/deleteById?id=$id";
 
   static String allFuelType = "${ApiConstants.BASE_URL}/api/fuelType/getAll";
   //Appointment
@@ -65,4 +67,9 @@ class ApiConstants {
 
   static String saveFeedback = "$BASE_URL/api/help/add";
   static String getFeedback(id) => "$BASE_URL/api/help/getByUserId?userId=$id";
+  static String getBalance(id) => "$BASE_URL/api/garage/$id/withdrawal/balance";
+  static String sendWithdrawRequest(id) =>
+      "$BASE_URL/api/garage/$id/withdrawal/request";
+  static String getWithdrawHistory(id) =>
+      "$BASE_URL/api/garage/$id/withdrawal/requests";
 }
