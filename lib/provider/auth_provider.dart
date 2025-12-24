@@ -416,6 +416,10 @@ class AuthProvider extends ChangeNotifier {
       body: body,
     );
     log("${createResponse.statusCode} --- ${createResponse.body}");
+    print(
+      "${createResponse.statusCode}" + " --- " + createResponse.body.toString(),
+    );
+    print(createResponse.body);
     isLoading = false;
     if (createResponse.statusCode == 200) {
       var response = await json.decode(createResponse.body);
@@ -468,5 +472,12 @@ class AuthProvider extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  deleteAccount(User user) async {
+    isLoading = true;
+    String myUrl = ApiConstants.DELETE_USER + 'deleteById?id=${user.id}';
+    var req = await http.delete(Uri.parse(myUrl));
+    isLoading = false;
+    response = json.decode(req.body);
+    notifyListeners();
   }
 }
