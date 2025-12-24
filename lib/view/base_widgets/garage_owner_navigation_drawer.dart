@@ -5,6 +5,7 @@ import 'package:carcheks/provider/garage_provider.dart';
 import 'package:carcheks/route/app_routes.dart';
 import 'package:carcheks/util/color-resource.dart';
 import 'package:carcheks/view/screens/customer/garage/garage_report.dart';
+import 'package:carcheks/view/screens/garage_owner/withdraw_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/garage_owner/appointment/all_appointment.dart';
@@ -216,6 +217,8 @@ class _GarageOwnerDrawerWidgetState extends State<GarageOwnerDrawerWidget>
                       ),
                       _getTile(5, context, "assets/svg/doller.svg", "My Earning",
                           textColor),
+                      _getTile(7, context, "assets/svg/doller.svg", "Balance",
+                          textColor),
                       const Divider(),
                       _getTile(6, context, "assets/svg/logoutgarage.svg",
                           "Logout", textColor),
@@ -281,6 +284,12 @@ class _GarageOwnerDrawerWidgetState extends State<GarageOwnerDrawerWidget>
                 break;
               case 5:
                 getReport(context);
+                break;
+              case 7:
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => WithdrawalScreen(garageId: 1,)),
+                );
                 break;
             }
           });

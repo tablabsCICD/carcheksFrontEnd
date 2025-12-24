@@ -65,6 +65,7 @@ class _AllAppointmentState extends State<AllAppointment> {
 
     print("APPOINTMENT LENGTHHHHH:${appointmentProvider.appointmentByGarageId.length}");
     return Scaffold(
+      key: _scaffoldKey,
       appBar: CustomAppBarWidget(context,_scaffoldKey,"Appointment"),
       body:
       Container(

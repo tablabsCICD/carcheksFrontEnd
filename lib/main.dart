@@ -17,6 +17,7 @@ import 'package:carcheks/provider/services_provider.dart';
 import 'package:carcheks/provider/transaction_provider.dart';
 import 'package:carcheks/provider/user_provider.dart';
 import 'package:carcheks/provider/vehicle_provider.dart';
+import 'package:carcheks/provider/withdrawal_provider.dart';
 import 'package:carcheks/route/app_routes.dart';
 import 'package:carcheks/route/routes.dart';
 import 'package:carcheks/view/screens/notification/local_notification.dart';
@@ -83,6 +84,7 @@ Future<void> main() async {
           ChangeNotifierProvider(create: (_) => locator<PaymentProvider>()),
           ChangeNotifierProvider(create: (_) => locator<SearchProvider>()),
           ChangeNotifierProvider(create: (_) => locator<FeedbackProvider>()),
+          ChangeNotifierProvider(create: (_) => locator<WithdrawalProvider>()),
         ],
         child: const MyApp(),
       ),

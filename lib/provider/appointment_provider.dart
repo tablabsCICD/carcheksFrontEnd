@@ -132,7 +132,7 @@ class AppointmentProvider extends ChangeNotifier {
         int? id,
         String? status,
         String? time,
-        int? paypalId,
+        String? paypalId,
         int? garageServiceId}) async {
     int? id = await authProvider.getUserId();
     AddressClass? addressClass = await addressProvider.getAddressForUser(id!);
@@ -195,8 +195,9 @@ class AppointmentProvider extends ChangeNotifier {
       "userId": userId,
       "vehicleId": vehicleId,
     };
+    print(data);
     var body = json.encode(data);
-
+    print(body);
     var createResponse = await http.put(uri,
         headers: {"Content-Type": "application/json"}, body: body);
     print("${createResponse.statusCode}" +

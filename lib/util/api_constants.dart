@@ -60,6 +60,9 @@ class ApiConstants{
 
   static String saveFeedback = BASE_URL+"/api/help/add";
   static String getFeedback(id) => BASE_URL+"/api/help/getByUserId?userId=$id";
+  static String getBalance(id) => BASE_URL+"/api/garage/${id}/withdrawal/balance";
+  static String sendWithdrawRequest(id) => BASE_URL+"/api/garage/${id}/withdrawal/request";
+  static String getWithdrawHistory(id) => BASE_URL+"/api/garage/${id}/withdrawal/requests";
 
 
 }

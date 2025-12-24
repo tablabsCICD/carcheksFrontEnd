@@ -371,7 +371,9 @@ class _EstimateDetailsState extends State<EstimateDetails> {
                               onPressed: () async {
 
 
-                                makePayment();
+                              //  makePayment();
+
+                                testingPayment();
                               /*  showAnimatedDialog(
                                       context,
                                      const MyDialog(
@@ -458,11 +460,9 @@ class _EstimateDetailsState extends State<EstimateDetails> {
     itemList.shippingAddress = ShippingAddress(
       recipientName: cartProvider
           .cartItemList[0].garageServicesdtls!.garage!.name,
-      line1:cartProvider.cartItemList[0].garageServicesdtls!
-          .garage!.addressDtls!.houseName +
-          " " +
-          cartProvider.cartItemList[0].garageServicesdtls!.garage!
-              .addressDtls!.street,
+      line1:"${cartProvider.cartItemList[0].garageServicesdtls!
+          .garage!.addressDtls!.houseName} ${cartProvider.cartItemList[0].garageServicesdtls!.garage!
+              .addressDtls!.street}",
         line2: cartProvider.cartItemList[0].garageServicesdtls!
         .garage!.addressDtls!.landmark,
         city: cartProvider.cartItemList[0].garageServicesdtls!.garage!
@@ -490,8 +490,8 @@ class _EstimateDetailsState extends State<EstimateDetails> {
           sandboxMode: false,
           clientId: AppConstants.payPal_ClientId,
           secretKey: AppConstants.PayPal_SecretKey,
-          returnURL: "carcheck://paypal/success",
-          cancelURL: "carcheck://paypal/cancel",
+          returnURL: "carchek://paypal/success",
+          cancelURL: "carchek://paypal/cancel",
           transactions: [paypalRequest.toJson()],
           note: "Contact us for any questions on your order.",
           onSuccess: (Map params) async {
@@ -521,7 +521,7 @@ class _EstimateDetailsState extends State<EstimateDetails> {
                   orderId: widget.orderProvider.servicesListByOrderId[0].userOrderId!.id,
                   status: 'New Arrival',
                   time: "${widget.time}",
-                  paypalId: paymentProvider.id,
+                  paypalId: paymentProvider.id.toString(),
                 );
               }
               checkNext(true, jsonString);
@@ -582,4 +582,80 @@ class _EstimateDetailsState extends State<EstimateDetails> {
     });
 
   }
+
+
+  Map<String, dynamic> dummyPaypalSuccessParams = {
+    "paymentId": "PAYID-MOCK123456789",
+    "payerID": "PAYERMOCK987654",
+    "token": "EC-MOCKTOKEN123456",
+    "status": "success",
+    "intent": "sale",
+    "state": "approved",
+    "create_time": DateTime.now().toIso8601String(),
+    "update_time": DateTime.now().toIso8601String(),
+    "amount": {
+      "total": "500.00",
+      "currency": "INR",
+    },
+    "payer": {
+      "email": "testuser@paypal.com",
+      "first_name": "Test",
+      "last_name": "User",
+      "payer_id": "PAYERMOCK987654",
+    },
+    "transactions": [
+      {
+        "invoice_number": "INV-${DateTime.now().millisecondsSinceEpoch}",
+        "description": "Garage service payment (dummy)",
+      }
+    ]
+  };
+
+  Future<void> testingPayment() async {
+    try {
+      // 🔹 Dummy PayPal success response
+      final params = dummyPaypalSuccessParams;
+
+      debugPrint("onSuccess: $params");
+
+      paymentProvider.orderId = await paymentProvider.createOrder(
+        totalAmt: cartProvider.totalAmount,
+        garageId:
+        cartProvider.cartItemList[0].garageServicesdtls!.garage!.id,
+        invoiceNumber: params['token'], // dummy token
+      );
+
+      paymentProvider.transactionId = params['paymentId']; // dummy paymentId
+      debugPrint("Transaction Id: ${paymentProvider.transactionId}");
+
+      String jsonString = jsonEncode(params);
+
+      var transactionResponse =
+      await paymentProvider.updateTransaction(
+        paymentProvider.transactionId!,
+        jsonString,
+      );
+
+      debugPrint("Transaction Response: $transactionResponse");
+
+      if (paymentProvider.orderId != null) {
+        await appointmentProvider.SaveAppointment(
+          accept: true,
+          active: true,
+          availableTime: "${widget.time}",
+          date: "${widget.date}",
+          orderId: widget
+              .orderProvider.servicesListByOrderId[0].userOrderId!.id,
+          status: 'New Arrival',
+          time: "${widget.time}",
+          paypalId: paymentProvider.transactionId, // dummy PayPal ID
+        );
+      }
+
+      checkNext(true, jsonString);
+    } catch (e) {
+      debugPrint("Error processing success: $e");
+    }
+  }
+
 }
