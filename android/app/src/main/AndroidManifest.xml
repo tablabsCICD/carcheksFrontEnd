@@ -4,7 +4,7 @@
     <application
         android:label="Carcheks"
         android:name="${applicationName}"
-        android:icon="@mipmap/carchecks"
+        android:icon="@mipmap/launcher_icon"
         android:enableOnBackInvokedCallback="true">
 
         <activity

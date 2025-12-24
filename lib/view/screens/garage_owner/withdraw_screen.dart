@@ -32,21 +32,21 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
       builder: (context, p, _) {
         return Scaffold(
           key: _scaffoldKey,
-          appBar: CustomAppBarWidget(context,_scaffoldKey,"Appointment"),
+          appBar: CustomAppBarWidget(context, _scaffoldKey, "Appointment"),
           body: p.isLoading
               ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                _balanceCard(p),
-                const SizedBox(height: 20),
-                _withdrawInput(p),
-                const SizedBox(height: 24),
-                _withdrawalHistory(p),
-              ],
-            ),
-          ),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      _balanceCard(p),
+                      const SizedBox(height: 20),
+                      _withdrawInput(p),
+                      const SizedBox(height: 24),
+                      _withdrawalHistory(p),
+                    ],
+                  ),
+                ),
         );
       },
     );
@@ -63,15 +63,18 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
       ),
       child: Column(
         children: [
-          const Text("Available Balance",
-              style: TextStyle(color: Colors.white70)),
+          const Text(
+            "Available Balance",
+            style: TextStyle(color: Colors.white70),
+          ),
           const SizedBox(height: 8),
           Text(
             "\$ ${p.balance ?? 0}",
             style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white),
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
@@ -87,16 +90,17 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Withdraw Amount",
-            style: TextStyle(fontWeight: FontWeight.w600)),
+        const Text(
+          "Withdraw Amount",
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: amountCtrl,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
             hintText: "Enter amount",
-            border:
-            OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
         const SizedBox(height: 14),
@@ -107,10 +111,10 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
             onPressed: p.isSubmitting
                 ? null
                 : () async {
-              final amt = double.parse(amountCtrl.text);
-              await p.raiseWithdrawal(widget.garageId, amt);
-              amountCtrl.clear();
-            },
+                    final amt = double.parse(amountCtrl.text);
+                    await p.raiseWithdrawal(widget.garageId, amt);
+                    amountCtrl.clear();
+                  },
             style: ElevatedButton.styleFrom(
               elevation: 4,
               backgroundColor: Colors.transparent,
@@ -129,26 +133,25 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
               child: Center(
                 child: p.isSubmitting
                     ? const SizedBox(
-                  height: 22,
-                  width: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: Colors.white,
-                  ),
-                )
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
+                      )
                     : const Text(
-                  "Request Withdrawal",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
+                        "Request Withdrawal",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
           ),
         ),
-
       ],
     );
   }
@@ -161,8 +164,10 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Withdrawal History",
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text(
+          "Withdrawal History",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 10),
         ListView.builder(
           shrinkWrap: true,
@@ -174,9 +179,10 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
               child: ListTile(
                 title: Text("₹ ${w.requestedAmount}"),
                 subtitle: Text(
-                    "Commission: ₹${w.adminCommission} | Net: ₹${w.garageAmount}"),
+                  "Commission: ₹${w.adminCommission} | Net: ₹${w.garageAmount}",
+                ),
                 trailing: Chip(
-                  label: Text(w.status??""),
+                  label: Text(w.status ?? ""),
                   backgroundColor: Colors.orange.shade100,
                 ),
               ),

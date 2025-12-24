@@ -1,5 +1,3 @@
-
-
 import 'package:carcheks/provider/address_provider.dart';
 import 'package:carcheks/provider/auth_provider.dart';
 import 'package:carcheks/provider/bid_provider.dart';
@@ -25,7 +23,6 @@ import 'provider/user_order_service_provider.dart';
 GetIt locator = GetIt.asNewInstance();
 
 Future<void> setupLocator() async {
-
   locator.registerLazySingleton(() => FuelProvider());
   locator.registerLazySingleton(() => GarageProvider());
   locator.registerLazySingleton(() => ServiceProvider());
@@ -37,14 +34,14 @@ Future<void> setupLocator() async {
   locator.registerLazySingleton(() => AuthProvider());
   locator.registerLazySingleton(() => AppointmentProvider());
   locator.registerLazySingleton(() => ImgProvider());
- locator.registerLazySingleton(() => CartProvider());
- locator.registerLazySingleton(() => UserOrderServicesProvider());
+  locator.registerLazySingleton(() => CartProvider());
+  locator.registerLazySingleton(() => UserOrderServicesProvider());
   locator.registerLazySingleton(() => ReviewProvider());
   locator.registerLazySingleton(() => PaymentProvider());
   locator.registerLazySingleton(() => SearchProvider());
   locator.registerLazySingleton(() => FeedbackProvider());
   locator.registerLazySingleton(() => WithdrawalProvider());
- // locator.registerLazySingleton(() => LocalizationProvider(sharedPreferences: locator()));
+  // locator.registerLazySingleton(() => LocalizationProvider(sharedPreferences: locator()));
   final sharedPreferences = await SharedPreferences.getInstance();
   locator.registerLazySingleton(() => sharedPreferences);
 }

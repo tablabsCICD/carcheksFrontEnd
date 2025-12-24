@@ -3,7 +3,9 @@ import 'dart:convert';
 
 import 'package:carcheks/util/api_constants.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as ApiHelper;
 import 'package:http/http.dart' as http;
+import 'package:overlay_support/overlay_support.dart';
 
 import '../model/garage_balance_model.dart';
 import '../model/withdrawal_history_model.dart';
@@ -25,13 +27,13 @@ class WithdrawalProvider extends ChangeNotifier {
     var req = await http.get(Uri.parse(myUrl));
 
     if (req.statusCode == 200) {
-      BalanceResponse balanceResponse = BalanceResponse.fromJson(jsonDecode(req.body));
-      if(balanceResponse.success==true) {
+      BalanceResponse balanceResponse = BalanceResponse.fromJson(
+        jsonDecode(req.body),
+      );
+      if (balanceResponse.success == true) {
         balance = balanceResponse.data!.availableAmount ?? 0.0;
-        totalOrders = balanceResponse.data!.totalOrders??0;
-      }else{
-
-      }
+        totalOrders = balanceResponse.data!.totalOrders ?? 0;
+      } else {}
     }
 
     isLoading = false;
@@ -44,22 +46,18 @@ class WithdrawalProvider extends ChangeNotifier {
     var req = await http.get(Uri.parse(myUrl));
 
     if (req.statusCode == 200) {
-      WithdrawalHistoryResponse withdrawalHistoryResponse = WithdrawalHistoryResponse.fromJson(jsonDecode(req.body));
-      if(withdrawalHistoryResponse.success==true) {
+      WithdrawalHistoryResponse withdrawalHistoryResponse =
+          WithdrawalHistoryResponse.fromJson(jsonDecode(req.body));
+      if (withdrawalHistoryResponse.success == true) {
         withdrawals = withdrawalHistoryResponse.data!;
-      }else{
-
-      }
+      } else {}
     }
     isLoading = false;
     notifyListeners();
   }
 
   /// POST Withdrawal Request
-  Future<bool?> raiseWithdrawal(
-      int garageId,
-      double amount,
-      ) async {
+  Future<bool?> raiseWithdrawal(int garageId, double amount) async {
     isSubmitting = true;
     notifyListeners();
 
@@ -68,17 +66,18 @@ class WithdrawalProvider extends ChangeNotifier {
 
     isSubmitting = false;
     if (req.statusCode == 200) {
-      WithdrawalHistoryResponse withdrawalHistoryResponse = WithdrawalHistoryResponse.fromJson(jsonDecode(req.body));
-      if(withdrawalHistoryResponse.success==true) {
+      WithdrawalHistoryResponse withdrawalHistoryResponse =
+          WithdrawalHistoryResponse.fromJson(jsonDecode(req.body));
+      if (withdrawalHistoryResponse.success == true) {
         withdrawals = withdrawalHistoryResponse.data!;
         await fetchBalance(garageId);
         await fetchWithdrawals(garageId);
         notifyListeners();
         return true;
-      }else{
+      } else {
         notifyListeners();
         return false;
       }
     }
-   }
+  }
 }
