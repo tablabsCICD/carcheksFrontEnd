@@ -13,7 +13,7 @@ class LocalNotificationService{
     // initializationSettings  for Android
     const InitializationSettings initializationSettings =
     InitializationSettings(
-      android: AndroidInitializationSettings("tkd_logo"),
+      android: AndroidInitializationSettings("carchecks"),
     );
 
     _notificationsPlugin.initialize(

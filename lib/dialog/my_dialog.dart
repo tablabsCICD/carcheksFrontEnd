@@ -43,7 +43,7 @@ class MyDialog extends StatelessWidget {
               Container(
                 width: MediaQuery.of(context).size.width,
                 alignment: Alignment.center,
-                child: CustomButton(buttonText: 'Ok', onTap: () => Navigator.pop(context)),
+                child: CustomButton(buttonText: 'Ok', onTap: () => Navigator.pop(context),isEnable: true,),
               ),
             ]),
           ),

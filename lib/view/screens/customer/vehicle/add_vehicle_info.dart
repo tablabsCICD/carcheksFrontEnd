@@ -47,6 +47,8 @@ class AddVehicleInfo extends StatefulWidget {
 
 class _AddVehicleInfoState extends State<AddVehicleInfo> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool isFormValid = false;
+
   TextEditingController rnoController = TextEditingController();
   TextEditingController noOfServicingController = TextEditingController();
   TextEditingController avgController = TextEditingController();
@@ -54,96 +56,59 @@ class _AddVehicleInfoState extends State<AddVehicleInfo> {
   TextEditingController vehicleNameController = TextEditingController();
   TextEditingController vehicleModelController = TextEditingController();
   TextEditingController lastServiceDateController = TextEditingController();
+
   Vehicle? vehicle;
   Vehicletype? vehicleType;
   VehicleManufacturer? vehicleManufacturer;
   FuelType? fuelType;
-  String selectedFuelType = '';
   User? user;
-  List<String> yearList = <String>[
-    '2025',
-    '2024',
-    '2023',
-    '2022',
-    '2021',
-    '2020',
-    '2019',
-    '2018',
-    '2017',
-    '2016',
-    '2015',
-    '2014',
-    '2013',
-    '2012',
-    '2011',
-    '2010',
-    '2009',
-    '2008',
-    '2007',
-    '2006',
-    '2005',
-    '2004',
-    '2003',
-    '2002',
-    '2001',
-    '2000',
-  ];
 
+  String selectedFuelType = '';
   String selectedYear = '';
   String selectedVehicleType = '';
-  int selectedVehicaleTypeIndex = 0;
   String selectedVehicleCompany = '';
   String selectedModel = '';
+
+  List<String> yearList = [
+    '2025','2024','2023','2022','2021','2020','2019','2018','2017','2016',
+    '2015','2014','2013','2012','2011','2010','2009','2008','2007','2006',
+    '2005','2004','2003','2002','2001','2000',
+  ];
+
   FuelProvider fuelTypeProvider = locator<FuelProvider>();
   VehicleProvider vehicleProvider = locator<VehicleProvider>();
   ImgProvider imgProvider = locator<ImgProvider>();
+  final authProvider = locator<AuthProvider>();
+
   final now = DateTime.now();
   String formatter = '';
   bool isloading = false;
+
   final formKey = GlobalKey<FormState>();
 
-  pickProfilePic(ImgProvider model) async {
-    var result = await FilePicker.platform.pickFiles(
-      withReadStream:
-          true, // this will return PlatformFile object with read stream
-    );
-    if (result != null) {
-      try {
-        fileName = result.files.first.name;
-        print(result.files.first.toString());
-        //imagefile = File(result.files.first.name);
-        imageBytes = result.files.first.bytes;
-        objFile = result.files.single;
-        print(fileName);
-        model.setImage(fileName ?? "");
-        vehicleImage = '';
-        vehicleImage = await model.uploadImage("0",
-            imageBytes: imageBytes, objectFile: objFile);
-        //debugPrint("service img::"+vehicleImage!);
-      } catch (ex) {
-        throw Exception("Exception Occurred ${ex.toString()}");
-      }
-    }
-  }
+  PlatformFile? objFile;
+  TextEditingController photoController = TextEditingController();
+  File? imagefile;
+  Uint8List? imageBytes;
+  String? fileName, img, vehicleImage;
 
   @override
   void initState() {
-    // TODO: implement initState
     formatter = DateFormat('yMd').format(now);
     user = authProvider.user;
-    vehicleProvider.callApi();
 
+    vehicleProvider.callApi();
     getData();
     fuelTypeProvider.getAllFuelType();
     vehicleProvider.getAllVehicle();
     vehicleProvider.getAllVehicleManufacture();
     vehicleProvider.getAllVehicleType();
+
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     setEmptyValue();
     super.dispose();
   }
@@ -152,528 +117,287 @@ class _AddVehicleInfoState extends State<AddVehicleInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      resizeToAvoidBottomInset: true,
       appBar: CustomAppBarWidget(context, _scaffoldKey, "Add Vehicle"),
       body: Consumer<VehicleProvider>(
-        builder: (context, model, child) => model.isLoadData == true
-            ? Center(
-                child: Container(
-                  child: const CircularProgressIndicator(),
-                ),
-              )
-            : Form(
-                key: formKey,
-                child: Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.all(15),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        /*  Text(
-                      "Add Vehicle Photo",
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                  Consumer<ImgProvider>(
-                    builder: (context, model, child) => Container(
-                      height:100,
-                      padding: EdgeInsets.only(bottom: 16.0),
-                      margin: EdgeInsets.all(10.0),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(model.uploaded_image.toString())
-                          ),
-                          border: Border.all()),
-                      child: GestureDetector(
-                          onTap: (){
-                            img==null?pickProfilePic(model):img=null;
-                          },
-                          child: Icon(img == null?Icons.add:Icons.delete, size: 30)),
-                    ),
+        builder: (context, model, child) {
+          if (model.isLoadData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return Form(
+            key: formKey,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  _title("Select Vehicle Manufacturing Year"),
+                  CustomDropdownList(
+                    hintText: "Select Manufacturing Year",
+                    items: yearList,
+                    selectedType: selectedYear,
+                    onChange: (v) {
+                      setState(() => selectedYear = v);
+                    },
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),*/
-                        const Text(
-                          "Select Vehicle Manufacturing Year",
-                          style: TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        CustomDropdownList(
-                          hintText: "Select Manufacturing Year",
-                          items: yearList,
-                          selectedType: selectedYear,
-                          onChange: (String value) {
-                            setState(() {
-                              selectedYear = value;
-                            });
+
+                  _gap(),
+                  _title("Select Your Vehicle Type"),
+                  CustomDropdownList(
+                    hintText: "Select Vehicle Type",
+                    items: model.vehicleTypeNameList,
+                    selectedType: selectedVehicleType,
+                    onChange: (v) {
+                      setState(() {
+                        selectedVehicleType = v;
+                        vehicleType = model.getSelectedVehicleTypeId(v);
+                      });
+                    },
+                  ),
+
+                  _gap(),
+                  _title("Select Your Vehicle Company"),
+                  CustomDropdownList(
+                    hintText: "Select Vehicle",
+                    items: model.vehicleManufacturerNameList,
+                    selectedType: selectedVehicleCompany,
+                    onChange: (v) {
+                      setState(() {
+                        selectedVehicleCompany = v;
+                        vehicleManufacturer =
+                            model.getSelectedVehicleManufacturerId(v);
+                      });
+                    },
+                  ),
+
+                  _gap(),
+                  _title("Vehicle Registration Number"),
+                  _textField(
+                    rnoController,
+                    "Registration Number",
+                    validator:
+                    Validators.required('This field is required'),
+                  ),
+
+                  _gap(),
+                  _title("Select Your Vehicle Model"),
+                  _textField(vehicleModelController, "Vehicle Model"),
+
+                  _gap(),
+                  _title("Kilometer Run"),
+                  _textField(kmRunController, "Kilometer Run",
+                      keyboard: TextInputType.number),
+
+                  _gap(),
+                  _title("Vehicle Average"),
+                  _textField(avgController, "Average Run",
+                      keyboard: TextInputType.number),
+
+                  _gap(),
+                  _title("Number of Service Done"),
+                  _textField(noOfServicingController, "Number Of Servicing",
+                      keyboard: TextInputType.number),
+
+                  _gap(),
+                  _title("Last Servicing Date"),
+                  _dateField(),
+
+                  const SizedBox(height: 80),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: isloading
+              ? const SizedBox(
+            height: 48,
+            child: Center(child: CircularProgressIndicator()),
+          )
+              : CustomButton(
+            buttonText: 'Continue',
+            isEnable: isFormValid && !isloading,
+            onTap: _onSubmit,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---------------- HELPERS ----------------
+
+  Widget _title(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: 10),
+    child: Text(text,
+        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+  );
+
+  Widget _gap() => const SizedBox(height: 20);
+
+  Widget _textField(TextEditingController c, String hint,
+      {TextInputType keyboard = TextInputType.text, String? Function(String?)? validator}) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: SizedBox(
+        height: 50,
+        child: TextFormField(
+          controller: c,
+          keyboardType: keyboard,
+          validator: validator,
+          onChanged: (_) => _checkFormValidity(),
+          decoration: InputDecoration(
+            hintText: hint,
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _dateField() {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: SizedBox(
+        height: 50,
+        child: TextFormField(
+          readOnly: true,
+          controller: lastServiceDateController,
+          onTap: () async {
+            String selectedDate =
+            await DateTimePickerDialog().pickBeforeDateDialog(context);
+            if (selectedDate.isNotEmpty) {
+              lastServiceDateController.text = selectedDate;
+              _checkFormValidity();
+            }
+          },
+          decoration: const InputDecoration(
+            hintText: 'Last Service Date',
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.symmetric(horizontal: 10),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _checkFormValidity() {
+    final isValid = formKey.currentState?.validate() ?? false;
+    final dropdownValid = selectedYear.isNotEmpty &&
+        selectedVehicleType.isNotEmpty &&
+        selectedVehicleCompany.isNotEmpty;
+
+    setState(() => isFormValid = isValid && dropdownValid);
+  }
+
+  void _onSubmit() async {
+    if (!isFormValid) return;
+
+    if (formKey.currentState!.validate()) {
+      showDialog(
+        context: context,
+        builder: (_) => CupertinoAlertDialog(
+          title: const Text('Are you sure you want to add this vehicle?'),
+          actions: [
+            TextButton(
+              child: Text("Yes", style: Style.okButton),
+              onPressed: () async {
+                Navigator.pop(context);
+                setState(() => isloading = true);
+
+                final result = await vehicleProvider.addVehicle(
+                  userId: user!.id,
+                  active: true,
+                  created: formatter,
+                  created_by: authProvider.user!.firstName,
+                  updated: formatter,
+                  updated_by: authProvider.user!.firstName,
+                  name: vehicleModelController.text,
+                  image_url: vehicleImage,
+                  last_servecing_date: lastServiceDateController.text,
+                  year: selectedYear,
+                  vehicle_model: vehicleModelController.text,
+                  regNumber: rnoController.text,
+                  avgRun: avgController.text,
+                  kiloMeterRun: kmRunController.text,
+                  no_Of_servecing: noOfServicingController.text,
+                  vehicleType: vehicleType,
+                  vehicleManufacturer: vehicleManufacturer,
+                );
+
+                setState(() => isloading = false);
+
+                if (result != null) {
+                  vehicleProvider.getAllVehicleListByUserIdnew(id: user!.id);
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Vehicle Added'),
+                      content: const Text(
+                          'Your vehicle has been added successfully.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            if (widget.isdashboard) {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            } else {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            }
                           },
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const Text(
-                          "Select Your Vehicle Type",
-                          style: TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        CustomDropdownList(
-                          hintText: "Select Vehicle Type",
-                          items: model.vehicleTypeNameList,
-                          selectedType: selectedVehicleType,
-                          onChange: (String value) {
-                            setState(() {
-                              selectedVehicleType = value;
-                              vehicleType = model.getSelectedVehicleTypeId(
-                                  selectedVehicleType);
-                            });
-                          },
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const Text(
-                          "Select Your Vehicle Company",
-                          style: TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        CustomDropdownList(
-                          hintText: "Select Vehicle",
-                          items: model.vehicleManufacturerNameList,
-                          selectedType: selectedVehicleCompany,
-                          onChange: (String value) {
-                            setState(() {
-                              selectedVehicleCompany = value;
-                              vehicleManufacturer =
-                                  model.getSelectedVehicleManufacturerId(
-                                      selectedVehicleCompany)!;
-                            });
-                          },
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const Text(
-                          "Select Your Vehicle Model",
-                          style: TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Card(
-                          elevation: 0,
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 0, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            side: const BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Container(
-                            height: 50,
-                            padding: const EdgeInsets.only(left: 10),
-                            alignment: Alignment.center,
-                            child: TextFormField(
-                              controller: vehicleModelController,
-                              decoration: InputDecoration.collapsed(
-                                hintText: 'Vehicle Model',
-                                border: OutlineInputBorder(
-                                    borderRadius: new BorderRadius.circular(0),
-                                    borderSide: BorderSide.none),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const Text(
-                          "Vehicle Registration Number",
-                          style: TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Card(
-                          elevation: 0,
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 0, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            side: const BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Container(
-                            height: 50,
-                            padding: const EdgeInsets.only(left: 10),
-                            alignment: Alignment.center,
-                            child: TextFormField(
-                              controller: rnoController,
-                              keyboardType: TextInputType.text,
-                              validator:
-                                  Validators.required('This field is required'),
-                              decoration: InputDecoration.collapsed(
-                                hintText: 'Registration Number',
-                                border: OutlineInputBorder(
-                                    borderRadius: new BorderRadius.circular(0),
-                                    borderSide: BorderSide.none),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const Text(
-                          "Kilometer Run",
-                          style: TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Card(
-                          elevation: 0,
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 0, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            side: const BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Container(
-                            height: 50,
-                            padding: const EdgeInsets.only(left: 10),
-                            alignment: Alignment.center,
-                            child: TextFormField(
-                              controller: kmRunController,
-                              //keyboardType: TextInputType.text,
-                              //validator: Validators.required('This field is required'),
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration.collapsed(
-                                hintText: 'Kilometer Run',
-                                border: OutlineInputBorder(
-                                    borderRadius: new BorderRadius.circular(0),
-                                    borderSide: BorderSide.none),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const Text(
-                          "Vehicle Average",
-                          style: TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Card(
-                          elevation: 0,
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 0, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            side: const BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Container(
-                            height: 50,
-                            padding: const EdgeInsets.only(left: 10),
-                            alignment: Alignment.center,
-                            child: TextFormField(
-                              controller: avgController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration.collapsed(
-                                hintText: 'Average Run',
-                                border: OutlineInputBorder(
-                                    borderRadius: new BorderRadius.circular(0),
-                                    borderSide: BorderSide.none),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const Text(
-                          "Number of Service Done",
-                          style: TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Card(
-                          elevation: 0,
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 0, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            side: const BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Container(
-                            height: 50,
-                            padding: const EdgeInsets.only(left: 10),
-                            alignment: Alignment.center,
-                            child: TextFormField(
-                              controller: noOfServicingController,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration.collapsed(
-                                hintText: 'Number Of Servicing',
-                                border: OutlineInputBorder(
-                                    borderRadius: new BorderRadius.circular(0),
-                                    borderSide: BorderSide.none),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        const Text(
-                          "Last Servicing Date",
-                          style: TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Card(
-                          elevation: 0,
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 0, vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            side: const BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Container(
-                            height: 50,
-                            padding: const EdgeInsets.only(left: 10),
-                            alignment: Alignment.center,
-                            child: TextFormField(
-                              readOnly: true,
-                              onTap: () async {
-                                String selectedDate =
-                                    await DateTimePickerDialog()
-                                        .pickBeforeDateDialog(context);
-                                if (selectedDate == null) {
-                                  selectedDate = "Select From Date";
-                                } else {
-                                  lastServiceDateController.text = selectedDate;
-                                }
-                                setState(() {});
-                              },
-                              controller: lastServiceDateController,
-                              decoration: InputDecoration.collapsed(
-                                hintText: 'Last Service Date',
-                                border: OutlineInputBorder(
-                                    borderRadius: new BorderRadius.circular(0),
-                                    borderSide: BorderSide.none),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
+                          child: const Text('OK'),
                         ),
                       ],
                     ),
-                  ),
-                ),
-              ),
-      ),
-      bottomNavigationBar: Consumer<VehicleProvider>(
-        builder: (context, provider, child) {
-          return provider.isLoadData == true
-              ? Container(
-                  height: 20,
-                )
-              : Container(
-                  //  width: MediaQuery.of(context).size.width,
-
-                  child: isloading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.0,
-                            color: Colors.white,
-                          ),
-                        )
-                      : BoxButton(
-                          buttonText: 'Continue',
-                          onTap: () {
-                            if (formKey.currentState!.validate()) {
-                              showDialog(
-                                context: context,
-                                builder: (_) => CupertinoAlertDialog(
-                                  title: const Text(
-                                      'Are you sure you want to add this vehicle?'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      child: Text("Yes", style: Style.okButton),
-                                      onPressed: () async {
-                                        Navigator.of(context)
-                                            .pop(); // Close the confirmation dialog
-                                        setState(() =>
-                                            isloading = true); // Start loader
-
-                                        final result =
-                                            await vehicleProvider.addVehicle(
-                                          userId: user!.id,
-                                          active: true,
-                                          created: formatter,
-                                          created_by:
-                                              authProvider.user!.firstName,
-                                          updated: formatter,
-                                          updated_by:
-                                              authProvider.user!.firstName,
-                                          name: vehicleModelController.text,
-                                          image_url: vehicleImage,
-                                          last_servecing_date:
-                                              lastServiceDateController.text,
-                                          year: selectedYear,
-                                          vehicle_model:
-                                              vehicleModelController.text,
-                                          regNumber: rnoController.text,
-                                          avgRun: avgController.text,
-                                          kiloMeterRun: kmRunController.text,
-                                          no_Of_servecing:
-                                              noOfServicingController.text,
-                                          vehicleType: vehicleType,
-                                          vehicleManufacturer:
-                                              vehicleManufacturer,
-                                        );
-
-                                        setState(() =>
-                                            isloading = false); // Stop loader
-
-                                        if (result != null) {
-                                          provider.getAllVehicleListByUserIdnew(
-                                              id: user!.id);
-
-                                          // Show success dialog
-                                          showDialog(
-                                            context: context,
-                                            builder: (_) => AlertDialog(
-                                              title:
-                                                  const Text('Vehicle Added'),
-                                              content: const Text(
-                                                  'Your vehicle has been added successfully.'),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    if (widget.isdashboard) {
-                                                      Navigator.of(context)
-                                                          .pop(); // Close dialog
-                                                      Navigator.of(context)
-                                                          .pop(); // Close form
-                                                    } else {
-                                                      Navigator.of(context)
-                                                          .pop(); // Close dialog
-                                                      Navigator.of(context)
-                                                          .pop(); // Close form
-                                                      Navigator.of(context)
-                                                          .pop(); // Go back
-                                                    }
-                                                  },
-                                                  child: const Text('OK'),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content:
-                                                  Text('Something went wrong'),
-                                              backgroundColor: Colors.red,
-                                            ),
-                                          );
-                                        }
-                                      },
-                                    ),
-                                    TextButton(
-                                      child:
-                                          Text("No", style: Style.cancelButton),
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                );
-        },
-      ),
-    );
-  }
-
-  PlatformFile? objFile;
-  TextEditingController photoController = TextEditingController();
-  final authProvider = locator<AuthProvider>();
-  File? imagefile;
-  Uint8List? imageBytes;
-  String? fileName, img;
-  String? vehicleImage;
-  final _formKey = GlobalKey<FormState>();
-
-  pickFile(VehicleProvider model) async {
-    var result = await FilePicker.platform.pickFiles(
-      withReadStream:
-          true, // this will return PlatformFile object with read stream
-    );
-    if (result != null) {
-      setState(() {
-        objFile = result.files.single;
-      });
-      try {
-        fileName = result.files.first.name;
-        print(result.files.first.toString());
-        imagefile = File(result.files.first.name);
-        imageBytes = result.files.first.bytes;
-        print(fileName);
-        photoController.text = fileName!;
-        model.setImage(fileName);
-        img = await imgProvider.uploadImage("0",
-            imageBytes: imageBytes, objectFile: objFile);
-        debugPrint("IMG::" + img!);
-      } catch (ex) {
-        throw Exception("Exception Occurred ${ex.toString()}");
-      }
+                  );
+                }else{
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                          'Something went wrong'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+            ),
+            TextButton(
+              child: Text("No", style: Style.cancelButton),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
     }
   }
 
-  setEmptyValue() {
-    setState(() {
-      rnoController.text = '';
-      avgController.text = '';
-      photoController.text = '';
-      kmRunController.text = '';
-      lastServiceDateController.text = '';
-      vehicleNameController.text = '';
-      vehicleModelController.text = '';
-      noOfServicingController.text = '';
-      isloading = false;
-    });
+  void setEmptyValue() {
+    rnoController.clear();
+    avgController.clear();
+    photoController.clear();
+    kmRunController.clear();
+    lastServiceDateController.clear();
+    vehicleNameController.clear();
+    vehicleModelController.clear();
+    noOfServicingController.clear();
+    isloading = false;
   }
 
   Future<void> getData() async {

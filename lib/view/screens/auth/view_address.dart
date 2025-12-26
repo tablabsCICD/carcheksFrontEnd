@@ -9,7 +9,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
@@ -267,7 +266,7 @@ class _ViewAddressState extends State<ViewAddress> {
                               ],
                             ));}
                       },
-                      buttonText: 'Save'),
+                      buttonText: 'Save',isEnable: true,),
                 ),
 
                 /* CustomButton(
@@ -355,7 +354,7 @@ class _ViewAddressState extends State<ViewAddress> {
           //obscuringCharacter: pass? '*' : '',
           decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.ubuntu(color: Colors.grey),
+              hintStyle: TextStyle(color: Colors.grey),
               contentPadding: EdgeInsets.only(top: 15, bottom: 15),
               prefixIcon: pass
                   ? Icon(

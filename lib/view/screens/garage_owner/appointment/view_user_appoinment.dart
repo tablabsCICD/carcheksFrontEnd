@@ -127,6 +127,10 @@ class _ViewUserAppointmentState extends State<ViewUserAppointment> {
                     borderRadius: BorderRadius.circular(10)
                 ),
                 child: ListTile(
+                  onTap: (){
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (builder) => AppointmentDetails(model.AppointmentByUserId[index])));
+                  },
                   leading: getImage(''),
                   title: Text( model.AppointmentByUserId[index].garageServices!.garage!.name!),
                   subtitle: Column(

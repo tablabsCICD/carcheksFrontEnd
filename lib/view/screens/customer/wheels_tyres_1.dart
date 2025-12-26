@@ -56,7 +56,7 @@ class _WheelsAndTyresState extends State<WheelsAndTyres> {
                 onTap: (){
                   Navigator.push(context, MaterialPageRoute(builder: (builder)=>Notes()));
                 },
-                buttonText: "Continue"
+                buttonText: "Continue",isEnable: true,
               ),
             )
           ],

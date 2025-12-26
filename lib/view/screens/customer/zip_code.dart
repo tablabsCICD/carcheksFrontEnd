@@ -43,7 +43,7 @@ class _ZipCodeState extends State<ZipCode> {
               width: MediaQuery.of(context).size.width,
               alignment: Alignment.center,
               child: CustomButton(
-                buttonText: 'Continue',
+                buttonText: 'Continue',isEnable: true,
                 onTap: () {
                   Navigator.push(
                       context,

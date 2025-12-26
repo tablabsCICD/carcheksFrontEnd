@@ -3,10 +3,10 @@ import 'package:wc_form_validators/wc_form_validators.dart';
 import '../../../provider/auth_provider.dart';
 import '../../../route/app_routes.dart';
 import '../../../util/color-resource.dart';
+import '../../../util/sharepreferences.dart';
 import '../../base_widgets/custom_button.dart';
 import '../../base_widgets/loader.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 
@@ -86,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                           children: [
                             Text(
                               "Welcome",
-                              style: GoogleFonts.ubuntu(
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 34,
                                 fontWeight: FontWeight.bold,
@@ -117,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                                     Container(
                                       width: size.width * 0.7,
                                       child: CustomButton(
-                                        buttonText: "Login",
+                                        buttonText: "Login",isEnable: true,
                                         onTap: () {
                                           if (isCustomerLogin) {
                                             loginUser(model, context);
@@ -187,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Center(
             child: Text(
               label,
-              style: GoogleFonts.ubuntu(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: active ? Colors.black : Colors.white,
@@ -220,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.phone_iphone, color: Colors.grey),
           hintText: "Mobile Number",
-          hintStyle: GoogleFonts.ubuntu(color: Colors.grey),
+          hintStyle: TextStyle(color: Colors.grey),
           border: InputBorder.none,
           contentPadding:
           const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
@@ -248,7 +248,7 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () => setState(() => _isObscure = !_isObscure),
           ),
           hintText: "Password",
-          hintStyle: GoogleFonts.ubuntu(color: Colors.grey),
+          hintStyle: TextStyle(color: Colors.grey),
           border: InputBorder.none,
           contentPadding:
           const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
@@ -263,7 +263,7 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         Text(
           "Don't have an account?",
-          style: GoogleFonts.ubuntu(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
             color: Colors.black87,
@@ -274,7 +274,7 @@ class _LoginPageState extends State<LoginPage> {
           onTap: () => Navigator.pushNamed(context, AppRoutes.select_type),
           child: Text(
             "Sign Up",
-            style: GoogleFonts.ubuntu(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: const Color(0xff5172b4),
@@ -301,6 +301,7 @@ class _LoginPageState extends State<LoginPage> {
         if (result["data"]["garrage_Owner"]) {
           _toast("Please switch to Garage Owner login");
         } else {
+
           model.setVisitingFlag(true);
           model.setUserId(result["data"]["id"]);
 

@@ -48,8 +48,7 @@ class RouteGenerator {
       case AppRoutes.register:
         final set = settings.arguments as Set<bool>;
         bool isSelectedCustomer = set.first;
-        bool isSelected = set.last;
-        return buildRoute(RegistrationScreen(isSelectedCustomer, isSelected),
+        return buildRoute(RegistrationScreen(isSelectedCustomer),
             settings: settings);
 
       case AppRoutes.login:

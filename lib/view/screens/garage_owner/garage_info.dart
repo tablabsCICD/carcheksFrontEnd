@@ -7,7 +7,6 @@ import 'package:carcheks/view/base_widgets/custom_textfield.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:carcheks/locator.dart';
 import 'package:provider/provider.dart';
 
@@ -290,7 +289,7 @@ class _GarageInfoState extends State<GarageInfo> {
                                       ],
                                     ));
                               },
-                              buttonText: 'Save'),
+                              buttonText: 'Save',isEnable: true,),
                         ),
                         SizedBox(
                           height: 16,
@@ -322,78 +321,78 @@ class _GarageInfoState extends State<GarageInfo> {
 
                         /*  Row(
                   children: [
-                    Text("Garage Name: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text(model.ownGarageList[0].name,style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Garage Name: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text(model.ownGarageList[0].name,style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Contact Number: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text(model.ownGarageList[0].contactNumber,style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Contact Number: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text(model.ownGarageList[0].contactNumber,style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("EmailId: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.emailId",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("EmailId: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.emailId",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Website: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.websiteUrl",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Website: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.websiteUrl",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Rating: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.rating".toString(),style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Rating: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.rating".toString(),style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Opening Time: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.openingTime",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Opening Time: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.openingTime",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Closing Time: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.closingTime",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Closing Time: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.closingTime",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Latitude: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.latitude",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Latitude: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.latitude",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Longitude: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.longitude",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Longitude: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.longitude",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Rating Count: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.noOfRating.toString()",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Rating Count: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.noOfRating.toString()",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Address: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Expanded(child: Text(model.ownGarageList[0].addressDtls.name,maxLines: 3,style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),)),
+                    Text("Address: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Expanded(child: Text(model.ownGarageList[0].addressDtls.name,maxLines: 3,style: TextStyle(color: Colors.black,fontSize: 15),)),
                   ],
                 ),   */
                       ],

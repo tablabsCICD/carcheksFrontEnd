@@ -45,7 +45,7 @@ class ApiConstants {
   static String getVehiclesByUserId(userId) =>
       "${ApiConstants.BASE_URL}/Vehicle/user/getbyuserid?id=$userId";
   static String updateVehicle =
-      "${ApiConstants.BASE_URL}/Vehicle/Vehicle/update";
+      "${ApiConstants.BASE_URL}/Vehicle/Vehicle/Update";
   static String deleteVehicle(id) =>
       "${ApiConstants.BASE_URL}/Vehicle/Vehicle/deleteById?id=$id";
 
@@ -72,4 +72,6 @@ class ApiConstants {
       "$BASE_URL/api/garage/$id/withdrawal/request";
   static String getWithdrawHistory(id) =>
       "$BASE_URL/api/garage/$id/withdrawal/requests";
+
+  static String getUserById(id) => "$BASE_URL/UserTable/UserTable/getById?id=$id";
 }

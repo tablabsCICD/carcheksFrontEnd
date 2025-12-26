@@ -32,6 +32,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../util/DateTimePickerDialog.dart';
 import '../../../base_widgets/Custom_Vehicle_dialog.dart';
 import '../../../base_widgets/box_button.dart';
 import '../../../base_widgets/cutom_city_textfield.dart';
@@ -165,36 +166,7 @@ class _EditVehicleInfoState extends State<EditVehicleInfo> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Add Vehicle Photo",
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Consumer<ImgProvider>(
-                  builder: (context, model, child) => Container(
-                    height:100,
-                    padding: EdgeInsets.only(bottom: 16.0),
-                    margin: EdgeInsets.all(10.0),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(model.uploadedImage.toString())
-                        ),
-                        border: Border.all()),
-                    child: GestureDetector(
-                        onTap: (){
-                          img==null?pickProfilePic(model):img=null;
-                        },
-                        child: Icon(img == null?Icons.add:Icons.delete, size: 30)),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
+
                 /*Text(
                   "Select Vehicle Manufacturing Year",
                   style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
@@ -503,6 +475,18 @@ class _EditVehicleInfoState extends State<EditVehicleInfo> {
                     padding: EdgeInsets.only(left: 10),
                     alignment: Alignment.center,
                     child: TextFormField(
+                      readOnly: true,
+                      onTap: () async {
+                        String selectedDate =
+                        await DateTimePickerDialog()
+                            .pickBeforeDateDialog(context);
+                        if (selectedDate == null) {
+                          selectedDate = "Select From Date";
+                        } else {
+                          lastServiceDateController.text = selectedDate;
+                        }
+                        setState(() {});
+                      },
                       controller: lastServiceDateController,
                       decoration: InputDecoration.collapsed(
                         hintText: 'Last Service Date',

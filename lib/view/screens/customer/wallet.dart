@@ -138,7 +138,7 @@ class _WalletState extends State<Wallet> {
               child: Consumer<TransactionProvider>(
 
                 builder: (context, model, child) => CustomButton(
-                  buttonText: "Continue",
+                  buttonText: "Continue",isEnable: true,
                   onTap: () {
 
 

@@ -140,8 +140,8 @@ class AppointmentProvider extends ChangeNotifier {
     Uri uri = Uri.parse(myUrl);
     print(myUrl);
     Map<String, dynamic> data = {
-      "accept": active,
-      "active": accept,
+      "accept": accept,
+      "active": active,
       "availableTime": availableTime,
       "date": date,
       "garageServicesId": garageServiceId,
@@ -165,8 +165,10 @@ class AppointmentProvider extends ChangeNotifier {
         "vechicleId": 0
       }
     };
+
     var body = json.encode(data);
     print(data);
+    print(body);
     var createResponse = await http.post(uri,
         headers: {"Content-Type": "application/json"}, body: body);
     print("${createResponse.statusCode}" +

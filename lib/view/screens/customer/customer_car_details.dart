@@ -120,7 +120,7 @@ class _CustomerCarDetailsState extends State<CustomerCarDetails> {
                             builder: (builder) => AddVehicleInfo(
                                   isdashboard: false,
                                 )));
-                  },
+                  },isEnable: true,
                 ),
               )
             ],

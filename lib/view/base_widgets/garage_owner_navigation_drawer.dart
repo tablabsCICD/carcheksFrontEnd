@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../util/sharepreferences.dart';
 import '../screens/garage_owner/appointment/all_appointment.dart';
 import '../screens/garage_owner/garage_services/all_garage_services.dart';
 
@@ -202,10 +203,10 @@ class GarageOwnerDrawerWidget extends StatelessWidget {
   // LOGOUT FUNCTION
   // -----------------------------------------------------------
   Future<void> _logout(BuildContext context) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.clear();
     authProvider.setGarageOwnerVisitingFlag(false);
     authProvider.setUserId(0);
+    LocalSharePreferences preferences = LocalSharePreferences();
+    preferences.logOut();
 
     Navigator.of(
       context,

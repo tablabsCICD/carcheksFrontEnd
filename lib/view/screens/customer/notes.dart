@@ -88,8 +88,7 @@ class _NotesState extends State<Notes> {
                      var snackBar = SnackBar(content: Text('Please provide some instructions for technician!'));
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);}
                   },
-                  buttonText: "Continue",
-        
+                  buttonText: "Continue",isEnable: true,
               ),
             )
           ],

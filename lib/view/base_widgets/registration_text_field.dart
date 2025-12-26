@@ -109,7 +109,7 @@ class _RegistrationTextFeildState extends State<RegistrationTextFeild> {
                 ),
               ])
             : widget.isValidator
-            ? Validators.required('This field is required')
+            ? Validators.required('${widget.hintText} is required')
             : null,
         readOnly: widget.readOnly ?? false,
         obscureText: widget.isPassword ? _isObscure : false,

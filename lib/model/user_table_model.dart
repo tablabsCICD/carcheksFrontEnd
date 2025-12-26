@@ -62,7 +62,6 @@ class UserDetails {
 class User {
   User({
     required this.id,
-    required this.userorderDtls,
     required this.firstName,
     required this.lastName,
     required this.emailid,
@@ -82,7 +81,6 @@ class User {
     required this.otp,
   });
   late final int id;
-  late final List<dynamic> userorderDtls;
   late final String firstName;
   late final String lastName;
   late final String emailid;
@@ -103,7 +101,6 @@ class User {
 
   User.fromJson(Map<String, dynamic> json){
     id = json['id']??0;
-   // userorderDtls = List.castFrom<dynamic, dynamic>(json['userorder_dtls'])??[];
     firstName = json['firstName']??'';
     lastName = json['lastName']??'';
     emailid = json['emailid']??'';
@@ -126,7 +123,6 @@ class User {
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
     _data['id'] = id;
-    _data['userorder_dtls'] = userorderDtls;
     _data['firstName'] = firstName;
     _data['lastName'] = lastName;
     _data['emailid'] = emailid;

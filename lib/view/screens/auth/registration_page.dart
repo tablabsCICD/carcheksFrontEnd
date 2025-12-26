@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:carcheks/locator.dart';
 import 'package:carcheks/provider/address_provider.dart';
 import 'package:carcheks/provider/auth_provider.dart';
@@ -16,18 +18,15 @@ import 'package:geolocator/geolocator.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../base_widgets/loader.dart';
 
 class RegistrationScreen extends StatefulWidget {
-  bool isCustomer, isgarageOwner;
+  bool isgarageOwner;
 
-  RegistrationScreen(this.isCustomer, this.isgarageOwner, {Key? key})
-      : super(key: key);
+  RegistrationScreen(this.isgarageOwner, {Key? key}) : super(key: key);
 
   @override
   State<RegistrationScreen> createState() => _RegistrationScreenState();
@@ -35,42 +34,117 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   bool isLoading = false;
+  bool isFormValid = false; // 🔹 NEW
+
+  final formKey = GlobalKey<FormState>();
+
+  // ---------------- CONTROLLERS ----------------
   TextEditingController fnameController = TextEditingController();
   TextEditingController lnameController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  TextEditingController websiteController = TextEditingController();
-  TextEditingController garageInfoController = TextEditingController();
-  TextEditingController openHrsController = TextEditingController();
-  TextEditingController closeHrsController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  TextEditingController garageNameController = TextEditingController();
-  TextEditingController garageAddressController = TextEditingController();
-  TextEditingController garageMobileNoController = TextEditingController();
-  TextEditingController garageEmailIdController = TextEditingController();
-  TextEditingController latController = TextEditingController();
-  TextEditingController longController = TextEditingController();
-  TextEditingController garagePhotoController = TextEditingController();
+
   TextEditingController streetController = TextEditingController();
   TextEditingController subLocalityController = TextEditingController();
   TextEditingController localityController = TextEditingController();
-  TextEditingController zipCodeController = TextEditingController();
   TextEditingController cityController = TextEditingController();
-  TextEditingController countryController = TextEditingController();
+  TextEditingController zipCodeController = TextEditingController();
   TextEditingController stateController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
+  TextEditingController countryController = TextEditingController();
+
+  TextEditingController garageNameController = TextEditingController();
+  TextEditingController garageInfoController = TextEditingController();
+  TextEditingController websiteController = TextEditingController();
+  TextEditingController garageMobileNoController = TextEditingController();
+  TextEditingController garageEmailIdController = TextEditingController();
   TextEditingController garageStreetController = TextEditingController();
-  TextEditingController garageSubLocalityController = TextEditingController();
   TextEditingController garageLocalityController = TextEditingController();
-  TextEditingController garageZipCodeController = TextEditingController();
   TextEditingController garageCityController = TextEditingController();
-  TextEditingController garageCountryController = TextEditingController();
+  TextEditingController garageZipCodeController = TextEditingController();
   TextEditingController garageStateController = TextEditingController();
+  TextEditingController garageCountryController = TextEditingController();
+  TextEditingController openHrsController = TextEditingController();
+  TextEditingController closeHrsController = TextEditingController();
+
+  TextEditingController latController = TextEditingController();
+  TextEditingController longController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController garageSubLocalityController = TextEditingController();
+  String? openingTime, closingTime;
+
+  // ---------------- INIT ----------------
+  @override
+  void initState() {
+    super.initState();
+    getCurrentLocation();
+    _attachListeners();
+  }
+
+  // ---------------- LISTENERS ----------------
+  void _attachListeners() {
+    final controllers = [
+      fnameController,
+      lnameController,
+      mobileController,
+      emailController,
+      passwordController,
+      cityController,
+      zipCodeController,
+      stateController,
+      countryController,
+      garageNameController,
+      garageMobileNoController,
+      garageEmailIdController,
+      garageStreetController,
+      garageCityController,
+      garageZipCodeController,
+      garageStateController,
+      garageCountryController,
+      openHrsController,
+      closeHrsController,
+    ];
+
+    for (final c in controllers) {
+      c.addListener(_validateForm);
+    }
+  }
+
+  // ---------------- VALIDATION LOGIC ----------------
+  void _validateForm() {
+    bool valid = formKey.currentState?.validate() ?? false;
+
+    if (widget.isgarageOwner) {
+      valid =
+          valid &&
+          garageNameController.text.isNotEmpty &&
+          garageMobileNoController.text.isNotEmpty &&
+          garageEmailIdController.text.isNotEmpty &&
+          garageStreetController.text.isNotEmpty &&
+          garageCityController.text.isNotEmpty &&
+          garageZipCodeController.text.isNotEmpty &&
+          garageStateController.text.isNotEmpty &&
+          garageCountryController.text.isNotEmpty &&
+          openHrsController.text.isNotEmpty &&
+          closeHrsController.text.isNotEmpty;
+    } else {
+      valid =
+          valid &&
+          cityController.text.isNotEmpty &&
+          zipCodeController.text.isNotEmpty &&
+          stateController.text.isNotEmpty &&
+          countryController.text.isNotEmpty;
+    }
+
+    if (valid != isFormValid) {
+      setState(() {
+        isFormValid = valid;
+      });
+    }
+  }
 
   String location = 'Null, Press Button';
   double? currentPlaceLat;
-
-  String? openingTime, closingTime;
 
   double? currentPlaceLong;
   String address = 'searching current location.......';
@@ -93,17 +167,21 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
     if (permission == LocationPermission.deniedForever) {
       return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
     }
     return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+      desiredAccuracy: LocationAccuracy.high,
+    );
   }
 
   Placemark? place;
 
   Future<void> getAddressFromLatLong(Position position) async {
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
     place = placemarks[0];
     address =
         '${place!.street}, ${place!.subLocality}, ${place!.locality}, ${place!.subAdministrativeArea}, ${place!.postalCode}, ${place!.country}';
@@ -119,277 +197,307 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     getAddressFromLatLong(position);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getCurrentLocation();
-  }
-
   final now = DateTime.now();
   String formatter = '';
   AddressProvider addressProvider = locator<AddressProvider>();
   GarageProvider garageProvider = locator<GarageProvider>();
-  final formKey = GlobalKey<FormState>();
-
 
   bool isPasswordValid(String password) {
     final regex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#\$&*~]).{6,}$');
     return regex.hasMatch(password);
   }
 
-  @override
+
+  String? imageUrl;
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     formatter = DateFormat('yMd').format(now);
-
+    final authProvider = context.read<AuthProvider>();
     return Scaffold(
-      body: Consumer<AuthProvider>(
-        builder: (context, model, child) => Form(
-          key: formKey,
-          child: Column(
-            children: [
-              Stack(
-                  children: [
-                    ClipPath(
-                      clipper: DrawClip2(),
-                      child: Container(
-                        width: size.width,
-                        height: size.height * 0.3,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xffa58fd2), Color(0xffddc3fc)],
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
+      body: Form(
+        key: formKey,
+        onChanged: _validateForm,
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                ClipPath(
+                  clipper: DrawClip2(),
+                  child: Container(
+                    width: size.width,
+                    height: size.height * 0.3,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xffa58fd2), Color(0xffddc3fc)],
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.bottomRight,
                       ),
                     ),
-                    ClipPath(
-                      clipper: DrawClip(),
-                      child: Container(
-                        width: size.width,
-                        height: size.height * 0.3,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [ColorResources.PRIMARY_COLOR, Color(0xff91c5fc)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Profile Image
-                    Positioned(
-                      top: 50,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.grey[100],
-                          backgroundImage: model.uploadedProfileImg != null
-                              ? NetworkImage(model.uploadedProfileImg!)
-                              : (model.localProfileImg != null
-                              ? FileImage(model.localProfileImg!)
-                              : null),
-                          child: (model.uploadedProfileImg == null && model.localProfileImg == null)
-                              ? Icon(Icons.account_circle_outlined, size: 50)
-                              : null,
-
-                        ),
-                      ),
-                    ),
-
-                    Positioned(
-                      top: 125,
-                      left: size.width / 2 + 20,
-                      child: InkWell(
-                        onTap: () async {
-                          await model.pickAndUploadImage(context,true);
-                        },
-                        child: Container(
-                          width: 30,
-                          height: 30,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.grey[500],
-                          ),
-                          child: const Icon(Icons.add, size: 18),
-                        ),
-                      ),
-                    ),
-
-                  ],
-                ),
-
-
-              // Expanded Form Fields
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      // User Info Fields
-                      RegistrationTextFeild(
-                        controller: fnameController,
-                        hintText: "First Name",
-                        isName: true,
-                        textInputType: TextInputType.text,
-                        iconData: Icons.person,
-                      ),
-                      RegistrationTextFeild(
-                        controller: lnameController,
-                        hintText: "Last Name",
-                        isName: true,
-                        textInputType: TextInputType.text,
-                        iconData: Icons.person,
-                      ),
-                      RegistrationTextFeild(
-                        controller: mobileController,
-                        hintText: "Mobile Number",
-                        isPhoneNumber: true,
-                        textInputType: TextInputType.phone,
-                        iconData: Icons.phone_android,
-                      ),
-                      RegistrationTextFeild(
-                        controller: emailController,
-                        hintText: "Email Id",
-                        isEmail: true,
-                        textInputType: TextInputType.emailAddress,
-                        iconData: Icons.email,
-                      ),
-                      RegistrationTextFeild(
-                        controller: passwordController,
-                        hintText: "Password",
-                        isPassword: true,
-                        textInputType: TextInputType.visiblePassword,
-                        iconData: Icons.lock,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(left: 25, top: 4),
-                        child: Text(
-                          "Hint: Minimum 6 characters, must include 1 number",
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                      ),
-
-                      // Customer Address Section
-                      if (widget.isCustomer) ...[
-                        useCurrentLocationButton(isCustomer: true),
-                        RegistrationTextFeild(
-                          controller: streetController,
-                          hintText: "Street Name1",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.apartment,
-                        ),
-                        RegistrationTextFeild(
-                          controller: subLocalityController,
-                          hintText: "Street Name2",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.location_pin,
-                        ),
-                        RegistrationTextFeild(
-                          controller: localityController,
-                          hintText: "Location",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.apartment,
-                        ),
-                        RegistrationTextFeild(
-                          controller: cityController,
-                          hintText: "City",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.location_city,
-                        ),
-                        RegistrationTextFeild(
-                          controller: zipCodeController,
-                          hintText: "Zip Code",
-                          textInputType: TextInputType.number,
-                          iconData: Icons.location_pin,
-                        ),
-                        RegistrationTextFeild(
-                          controller: stateController,
-                          hintText: "State",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.location_city,
-                        ),
-                        RegistrationTextFeild(
-                          controller: countryController,
-                          hintText: "Country",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.location_pin,
-                        ),
-                      ],
-
-                      // Garage Owner Section
-                      if (widget.isgarageOwner) ...garageOwnerFields(model),
-
-                      const SizedBox(height: 20),
-
-                      // Register Button
-                      Container(
-                        width: size.width - 100,
-                        child: CustomButton(
-                          buttonText: 'Register',
-                          onTap: () async {
-                           if (formKey.currentState!.validate()) {
-                              await getLatLong(
-                                "${garageStreetController.text} ${garageLocalityController.text} "
-                                    "${garageCityController.text} ${garageStateController.text} ${garageCountryController.text}",
-                              );
-
-                              final confirmed = await showDialog<bool>(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('Confirm Registration'),
-                                  content: const Text(
-                                      'Are you sure you want to register with these details?'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(false),
-                                      child: const Text(
-                                        'No',
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                    ),
-                                    ElevatedButton(
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                        MaterialStateProperty.all(Colors.green),
-                                      ),
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(true),
-                                      child: const Text(
-                                        'Yes',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-
-                              if (confirmed == true) {
-                                Registration(model);
-                              }
-                            }
-                          },
-                        ),
-                      ),
-
-                      // Login Section
-                      loginSection(context),
-                    ],
                   ),
                 ),
+                ClipPath(
+                  clipper: DrawClip(),
+                  child: Container(
+                    width: size.width,
+                    height: size.height * 0.3,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          ColorResources.PRIMARY_COLOR,
+                          Color(0xff91c5fc),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                  ),
+                ),
+                // Profile Image
+                Positioned(
+                  top: 50,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.grey[100],
+                      backgroundImage: (imageUrl == null)
+                          ? null
+                          : NetworkImage(imageUrl!),
+                      child: (imageUrl == null)
+                          ? Icon(Icons.account_circle_outlined, size: 50)
+                          : null,
+                    ),
+                  ),
+                ),
+
+                Positioned(
+                  top: 125,
+                  left: size.width / 2 + 20,
+                  child: InkWell(
+                    onTap: () async {
+                      imageUrl = await authProvider.pickAndUploadImage(
+                        context,
+                        true,
+                      );
+                      setState(() {
+                        print(imageUrl);
+                      });
+                    },
+                    child: Container(
+                      width: 30,
+                      height: 30,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey[500],
+                      ),
+                      child: const Icon(Icons.add, size: 18),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            // Expanded Form Fields
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    // User Info Fields
+                    RegistrationTextFeild(
+                      controller: fnameController,
+                      hintText: "First Name",
+                      isName: true,
+                      textInputType: TextInputType.text,
+                      iconData: Icons.person,
+                    ),
+                    RegistrationTextFeild(
+                      controller: lnameController,
+                      hintText: "Last Name",
+                      isName: true,
+                      textInputType: TextInputType.text,
+                      iconData: Icons.person,
+                    ),
+                    RegistrationTextFeild(
+                      controller: mobileController,
+                      hintText: "Mobile Number",
+                      isPhoneNumber: true,
+                      textInputType: TextInputType.phone,
+                      iconData: Icons.phone_android,
+                    ),
+                    RegistrationTextFeild(
+                      controller: emailController,
+                      hintText: "Email Id",
+                      isEmail: true,
+                      textInputType: TextInputType.emailAddress,
+                      iconData: Icons.email,
+                    ),
+                    RegistrationTextFeild(
+                      controller: passwordController,
+                      hintText: "Password",
+                      isPassword: true,
+                      textInputType: TextInputType.visiblePassword,
+                      iconData: Icons.lock,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 25, top: 4),
+                      child: Text(
+                        "Hint: Minimum 6 characters, must include 1 number",
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                      ),
+                    ),
+
+                    // Customer Address Section
+                    if (!widget.isgarageOwner) ...[
+                      useCurrentLocationButton(isCustomer: true),
+                      RegistrationTextFeild(
+                        controller: streetController,
+                        hintText: "Street Name1",
+                        textInputType: TextInputType.text,
+                        iconData: Icons.apartment,
+                      ),
+                      RegistrationTextFeild(
+                        controller: subLocalityController,
+                        hintText: "Street Name2",
+                        textInputType: TextInputType.text,
+                        iconData: Icons.location_pin,
+                      ),
+                      RegistrationTextFeild(
+                        controller: localityController,
+                        hintText: "Location",
+                        textInputType: TextInputType.text,
+                        iconData: Icons.apartment,
+                      ),
+                      RegistrationTextFeild(
+                        controller: cityController,
+                        hintText: "City",
+                        textInputType: TextInputType.text,
+                        iconData: Icons.location_city,
+                        isValidator: true,
+                      ),
+                      RegistrationTextFeild(
+                        controller: zipCodeController,
+                        hintText: "Zip Code",
+                        textInputType: TextInputType.number,
+                        iconData: Icons.location_pin,
+                        isValidator: true,
+                      ),
+                      RegistrationTextFeild(
+                        controller: stateController,
+                        hintText: "State",
+                        textInputType: TextInputType.text,
+                        iconData: Icons.location_city,
+                        isValidator: true,
+                      ),
+                      RegistrationTextFeild(
+                        controller: countryController,
+                        hintText: "Country",
+                        textInputType: TextInputType.text,
+                        iconData: Icons.location_pin,
+                        isValidator: true,
+                      ),
+                    ],
+
+                    // Garage Owner Section
+                    if (widget.isgarageOwner)
+                      ...garageOwnerFields(authProvider),
+
+                    const SizedBox(height: 20),
+
+                    // Register Button
+                    Container(
+                      width: size.width - 100,
+                      child: CustomButton(
+                        buttonText: isLoading ? "Please wait..." : "Register",
+                        isEnable: isFormValid && !isLoading,
+                        onTap: () async {
+                          if (!formKey.currentState!.validate()) return;
+
+                          try {
+                            await getLatLong(
+                              "${garageStreetController.text} "
+                              "${garageLocalityController.text} "
+                              "${garageCityController.text} "
+                              "${garageStateController.text} "
+                              "${garageCountryController.text}",
+                            );
+
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Confirm Registration'),
+                                content: const Text(
+                                  'Are you sure you want to register with these details?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: const Text(
+                                      'No',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                            Colors.green,
+                                          ),
+                                    ),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: const Text(
+                                      'Yes',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirmed == true) {
+                              if (isFormValid && !isLoading) {
+                                setState(() => isLoading = true);
+
+                                try {
+                                  RegistrationFun(authProvider);
+                                } finally {
+                                  setState(() => isLoading = false);
+                                }
+                              }
+                            }
+                          } on SocketException {
+                            _showError(
+                              context,
+                              "Network Error, please try again",
+                            );
+                          } catch (e) {
+                            _showError(
+                              context,
+                              "Something went wrong, please try again",
+                            );
+                          }
+                        },
+                      ),
+                    ),
+
+                    // Login Section
+                    loginSection(context),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
+
   Widget loginSection(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
@@ -398,7 +506,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         children: [
           Text(
             "Already have account?",
-            style: GoogleFonts.ubuntu(
+            style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 18,
@@ -465,10 +573,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     } else {
                       garageStreetController.text = place!.thoroughfare ?? '';
                       garageLocalityController.text = place!.locality ?? '';
-                      garageSubLocalityController.text = place!.subLocality ?? '';
+                      garageSubLocalityController.text =
+                          place!.subLocality ?? '';
                       garageZipCodeController.text = place!.postalCode ?? '';
-                      garageCityController.text = place!.subAdministrativeArea ?? '';
-                      garageStateController.text = place!.administrativeArea ?? '';
+                      garageCityController.text =
+                          place!.subAdministrativeArea ?? '';
+                      garageStateController.text =
+                          place!.administrativeArea ?? '';
                       garageCountryController.text = place!.country ?? '';
                       latController.text = currentPlaceLat.toString();
                       longController.text = currentPlaceLong.toString();
@@ -567,8 +678,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: RegistrationTextFeild(
               onTap: () async {
                 openingTime = await DateTimePickerDialog().selectTime(context);
-                openHrsController.text =
-                    openingTime ?? "Select Opening Time";
+                openHrsController.text = openingTime ?? "Select Opening Time";
                 setState(() {});
               },
               controller: openHrsController,
@@ -583,8 +693,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: RegistrationTextFeild(
               onTap: () async {
                 closingTime = await DateTimePickerDialog().selectTime(context);
-                closeHrsController.text =
-                    closingTime ?? "Select Closing Time";
+                closeHrsController.text = closingTime ?? "Select Closing Time";
                 setState(() {});
               },
               controller: closeHrsController,
@@ -601,7 +710,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: InkWell(
           onTap: () async {
-            await authProvider.pickAndUploadImage(context,false);
+            await authProvider.pickAndUploadImage(context, false);
           },
           child: InputDecorator(
             decoration: const InputDecoration(
@@ -627,10 +736,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           ),
         ),
       ),
-
     ];
   }
-
 
   Future<void> getLatLong(String address) async {
     try {
@@ -670,8 +777,17 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
+  void _showError(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
-  void Registration(AuthProvider model) async {
+  void RegistrationFun(AuthProvider model) async {
     getLoader(context, isLoading);
 
     if (fnameController.text.isNotEmpty &&
@@ -696,8 +812,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         garageInfo: garageInfoController.text,
         garageImg: model.uploadedGarageImg,
         garageEmailId: garageEmailIdController.text,
-        garageMobile:
-            widget.isgarageOwner ? int.parse(garageMobileNoController.text) : 0,
+        garageMobile: widget.isgarageOwner
+            ? int.parse(garageMobileNoController.text)
+            : 0,
         openingTime: openHrsController.text,
         closingTime: closeHrsController.text,
         lat: latController.text,
@@ -745,25 +862,26 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       if (result['success'] == true) {
         // 🎉 Show success dialog
         await showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: const Text('Registration Successful'),
-                  content: const Text(
-                    'Thank you for registering!\n\nYou can now continue to the login page.',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => LoginPage()),
-                        );
-                      },
-                      child: const Text('Continue to Login'),
-                    ),
-                  ],
-                ));
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Registration Successful'),
+            content: const Text(
+              'Thank you for registering!\n\nYou can now continue to the login page.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => LoginPage()),
+                  );
+                },
+                child: const Text('Continue to Login'),
+              ),
+            ],
+          ),
+        );
       } else {
         showSimpleNotification(
           Text(
@@ -775,9 +893,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       }
     } else {
       dismissLoader(context);
-      const snackBar = SnackBar(
-        content: Text('Please Fill All Fields'),
-      );
+      const snackBar = SnackBar(content: Text('Please Fill All Fields'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
@@ -788,8 +904,14 @@ class DrawClip extends CustomClipper<Path> {
   Path getClip(Size size) {
     Path path = Path();
     path.lineTo(0, size.height * 0.80);
-    path.cubicTo(size.width / 4, size.height, 3 * size.width / 4,
-        size.height / 2, size.width, size.height * 0.8);
+    path.cubicTo(
+      size.width / 4,
+      size.height,
+      3 * size.width / 4,
+      size.height / 2,
+      size.width,
+      size.height * 0.8,
+    );
     path.lineTo(size.width, 0);
     return path;
   }
@@ -805,8 +927,14 @@ class DrawClip2 extends CustomClipper<Path> {
   Path getClip(Size size) {
     Path path = Path();
     path.lineTo(0, size.height * 0.80);
-    path.cubicTo(size.width / 4, size.height, 3 * size.width / 4,
-        size.height / 2, size.width, size.height * 0.9);
+    path.cubicTo(
+      size.width / 4,
+      size.height,
+      3 * size.width / 4,
+      size.height / 2,
+      size.width,
+      size.height * 0.9,
+    );
     path.lineTo(size.width, 0);
     return path;
   }

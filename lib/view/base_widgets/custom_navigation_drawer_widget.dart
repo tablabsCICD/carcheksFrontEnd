@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../util/sharepreferences.dart';
 import '../screens/rate_raview/rate_review_screen.dart';
 
 class DrawerWidget extends StatelessWidget {
@@ -132,10 +133,10 @@ class DrawerWidget extends StatelessWidget {
   // LOGOUT FUNCTION
   // -----------------------------------------------------------
   void calllogOut(context) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.clear();
     authProvider.setVisitingFlag(false);
     authProvider.setUserId(0);
+    LocalSharePreferences preferences = LocalSharePreferences();
+    preferences.logOut();
 
     if (context.mounted) {
       Navigator.of(context).pushAndRemoveUntil(

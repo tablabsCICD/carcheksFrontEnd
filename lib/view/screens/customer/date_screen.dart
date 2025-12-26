@@ -9,7 +9,6 @@ import 'package:carcheks/view/base_widgets/custom_button.dart';
 import 'package:carcheks/view/base_widgets/loader.dart';
 import 'package:carcheks/view/screens/customer/wallet.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /*import 'package:flutter_clean_calendar/clean_calendar_event.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';*/
@@ -92,18 +91,18 @@ class _ChooseDateState extends State<ChooseDate> {
             weekendStyle: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              fontFamily: GoogleFonts.poppins().fontFamily,
+              fontFamily: TextStyle().fontFamily,
             ),
             weekdayStyle: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              fontFamily: GoogleFonts.poppins().fontFamily,
+              fontFamily: TextStyle().fontFamily,
             )),
         headerStyle: HeaderStyle(
           titleTextStyle: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
-            fontFamily: GoogleFonts.poppins().fontFamily,
+            fontFamily: TextStyle().fontFamily,
           ),
           formatButtonVisible: false,
         ),
@@ -111,47 +110,47 @@ class _ChooseDateState extends State<ChooseDate> {
           defaultTextStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            fontFamily: GoogleFonts.poppins().fontFamily,
+            fontFamily: TextStyle().fontFamily,
           ),
           weekendTextStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            fontFamily: GoogleFonts.poppins().fontFamily,
+            fontFamily: TextStyle().fontFamily,
           ),
           selectedTextStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            fontFamily: GoogleFonts.poppins().fontFamily,
+            fontFamily: TextStyle().fontFamily,
           ),
           rangeEndTextStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            fontFamily: GoogleFonts.poppins().fontFamily,
+            fontFamily: TextStyle().fontFamily,
           ),
           rangeStartTextStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            fontFamily: GoogleFonts.poppins().fontFamily,
+            fontFamily: TextStyle().fontFamily,
           ),
           todayTextStyle: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              fontFamily: GoogleFonts.poppins().fontFamily,
+              fontFamily: TextStyle().fontFamily,
               color: Colors.white),
           outsideTextStyle: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              fontFamily: GoogleFonts.poppins().fontFamily,
+              fontFamily: TextStyle().fontFamily,
               color: Color(0xFFBFBFBF)),
           withinRangeTextStyle: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              fontFamily: GoogleFonts.poppins().fontFamily,
+              fontFamily: TextStyle().fontFamily,
               color: Color(0xFFBFBFBF)),
           disabledTextStyle: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              fontFamily: GoogleFonts.poppins().fontFamily,
+              fontFamily: TextStyle().fontFamily,
               color: Color(0xFFBFBFBF)),
         ),
         rowHeight: 50,
@@ -333,7 +332,7 @@ class _ChooseDateState extends State<ChooseDate> {
               width: MediaQuery.of(context).size.width,
               alignment: Alignment.center,
               child: CustomButton(
-                buttonText: "Continue",
+                buttonText: "Continue",isEnable: true,
                 onTap: () {
                   getLoader(context, isloading);
                   DateTime _currentDate = DateTime.now();

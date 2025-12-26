@@ -9,12 +9,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class JoinUsScreen extends StatefulWidget {
+  const JoinUsScreen({super.key});
+
   @override
   _JoinUsScreenState createState() => _JoinUsScreenState();
 }
 
 class _JoinUsScreenState extends State<JoinUsScreen> {
-  bool isSelected = false,isSelectedCustomer = true;
+  bool isSelectedGarageOwner = false;
 
   @override
   Widget build(BuildContext context) {
@@ -29,24 +31,23 @@ class _JoinUsScreenState extends State<JoinUsScreen> {
             InkWell(
               onTap: (){
                 setState(() {
-                  isSelectedCustomer = !isSelectedCustomer;
-                  isSelected = !isSelected;
+                  isSelectedGarageOwner = !isSelectedGarageOwner;
                 });
               },
               child: Container(
                 height: 100,
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
-                  border: Border.all(color: isSelectedCustomer?ColorResources.PRIMARY_COLOR:Colors.black),
+                  border: Border.all(color: isSelectedGarageOwner?Colors.black:ColorResources.PRIMARY_COLOR),
                   borderRadius: BorderRadius.circular(10.0)
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                   //  SvgPicture.asset("assets/svg/customer.svg",height: 50,width: 50,color: isSelectedCustomer?ColorResources.PRIMARY_COLOR:Colors.black,),
-                    Icon(Icons.person,size: 40,color: isSelectedCustomer?ColorResources.PRIMARY_COLOR:Colors.black),
-                    Text("A Customer",style:TextStyle(color: isSelectedCustomer?ColorResources.PRIMARY_COLOR:Colors.black)),
-                    Icon(isSelectedCustomer?Icons.check_circle:Icons.circle_outlined,size: 30,color: isSelectedCustomer?ColorResources.PRIMARY_COLOR:Colors.black)
+                    Icon(Icons.person,size: 40,color: isSelectedGarageOwner?Colors.black:ColorResources.PRIMARY_COLOR),
+                    Text("A Customer",style:TextStyle(color: isSelectedGarageOwner?Colors.black:ColorResources.PRIMARY_COLOR)),
+                    Icon(isSelectedGarageOwner?Icons.circle_outlined:Icons.check_circle,size: 30,color: isSelectedGarageOwner?Colors.black:ColorResources.PRIMARY_COLOR)
                   ],
                 ),
               ),
@@ -55,24 +56,23 @@ class _JoinUsScreenState extends State<JoinUsScreen> {
             InkWell(
               onTap: (){
                 setState(() {
-                  isSelected = !isSelected;
-                  isSelectedCustomer = !isSelectedCustomer;
+                  isSelectedGarageOwner = !isSelectedGarageOwner;
                 });
               },
               child: Container(
                 height: 100,
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
-                    border: Border.all(color: isSelected?ColorResources.PRIMARY_COLOR:Colors.black),
+                    border: Border.all(color: isSelectedGarageOwner?ColorResources.PRIMARY_COLOR:Colors.black),
                     borderRadius: BorderRadius.circular(10.0)
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                    // SvgPicture.asset("assets/svg/garage_owner.svg",height: 50,width: 50,color: isSelectedCustomer?ColorResources.PRIMARY_COLOR:Colors.black,),
-                    Icon(Icons.person,size: 40,color: isSelected?ColorResources.PRIMARY_COLOR:Colors.black),
-                    Text("A Garage Owner",style: TextStyle(color: isSelected?ColorResources.PRIMARY_COLOR:Colors.black),),
-                    Icon(isSelected?Icons.check_circle:Icons.circle_outlined,size: 30,color: isSelected?ColorResources.PRIMARY_COLOR:Colors.black)
+                    Icon(Icons.person,size: 40,color: isSelectedGarageOwner?ColorResources.PRIMARY_COLOR:Colors.black),
+                    Text("A Garage Owner",style: TextStyle(color: isSelectedGarageOwner?ColorResources.PRIMARY_COLOR:Colors.black),),
+                    Icon(isSelectedGarageOwner?Icons.check_circle:Icons.circle_outlined,size: 30,color: isSelectedGarageOwner?ColorResources.PRIMARY_COLOR:Colors.black)
                   ],
                 ),
               ),
@@ -80,9 +80,8 @@ class _JoinUsScreenState extends State<JoinUsScreen> {
             SizedBox(height: 40,),
             Center(
               child: CustomButton(onTap: (){
-              //  Navigator.push(context, MaterialPageRoute(builder: (builder)=>RegistrationScreen(isSelectedCustomer,isSelected)));
-                Navigator.pushNamed(context, AppRoutes.register,arguments: {isSelectedCustomer,isSelected});
-              }, buttonText: "Continue"),
+                Navigator.pushNamed(context, AppRoutes.register,arguments: {isSelectedGarageOwner});
+              }, buttonText: "Continue",isEnable: true,),
             )
           ],
         ),

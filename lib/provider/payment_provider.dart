@@ -117,7 +117,7 @@ class PaymentProvider extends ChangeNotifier {
   updateTransaction(String transactionId,String paypalResponse) async {
     isLoading = true;
 
-    String myUrl = ApiConstants.BASE_URL + "/api/paypal/update?id=${id}&transactionId=$transactionId&response=$paypalResponse";
+    String myUrl = "${ApiConstants.BASE_URL}/api/paypal/update?id=$id&transactionId=$transactionId&response=$paypalResponse";
     debugPrint(myUrl);
     Uri uri = Uri.parse(myUrl);
     var createResponse = await http.put(uri,

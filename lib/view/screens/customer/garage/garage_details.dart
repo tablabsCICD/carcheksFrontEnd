@@ -51,27 +51,30 @@ class GarageDetails extends StatefulWidget {
 
 class _GarageDetailsState extends State<GarageDetails> {
   String text =
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum ";
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
   String chatText =
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry.";
-  List<ImageCarousel> _imageUrls = [
-  ];
+
+  List<ImageCarousel> _imageUrls = [];
 
   int _current = 0;
   bool isCarSelected = true;
   bool isGSelected = false;
+
   TextEditingController searchTextController = TextEditingController();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   ServiceProvider serviceProvider = locator<ServiceProvider>();
   AddressProvider addressProvider = locator<AddressProvider>();
   AuthProvider authProvider = locator<AuthProvider>();
+
   AddressClass? addressClass;
   TextEditingController reviewController = TextEditingController();
   double rating = 0;
 
   @override
   void initState() {
+    super.initState();
     serviceProvider.getGarageServicesByGarageId(widget.garage.id);
     _imageUrls.add(ImageCarousel(widget.garage.imageUrl, '', ''));
     _imageUrls.add(ImageCarousel(widget.garage.photos1, '', ''));
@@ -81,310 +84,237 @@ class _GarageDetailsState extends State<GarageDetails> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       key: _scaffoldKey,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: ColorResources.APPBAR_COLOR,
-        title: Text(
-          widget.garage.name.toUpperCase(),
-          style: Style.TITLE,
-        ),
+        title: Text(widget.garage.name.toUpperCase(), style: Style.TITLE),
         leading: IconButton(
-          icon: Icon(
-            Icons.menu,
-            color: ColorResources.BUTTON_COLOR,
-          ),
-          //SvgPicture.asset("assets/svg/hamburger.svg"),
+          icon: Icon(Icons.menu, color: ColorResources.BUTTON_COLOR),
           onPressed: () => _scaffoldKey.currentState!.openDrawer(),
-          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
         ),
         actions: [
           InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfilePage()),
-              );
-            },
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => ProfilePage()),
+            ),
             child: getImage(authProvider.user!.imageUrl.toString()),
           ),
-          SizedBox(
-            width: 10,
-          ),
-          GetCart(
-            userId: authProvider.user!.id,
-          ),
-          SizedBox(
-            width: 10,
-          ),
+          const SizedBox(width: 10),
+          GetCart(userId: authProvider.user!.id),
+          const SizedBox(width: 10),
         ],
       ),
       drawer: DrawerWidget(),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
 
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              getImageSlider(),
+              const SizedBox(height: 20),
 
-                  SizedBox(
-                    height: 15,
-                  ),
-                  getImageSlider(),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Open at ${widget.garage.openingTime} ",
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: ColorResources.BUTTON_COLOR),
-                          ),
-                          Text(
-                            "Closes at ${widget.garage.closingTime}",
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: ColorResources.RED),
-                          ),
-                        ],
-                      ),
+              _timeRow(),
+              const SizedBox(height: 20),
 
+              _garageTitle(),
+              const SizedBox(height: 12),
 
-                      Row(
-                        children: [
-                          Card(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50)),
-                            elevation: 5,
-                            child: InkWell(
-                              onTap: () {
-                                launch("tel:${widget.garage.contactNumber}");
-                              },
+              _addressText(),
+              const SizedBox(height: 15),
 
-                              child: Padding(
-                                  padding: EdgeInsets.all(7.0),
-                                  child: Icon(
-                                    Icons.call,
-                                    color: Colors.green,
-                                    size: 18,
-                                  )),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (builder) => MyCart()));
-                            },
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50)),
-                              elevation: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(7.0),
-                                child: SvgPicture.asset(
-                                  "assets/svg/menu_cart.svg",
-                                  height: 18,
-                                  width: 18,
-                                ),
-                              ),
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (builder) => ServiceSearch()));
-                            },
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50)),
-                              elevation: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(7.0),
-                                child: SvgPicture.asset(
-                                  "assets/svg/menu_search.svg",
-                                  height: 18,
-                                  width: 18,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        widget.garage.name,
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: ColorResources.BUTTON_COLOR),
-                      ),
-                      Text(
-                        widget.garage.noOfRating.toString() + " Rating",
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 15,
-                            decoration: TextDecoration.underline,
-                            color: ColorResources.PRIMARY_COLOR),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    "${widget.garage.addressDtls?.street}, ${widget.garage.addressDtls?.landmark}, "
-                            "${widget.garage.addressDtls?.houseName}, " +
-                        "${widget.garage.addressDtls?.cityname}, ${widget.garage.addressDtls?.zipCode}",
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    "Highlights",
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    widget.garage.discription,
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    "See All Services",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  getServices(widget.garage),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    "Rate your experience with ",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-
-                  StarRating(
-                    rating: rating,
-                    onRatingChanged: (rating) =>
-                        setState(() => this.rating = rating),
-                  ),
-
-                  SizedBox(
-                    height: 7,
-                  ),
-                  writeReview(),
-                  SizedBox(
-                    height: 7,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Consumer<ReviewProvider>(
-                        builder: (context, model, child) => ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurpleAccent,
-                            foregroundColor: Colors.white
-                          ),
-                          onPressed: () async {
-                            if (reviewController.text.isNotEmpty) {
-
-                              if(rating==0){
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                  content: Text('Please select rating'),
-                                  backgroundColor: Colors.red,
-                                ));
-                              }else{
-                                var result = await model.addReview(
-                                    garageId: widget.garage.id,
-                                    comments: reviewController.text,
-                                    rating: rating);
-                                if (result['success'] == false) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                    content: Text(
-                                        'something went wrong to submit review'),
-                                    backgroundColor: Colors.red,
-                                  ));
-                                } else {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(const SnackBar(
-                                    content:
-                                    Text('review submitted successfully'),
-                                    backgroundColor: Colors.green,
-                                  ));
-                                  await model
-                                      .getReviewByGarageId(widget.garage.id);
-                                }
-                              }
-
-
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text('Please give some comments'),
-                                backgroundColor: Colors.red,
-                              ));
-                            }
-                          },
-                          child: Text("Submit Review"),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  getChatList(),
-                  SizedBox(
-                    height: 15,
-                  ),
-                ],
+              _sectionTitle("Highlights"),
+              Text(
+                widget.garage.discription,
+                style: const TextStyle(fontSize: 16),
               ),
+              const SizedBox(height: 20),
+
+              _sectionTitle("See All Services"),
+              const SizedBox(height: 10),
+              getServices(widget.garage),
+
+              const SizedBox(height: 25),
+              _sectionTitle("Rate your experience"),
+
+              StarRating(
+                rating: rating,
+                onRatingChanged: (r) => setState(() => rating = r),
+              ),
+
+              const SizedBox(height: 10),
+              writeReview(),
+
+              const SizedBox(height: 10),
+              _submitReviewButton(),
+
+              const SizedBox(height: 30),
+              getChatList(),
+              const SizedBox(height: 80),
+            ],
+          ),
+        ),
+      ),
+
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: BoxButton(
+            buttonText: "Continue",
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => MyCart()),
             ),
           ),
-        ],
+        ),
       ),
-      bottomNavigationBar: BoxButton(
-        buttonText: "Continue",
-        onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (builder) => MyCart()));
-        },
+    );
+  }
+
+  // ---------------- UI HELPERS ----------------
+
+  Widget _sectionTitle(String text) => Text(
+    text,
+    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+  );
+
+  Widget _garageTitle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          widget.garage.name,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: ColorResources.BUTTON_COLOR,
+          ),
+        ),
+        Text(
+          "${widget.garage.noOfRating} Rating",
+          style: TextStyle(
+            decoration: TextDecoration.underline,
+            color: ColorResources.PRIMARY_COLOR,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _addressText() {
+    return Text(
+      "${widget.garage.addressDtls?.street}, "
+      "${widget.garage.addressDtls?.landmark}, "
+      "${widget.garage.addressDtls?.houseName}, "
+      "${widget.garage.addressDtls?.cityname}, "
+      "${widget.garage.addressDtls?.zipCode}",
+      style: const TextStyle(fontSize: 16),
+    );
+  }
+
+  Widget _timeRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Open at ${widget.garage.openingTime}",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: ColorResources.BUTTON_COLOR,
+              ),
+            ),
+            Text(
+              "Closes at ${widget.garage.closingTime}",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: ColorResources.RED,
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            _iconButton(Icons.call, () {
+              launch("tel:${widget.garage.contactNumber}");
+            }),
+            _iconButton(Icons.shopping_cart, () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => MyCart()),
+              );
+            }),
+            _iconButton(Icons.search, () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ServiceSearch()),
+              );
+            }),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _iconButton(IconData icon, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Card(
+        shape: const CircleBorder(),
+        elevation: 4,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Icon(icon, color: Colors.green, size: 18),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _submitReviewButton() {
+    return Center(
+      child: Consumer<ReviewProvider>(
+        builder: (context, model, child) => ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.deepPurpleAccent,
+          ),
+          onPressed: () async {
+            if (reviewController.text.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Please give some comments')),
+              );
+              return;
+            }
+            if (rating == 0) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Please select rating')),
+              );
+              return;
+            }
+
+            var result = await model.addReview(
+              garageId: widget.garage.id,
+              comments: reviewController.text,
+              rating: rating,
+            );
+
+            if (result['success']) {
+              reviewController.clear();
+              FocusScope.of(context).unfocus();
+              rating = 0;
+              await model.getReviewByGarageId(widget.garage.id);
+            }
+          },
+          child: const Text("Submit Review",style: TextStyle(color: Colors.white),),
+        ),
       ),
     );
   }
@@ -416,26 +346,28 @@ class _GarageDetailsState extends State<GarageDetails> {
           ),
           items: _imageUrls.map((i) {
             index++;
-            return Builder(builder: (BuildContext context) {
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 10),
-                decoration: _imageUrls[_current] == ''
-                    ? BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        image: DecorationImage(
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10),
+                  decoration: _imageUrls[_current] == ''
+                      ? BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: AssetImage(
-                              "assets/images/1.jpg",
-                            )))
-                    : BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        image: DecorationImage(
+                            image: AssetImage("assets/images/1.jpg"),
+                          ),
+                        )
+                      : BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: NetworkImage(
-                              widget.garage.imageUrl
-                            ))),
-              );
-            });
+                            image: NetworkImage(widget.garage.imageUrl),
+                          ),
+                        ),
+                );
+              },
+            );
           }).toList(),
         ),
         Positioned(
@@ -461,7 +393,7 @@ class _GarageDetailsState extends State<GarageDetails> {
               }).toList(),
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -470,20 +402,25 @@ class _GarageDetailsState extends State<GarageDetails> {
     return Consumer<ServiceProvider>(
       builder: (context, model, child) => Container(
         height: 150,
-        child: model.garageServiceListByGarageId.isEmpty?Text("Garage Services not added.."):ListView.builder(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemCount: model.garageServiceListByGarageId.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                  height: 150,
-                  width: 150,
-                  margin: EdgeInsets.all(5),
-                  child: GarageServiceCard(
+        child: model.garageServiceListByGarageId.isEmpty
+            ? Text("Garage Services not added..")
+            : ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: model.garageServiceListByGarageId.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    height: 150,
+                    width: 150,
+                    margin: EdgeInsets.all(5),
+                    child: GarageServiceCard(
                       model.garageServiceListByGarageId[index],
-                      cost: true));
-              // child: GServiceCard(model.garageServiceListByGarageId[index],widget.garage));
-            }),
+                      cost: true,
+                    ),
+                  );
+                  // child: GServiceCard(model.garageServiceListByGarageId[index],widget.garage));
+                },
+              ),
       ),
     );
   }
@@ -531,68 +468,75 @@ class _GarageDetailsState extends State<GarageDetails> {
     return Consumer<ReviewProvider>(
       builder: (context, model, child) => Container(
         child: ListView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: model.reviewListByGarageId.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                margin: EdgeInsets.symmetric(vertical: 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        getImage(
-                            model.reviewListByGarageId[index].userTable == null
-                                ? ''
-                                : model.reviewListByGarageId[index].userTable!
-                                            .imageUrl ==
-                                        ''
-                                    ? ''
-                                    : model.reviewListByGarageId[index]
-                                        .userTable!.imageUrl),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Text(
-                            model.reviewListByGarageId[index].userTable!
-                                    .firstName +
-                                model.reviewListByGarageId[index].userTable!
-                                    .lastName,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15))
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        StarDisplay(
-                            value: model.reviewListByGarageId[index].rating!),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                            model.reviewListByGarageId[index].updated
-                                .toString(),
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal, fontSize: 12))
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(model.reviewListByGarageId[index].comments.toString(),
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: model.reviewListByGarageId.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              margin: EdgeInsets.symmetric(vertical: 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      getImage(
+                        model.reviewListByGarageId[index].userTable == null
+                            ? ''
+                            : model
+                                      .reviewListByGarageId[index]
+                                      .userTable!
+                                      .imageUrl ==
+                                  ''
+                            ? ''
+                            : model
+                                  .reviewListByGarageId[index]
+                                  .userTable!
+                                  .imageUrl,
+                      ),
+                      SizedBox(width: 15),
+                      Text(
+                        model.reviewListByGarageId[index].userTable!.firstName +
+                            model
+                                .reviewListByGarageId[index]
+                                .userTable!
+                                .lastName,
                         style: TextStyle(
-                            fontWeight: FontWeight.normal, fontSize: 12)),
-                    SizedBox(
-                      height: 10,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      StarDisplay(
+                        value: model.reviewListByGarageId[index].rating!,
+                      ),
+                      SizedBox(width: 10),
+                      Text(
+                        model.reviewListByGarageId[index].updated.toString(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    model.reviewListByGarageId[index].comments.toString(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: 12,
                     ),
-                    Divider(
-                      thickness: 2,
-                    )
-                  ],
-                ),
-              );
-            }),
+                  ),
+                  SizedBox(height: 10),
+                  Divider(thickness: 2),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

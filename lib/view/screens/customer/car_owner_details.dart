@@ -81,7 +81,7 @@ class _CarOwnerDetailsState extends State<CarOwnerDetails> {
                           buttonText: "Continue",
                           onTap: (){
                             Navigator.push(context, MaterialPageRoute(builder: (builder)=>ZipCode()));
-                          },
+                          },isEnable: true,
                         ),
                       )
                     ],

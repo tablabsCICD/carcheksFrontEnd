@@ -11,7 +11,6 @@ import 'package:carcheks/view/screens/auth/address_page.dart';
 import 'package:carcheks/view/screens/auth/vehicle_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class VehiclePage extends StatefulWidget {
@@ -207,7 +206,7 @@ class _VehiclePageState extends State<VehiclePage> {
 
 
                   },
-                  buttonText: 'Save'),
+                  buttonText: 'Save',isEnable: true,),
 
             ],
           ),
@@ -229,7 +228,7 @@ class _VehiclePageState extends State<VehiclePage> {
           //obscuringCharacter: pass? '*' : '',
           decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.ubuntu(color: Colors.grey),
+              hintStyle: TextStyle(color: Colors.grey),
               contentPadding: EdgeInsets.only(top: 15, bottom: 15),
               prefixIcon: pass
                   ? Icon(

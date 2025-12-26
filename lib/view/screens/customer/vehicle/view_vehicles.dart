@@ -7,7 +7,6 @@ import 'package:carcheks/view/screens/customer/vehicle/add_vehicle_info.dart';
 import 'package:carcheks/view/screens/customer/vehicle/edit_vehicle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../dialog/animated_custom_dialog.dart';
@@ -184,7 +183,7 @@ class ViewVehiclesState extends State<ViewVehicles> {
                               children: [
                                 Text(
                                   "Vehicle Type: ",
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(
                                       color: Colors.black54, fontSize: 12),
                                 ),
                                 Text(model.vehicleListNew[index].vehicletype ==
@@ -199,7 +198,7 @@ class ViewVehiclesState extends State<ViewVehicles> {
                               children: [
                                 Text(
                                   "Vehicle Name: ",
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(
                                       color: Colors.black54, fontSize: 12),
                                 ),
                                 Text("${model.vehicleListNew[index].name}"),
@@ -210,7 +209,7 @@ class ViewVehiclesState extends State<ViewVehicles> {
                               children: [
                                 Text(
                                   "Vehicle Model: ",
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(
                                       color: Colors.black54, fontSize: 12),
                                 ),
                                 Text(
@@ -222,7 +221,7 @@ class ViewVehiclesState extends State<ViewVehicles> {
                               children: [
                                 Text(
                                   "Vehicle Manufacturer: ",
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(
                                       color: Colors.black54, fontSize: 12),
                                 ),
                                 Text(model.vehicleListNew[index]
@@ -238,7 +237,7 @@ class ViewVehiclesState extends State<ViewVehicles> {
                               children: [
                                 Text(
                                   "Fuel Type: ",
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(
                                       color: Colors.black54, fontSize: 12),
                                 ),
                                 Text(
@@ -253,13 +252,13 @@ class ViewVehiclesState extends State<ViewVehicles> {
                               children: [
                                 Text(
                                   "Vehicle Registration Number: ",
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(
                                       color: Colors.black54, fontSize: 12),
                                 ),
                                 Text(
                                   "${model.vehicleListNew[index].registrationNo}",
                                   style:
-                                      GoogleFonts.poppins(color: Colors.green),
+                                      TextStyle(color: Colors.green),
                                 ),
                               ],
                             ),
@@ -268,13 +267,13 @@ class ViewVehiclesState extends State<ViewVehicles> {
                               children: [
                                 Text(
                                   "Manufacturing Year: ",
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(
                                       color: Colors.black54, fontSize: 12),
                                 ),
                                 Text(
                                   "${model.vehicleListNew[index].yearOfManufacturing}",
                                   style:
-                                      GoogleFonts.poppins(color: Colors.green),
+                                      TextStyle(color: Colors.green),
                                 ),
                               ],
                             ),
@@ -283,13 +282,13 @@ class ViewVehiclesState extends State<ViewVehicles> {
                               children: [
                                 Text(
                                   "Last Servicing date Year: ",
-                                  style: GoogleFonts.poppins(
+                                  style: TextStyle(
                                       color: Colors.black54, fontSize: 12),
                                 ),
                                 Text(
                                   "${model.vehicleListNew[index].lastServiceDate}",
                                   style:
-                                      GoogleFonts.poppins(color: Colors.green),
+                                      TextStyle(color: Colors.green),
                                 ),
                               ],
                             ),

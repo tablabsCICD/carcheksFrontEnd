@@ -15,7 +15,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
@@ -316,7 +315,7 @@ class _AddressPageState extends State<AddressPage> {
                                         isFlip: false),
                                   });
                         },
-                        buttonText: 'Save'),
+                        buttonText: 'Save',isEnable: true,),
                   ],
                 ),
         ),
@@ -337,7 +336,7 @@ class _AddressPageState extends State<AddressPage> {
           //obscuringCharacter: pass? '*' : '',
           decoration: InputDecoration(
               hintText: hint,
-              hintStyle: GoogleFonts.ubuntu(color: Colors.grey),
+              hintStyle: TextStyle(color: Colors.grey),
               contentPadding: EdgeInsets.only(top: 15, bottom: 15),
               prefixIcon: pass
                   ? Icon(

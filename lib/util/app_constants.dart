@@ -6,7 +6,13 @@ import 'package:carcheks/model/vehicle_type_model.dart';
 
 class AppConstants {
 
-  static String APP_VERSION = "1.0.0";//1
+  static String APP_VERSION = "1.1.0";//1
+
+
+  static String currentUser = "currentUser";
+  static String currentGarage = "currentGarage";
+  static String isUserLoggedIn = "isUserLoggedIN";
+  static String currentUserId = "currentUserId";
 
   static String DEFAULT_SERVICE_IMG =
       "https://cdn.vectorstock.com/i/preview-1x/40/42/car-service-vector-3874042.webp";
