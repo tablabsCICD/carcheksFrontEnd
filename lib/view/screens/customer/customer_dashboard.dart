@@ -93,7 +93,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       AppConstants.CurrentLatitude,
       AppConstants.CurrentLongtitude,
     );
-    log(myUrl);
+    debugPrint(myUrl);
     vehicleProvider.vehicleListDashboard.clear();
     var req = await http.get(Uri.parse(myUrl));
     log(req.body);

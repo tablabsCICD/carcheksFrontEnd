@@ -6,7 +6,7 @@ import 'package:carcheks/model/vehicle_type_model.dart';
 
 class AppConstants {
 
-  static String APP_VERSION = "1.1.0";//1
+  static String APP_VERSION = "1.2.0";//1
 
 
   static String currentUser = "currentUser";
@@ -42,7 +42,7 @@ class AppConstants {
       "https://play.google.com/store/apps/details?id=com.napesoft.carcheks";
 
   static const appStoreUrl =
-      "https://play.google.com/store/apps/details?id=com.napesoft.carcheks";
+      "https://apps.apple.com/in/app/carcheks/id6747573358";
 
   static String AddressCon = "Getting Your Current Location...";
   static String LocationCon = "";

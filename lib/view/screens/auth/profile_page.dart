@@ -185,6 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
               textInputType: TextInputType.name,
             ),
             RegistrationTextFeild(
+              readOnly: true,
               controller: mobileController,
               iconData: Icons.phone_android,
               hintText: "Mobile Number",

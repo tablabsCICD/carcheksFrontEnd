@@ -7,18 +7,12 @@ import 'package:carcheks/provider/auth_provider.dart';
 import 'package:carcheks/provider/cart_provider.dart';
 import 'package:carcheks/provider/vehicle_provider.dart';
 import 'package:carcheks/route/app_routes.dart';
-import 'package:carcheks/util/app_constants.dart';
 import 'package:carcheks/util/color-resource.dart';
 import 'package:carcheks/util/style.dart';
 import 'package:carcheks/view/base_widgets/custom_appbar.dart';
-import 'package:carcheks/view/base_widgets/custom_button.dart';
-import 'package:carcheks/view/base_widgets/loader.dart';
-import 'package:carcheks/view/screens/customer/notes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/widgets.dart';
 
 import '../../../../provider/user_order_service_provider.dart';
 
@@ -29,326 +23,257 @@ class MyCart extends StatefulWidget {
 
 class _MyCartState extends State<MyCart> {
   final authProvider = locator<AuthProvider>();
-  final _formKey = GlobalKey<FormState>();
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final cartProvider = locator<CartProvider>();
   final userOrderServiceProvider = locator<UserOrderServicesProvider>();
   final vehicleProvider = locator<VehicleProvider>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     cartProvider.getCartByUserId(authProvider.user!.id);
   }
 
-  double totalCount = 0.0;
-
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       key: _scaffoldKey,
       appBar: CustomAppBarWidget(context, _scaffoldKey, "My Cart"),
-      body: Consumer<CartProvider>(
-        builder: (context, model, child) => (model.cartItemList.isEmpty ||
-                    model.cartItemList.length == 0) &&
-                (model.isLoading == false)
-            ? Container(
-                //  height: MediaQuery.of(context).size.height - 200,
-                child: Center(
-                    child: Text(
-                "Your cart is empty",
-                style: Style.heading,
-              )))
-            : model.isLoading == true
-                ? getLoader(context, model.isLoading)
-                : Column(
-                    children: [
-                      Container(
-                          height: MediaQuery.of(context).size.height - 250,
-                          margin: const EdgeInsets.all(10),
-                          padding: const EdgeInsets.all(0),
-                          color: Colors.white,
-                          child: ListView.builder(
-                              itemCount: model.cartItemList.length,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                return Card(
+      body: Stack(
+        children: [
+          /// ================= MAIN CONTENT =================
+          Consumer<CartProvider>(
+            builder: (context, model, child) {
+              if (model.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (model.cartItemList.isEmpty) {
+                return Center(
+                  child: Text(
+                    "Your cart is empty",
+                    style: Style.heading,
+                  ),
+                );
+              }
+
+              return Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(10),
+                      itemCount: model.cartItemList.length,
+                      itemBuilder: (context, index) {
+                        final item = model.cartItemList[index];
+                        return Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    item.garageServicesdtls!.photosUrl == ''
+                                        ? "https://media.gettyimages.com/id/900416228/photo/mechanic-works-on-car-in-his-home-garage.jpg"
+                                        : item.garageServicesdtls!.photosUrl,
+                                    height: 100,
+                                    width: 100,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(width: 15),
+                                Expanded(
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
+                                      Text(
+                                        item.garageServicesdtls!.subService!.name!,
+                                        style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        item.garageServicesdtls!
+                                            .shortDiscribtion!,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      const SizedBox(height: 8),
                                       Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
                                         children: [
-                                          ClipRRect(
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(8)),
-                                            child: Image.network(
-                                              model
-                                                          .cartItemList[index]
-                                                          .garageServicesdtls!
-                                                          .photosUrl ==
-                                                      ''
-                                                  ? "https://media.gettyimages.com/id/900416228/photo/mechanic-works-on-car-in-his-home-garage.jpg?s=2048x2048&w=gi&k=20&c=AG4FxbEKVaivN3dAeYVq8Eklg6XPHPKhkk8nODaLpyQ="
-                                                  : model
-                                                      .cartItemList[index]
-                                                      .garageServicesdtls!
-                                                      .photosUrl,
-                                              height: 100.0,
-                                              width: 100,
-                                              fit: BoxFit.fill,
+                                          Text(
+                                            '\$',
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold
                                             ),
                                           ),
-                                          const SizedBox(
-                                            width: 20,
-                                          ),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  model
-                                                      .cartItemList[index]
-                                                      .garageServicesdtls!
-                                                      .subService!
-                                                      .name
-                                                      .toString(),
-                                                  style: const TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                const SizedBox(
-                                                  height: 9,
-                                                ),
-                                                Text(
-                                                  model
-                                                      .cartItemList[index]
-                                                      .garageServicesdtls!
-                                                      .shortDiscribtion
-                                                      .toString(),
-                                                  style: const TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.black),
-                                                ),
-                                                const SizedBox(
-                                                  height: 7,
-                                                ),
-                                                Text(
-                                                  model
-                                                      .cartItemList[index]
-                                                      .garageServicesdtls!
-                                                      .shortDiscribtion
-                                                      .toString(),
-                                                  style: const TextStyle(
-                                                      fontSize: 14,
-                                                      color: Colors.black),
-                                                ),
-                                                const SizedBox(
-                                                  height: 9,
-                                                ),
-                                                Row(
-                                                  children: [
-                                                    Text(
-                                                      model
-                                                          .cartItemList[index]
-                                                          .garageServicesdtls!
-                                                          .subService!
-                                                          .costing
-                                                          .toString(),
-                                                      style: const TextStyle(
-                                                          fontSize: 14,
-                                                          decoration:
-                                                              TextDecoration
-                                                                  .lineThrough,
-                                                          color: Colors.grey),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 7,
-                                                    ),
-                                                    Text(
-                                                      model
-                                                          .cartItemList[index]
-                                                          .garageServicesdtls!
-                                                          .cost
-                                                          .toString(),
-                                                      style: const TextStyle(
-                                                          fontSize: 15,
-                                                          color: Colors.black,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            width: 20,
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              showDialog(
-                                                  context: context,
-                                                  builder: (_) =>
-                                                      CupertinoAlertDialog(
-                                                        title: const Text(
-                                                          'Are you sure to remove this service from cart',
-                                                          // style: Style.heading,
-                                                        ),
-                                                        actions: <Widget>[
-                                                          TextButton(
-                                                            child: Text("Yes",
-                                                                style: Style
-                                                                    .okButton),
-                                                            onPressed:
-                                                                () async {
-                                                              model
-                                                                  .removeCartItem(
-                                                                      model.cartItemList[
-                                                                          index])
-                                                                  .then(
-                                                                      (value) =>
-                                                                          {
-                                                                            print(value),
-                                                                            showAnimatedDialog(
-                                                                                context,
-                                                                                const MyDialog(
-                                                                                  icon: Icons.check,
-                                                                                  title: 'Item',
-                                                                                  description: 'Successfully removed',
-                                                                                  isFailed: false,
-                                                                                ),
-                                                                                dismissible: false,
-                                                                                isFlip: false),
-                                                                          });
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            },
-                                                          ),
-                                                          TextButton(
-                                                            child: Text("No",
-                                                                style: Style
-                                                                    .cancelButton),
-                                                            onPressed: () {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            },
-                                                          ),
-                                                        ],
-                                                      ));
-                                            },
-                                            child: Container(
-                                                height: 20,
-                                                width: 20,
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red,
-                                                  borderRadius:
-                                                      BorderRadius.circular(50),
-                                                ),
-                                                child: const Icon(
-                                                  Icons.clear,
-                                                  color: Colors.white,
-                                                  size: 18,
-                                                )),
+                                          const SizedBox(width: 1),
+                                          Text(
+                                            item.garageServicesdtls!.cost
+                                                .toString(),
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
                                     ],
                                   ),
-                                );
-                              })),
-                      Container(
-                        height: 80,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(5),
-                            boxShadow: [
-                              const BoxShadow(
-                                color: Colors.grey,
-                                offset: Offset(
-                                  0.0,
-                                  0.0,
                                 ),
-                                blurRadius: 1.0,
-                                spreadRadius: 1.0,
-                              )
-                            ]),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 30.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "Cart Value",
-                                    style: TextStyle(fontSize: 15),
-                                  ),
-                                  Text(
-                                    "\$ " + model.getTotalAmount().toString(),
-                                    style: const TextStyle(fontSize: 18),
-                                  ),
-                                ],
-                              ),
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) => CupertinoAlertDialog(
+                                        title: const Text(
+                                            'Remove this service from cart?'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () async {
+                                              await model.removeCartItem(item);
+                                              Navigator.pop(context);
+                                              showAnimatedDialog(
+                                                context,
+                                                const MyDialog(
+                                                  icon: Icons.check,
+                                                  title: 'Item',
+                                                  description:
+                                                  'Successfully removed',
+                                                  isFailed: false,
+                                                ),
+                                                dismissible: false,
+                                                isFlip: false,
+                                              );
+                                            },
+                                            child: Text("Yes",
+                                                style: Style.okButton),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: Text("No",
+                                                style: Style.cancelButton),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  child: const Icon(Icons.delete,
+                                      color: Colors.red),
+                                )
+                              ],
                             ),
-                            Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 12),
-                              width: 150,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: ColorResources.BUTTON_COLOR,
-                                  foregroundColor: Colors.white,
-                                  elevation: 3,
-                                  shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(10))),
-                                ),
-                                child: const Text("Checkout"),
-                                onPressed: () async {
-                                  if (model.cartItemList.isEmpty) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                      content: Text(
-                                          'Please select atleast one service'),
-                                      backgroundColor: Colors.green,
-                                    ));
-                                  } else {
-                                    await model.getFinalCartList();
-                                    await userOrderServiceProvider
-                                        .saveUserOrderService(
-                                            status: "Pending",
-                                            invoiceNumber: "number",
-                                            totalAmt: model.totalAmount.toInt(),
-                                            vehicleId: vehicleProvider
-                                                .selectedUserVehicle!.id);
-                                    Navigator.pushReplacementNamed(
-                                        context, AppRoutes.notes,
-                                        arguments: cartProvider.cartItemList[0]
-                                            .garageServicesdtls!.garage);
-                                    //  Navigator.pushReplacement(context, MaterialPageRoute(builder: (builder)=>Notes(garage: cartProvider.cartItemList[0].garageServicesdtls!.garage,)));
-                                  }
-                                },
-                              ),
-                            )
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  /// ================= CHECKOUT BAR =================
+                  Container(
+                    height: 80,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.4),
+                          blurRadius: 4,
+                        )
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("Cart Value"),
+                            Text(
+                              "\$ ${model.getTotalAmount()}",
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
                           ],
                         ),
-                      )
-                    ],
+                        SizedBox(
+                          width: 150,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                              ColorResources.BUTTON_COLOR,
+                            ),
+                            onPressed: model.isCheckoutLoading
+                                ? null
+                                : () async {
+                              try {
+                                model.setCheckoutLoading(true);
+
+                                await model.getFinalCartList();
+
+                                await userOrderServiceProvider
+                                    .saveUserOrderService(
+                                  status: "Pending",
+                                  invoiceNumber: "number",
+                                  totalAmt:
+                                  model.totalAmount.toInt(),
+                                  vehicleId: vehicleProvider
+                                      .selectedUserVehicle!.id,
+                                );
+
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  AppRoutes.notes,
+                                  arguments: model.cartItemList[0]
+                                      .garageServicesdtls!
+                                      .garage,
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          "Something went wrong")),
+                                );
+                              } finally {
+                                model.setCheckoutLoading(false);
+                              }
+                            },
+                            child: model.isCheckoutLoading
+                                ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                                : const Text("Checkout"),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
+                ],
+              );
+            },
+          ),
+
+          /// ================= FULL SCREEN LOADER =================
+          Consumer<CartProvider>(
+            builder: (context, model, _) {
+              if (!model.isCheckoutLoading) return const SizedBox();
+              return Container(
+                color: Colors.black.withOpacity(0.3),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

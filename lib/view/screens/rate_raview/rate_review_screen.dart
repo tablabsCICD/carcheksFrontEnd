@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:carcheks/util/app_constants.dart';
 import 'package:carcheks/util/color-resource.dart';
 import 'package:flutter/cupertino.dart';
@@ -99,21 +101,40 @@ void showRateUsSheet(BuildContext context) {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {
-                      const url = AppConstants.playStoreUrl;
+                      String url;
 
-                      final uri = Uri.parse(url);
-                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      if (Platform.isAndroid) {
+                        url = AppConstants.playStoreUrl;
+                      } else if (Platform.isIOS) {
+                        url = AppConstants.appStoreUrl;
+                      } else {
+                        // fallback (web / desktop)
+                        url = AppConstants.playStoreUrl;
+                      }
+
+                      final Uri uri = Uri.parse(url);
+
+                      if (!await launchUrl(
+                        uri,
+                        mode: LaunchMode.externalApplication,
+                      )) {
+                        throw 'Could not launch $url';
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorResources.PRIMARY_COLOR,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    child: const Text(
-                      "Rate on Play Store",
-                      style: TextStyle(fontSize: 16,color: Colors.white),
+                    child: Text(
+                      Platform.isIOS ? "Rate on App Store" : "Rate on Play Store",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
+
 
                 const SizedBox(height: 15),
               ],
