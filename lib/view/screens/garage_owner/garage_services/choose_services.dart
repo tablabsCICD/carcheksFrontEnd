@@ -33,126 +33,179 @@ class _ChooseServicesState extends State<ChooseServices> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey1,
-      appBar: CustomAppBarWidget(context,_scaffoldKey1,"Choose Services"),
+      appBar: CustomAppBarWidget(context, _scaffoldKey1, "Choose Services"),
       body: Consumer<ServiceProvider>(
-        builder: (context, model, child) =>model.isLoading==true?Container(): Container(
-          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: Center(
-                    child: Text("Choose the services you provide",
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black))),
+        builder: (context, model, child) => model.isLoading == true
+            ? Center(child: CircularProgressIndicator())
+            : Container(
+                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                    //   child: Center(
+                    //     child: Text(
+                    //       "Choose the services you provide",
+                    //       style: TextStyle(
+                    //         fontSize: 20,
+                    //         fontWeight: FontWeight.bold,
+                    //         color: Colors.black,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(height: 15),
+                    getServices(),
+                    SizedBox(height: 5),
+                  ],
+                ),
               ),
-              SizedBox(height: 15,),
-              getServices(),
-              SizedBox(
-                height: 5,
-              ),
-
-            ],
-          ),
-        )),
+      ),
     );
   }
 
-  getServices(){
+  getServices() {
     return Consumer<ServiceProvider>(
-      builder: (context, model, child) =>model.isLoading==true?Center(child:CircularProgressIndicator() ,): Expanded(
-       // height: 400,
-        child: GridView.builder(
-          shrinkWrap: true,
-          itemCount: model.allServices.length,
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 250,
-            childAspectRatio: 2 / 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-          ),
-          itemBuilder: (context, index) {
-           return InkWell(
-             onTap: (){
-              // Navigator.push(context, MaterialPageRoute(builder: (builder)=>AddServices(model.allServices[index])));
-               Navigator.pushNamed(context, AppRoutes.add_service,arguments: model.allServices[index]);
-             },
-             child: Container(
-               width: 250,
-               height: 370,
-               padding: const EdgeInsets.all(0),
-               decoration: BoxDecoration(
-                   color:  Colors.white,
-                   borderRadius: BorderRadius.circular(5),
-                   boxShadow: [
-                    const BoxShadow(
-                       offset: Offset(1, 1),
-                       blurRadius: 5,
-                       color: Colors.grey,
-                     )
+      builder: (context, model, child) => model.isLoading == true
+          ? Center(child: CircularProgressIndicator())
+          : Expanded(
+              // height: 400,
+              child: GridView.builder(
+                shrinkWrap: true,
+                itemCount: model.allServices.length,
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 250,
+                  childAspectRatio: 6 / 7,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                ),
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    onTap: () {
+                      // Navigator.push(context, MaterialPageRoute(builder: (builder)=>AddServices(model.allServices[index])));
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.add_service,
+                        arguments: model.allServices[index],
+                      );
+                    },
+                    child: Container(
+                      width: 250,
+                      height: 370,
+                      padding: const EdgeInsets.all(0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        boxShadow: [
+                          const BoxShadow(
+                            offset: Offset(1, 1),
+                            blurRadius: 5,
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
 
-                   ]),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(8),
+                                  topLeft: Radius.circular(8),
+                                ),
+                                child: Image.network(
+                                  model.allServices[index].photosUrl,
+                                  fit: BoxFit.cover,
+                                  height: 140.0,
+                                  width: double.infinity,
+                                ),
+                              ),
 
-               child: Column(
-                 mainAxisAlignment: MainAxisAlignment.start,
-                 crossAxisAlignment: CrossAxisAlignment.center,
-                 children: [
-                   ClipRRect(
-                     borderRadius: BorderRadius.only(topRight: Radius.circular(8),topLeft: Radius.circular(8)),
-                     child: Image.network(
-                       model.allServices[index].photosUrl,
-                       fit: BoxFit.fill,
-                        height: 90.0,
-                        width: 500,
-                     ),
-                   ),
+                              Positioned(
+                                right: 3,
+                                bottom: 3,
+                                child: Container(
+                                  height: 25,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // Navigator.push(context, MaterialPageRoute(builder: (builder)=>AddServices(model.allServices[index])));
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRoutes.add_service,
+                                        arguments: model.allServices[index],
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          ColorResources.PRIMARY_COLOR,
+                                      foregroundColor: Colors.white,
+                                      elevation: 3,
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(5),
+                                        ),
+                                      ),
+                                    ),
+                                    child: Text("Add"),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
 
-                   SizedBox(
-                     height: 10,
-                   ),
-                   Text(
-                     model.allServices[index].name.toString(),
-                     textAlign: TextAlign.center,
-                     style: TextStyle(
-                         fontSize: 15,
-                         fontWeight: FontWeight.bold,
-                         color: ColorResources.BLACK),
-                   ),
-                   SizedBox(
-                     height: 10,
-                   ),
-                   Container(
-                     height: 25,
-                     child: ElevatedButton(
-                         onPressed: (){
-                          // Navigator.push(context, MaterialPageRoute(builder: (builder)=>AddServices(model.allServices[index])));
-                           Navigator.pushNamed(context, AppRoutes.add_service,arguments: model.allServices[index]);
-                         },
-                         style: ElevatedButton.styleFrom(
-                           backgroundColor: ColorResources.PRIMARY_COLOR,
-                           foregroundColor: Colors.white,
-                           elevation: 3,
-                           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                         ),
-                         child: Text("Add")),
-                   ),
-
-                 ],
-               ),
-             ),
-           );
-          },
-         /* gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
+                              child: Column(
+                                children: [
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "${model.allServices[index].name.toString()}${model.allServices[index].name.toString()}",
+                                    textAlign: TextAlign.start,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: ColorResources.BLACK,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    model.allServices[index].description
+                                        .toString(),
+                                    textAlign: TextAlign.start,
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.normal,
+                                      color: ColorResources.BLACK,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                /* gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 4.0,
               mainAxisSpacing: 4.0
           ),*/
-        ),
-      ),
+              ),
+            ),
     );
   }
 
@@ -196,8 +249,8 @@ class _ChooseServicesState extends State<ChooseServices> {
 
   getCard(IconData icon, String service_name) {
     return InkWell(
-      onTap: (){
-      /*  Navigator.push(
+      onTap: () {
+        /*  Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (builder) => AddServices()));*/
@@ -209,11 +262,8 @@ class _ChooseServicesState extends State<ChooseServices> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 50,),
-              Text(
-                service_name,
-                textAlign: TextAlign.center,
-              )
+              Icon(icon, size: 50),
+              Text(service_name, textAlign: TextAlign.center),
             ],
           ),
         ),

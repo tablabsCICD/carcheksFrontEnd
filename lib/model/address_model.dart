@@ -1,5 +1,3 @@
-
-
 class AddressModel {
   AddressModel({
     required this.message,
@@ -10,16 +8,18 @@ class AddressModel {
   late final List<AddressClass> data;
   late final bool success;
 
-  AddressModel.fromJson(Map<String, dynamic> json){
+  AddressModel.fromJson(Map<String, dynamic> json) {
     message = json['message'];
-    data = List.from(json['data']).map((e)=>AddressClass.fromJson(e)).toList();
+    data = List.from(
+      json['data'],
+    ).map((e) => AddressClass.fromJson(e)).toList();
     success = json['success'];
   }
 
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
     _data['message'] = message;
-    _data['data'] = data.map((e)=>e.toJson()).toList();
+    _data['data'] = data.map((e) => e.toJson()).toList();
     _data['success'] = success;
     return _data;
   }
@@ -63,24 +63,24 @@ class AddressClass {
   late final String landmark;
   late final bool garrageAddress;
 
-  AddressClass.fromJson(Map<String, dynamic> json){
-    id = json['id']??0;
-    created = json['created']??'';
-    createdBy = json['createdBy']??'';
-    updated = json['updated']??'';
-    updatedBy = json['updatedBy']??'';
-    active = json['active']??true;
-    houseName = json['houseName']??'';
-    street = json['street']??'';
-    userId = json['userId']??0;
-    state = json['state']??'';
-    country = json['country']??'';
-    lat = json['latitude']==null?"":json['latitude'].toString();
-    long = json['longitude']==null?"":json['longitude'].toString();
-    cityname = json['cityname']??'';
-    zipCode = json['zipCode']??'';
-    landmark = json['landmark']??'';
-    garrageAddress = json['garrageAddress']??false;
+  AddressClass.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? 0;
+    created = json['created'] ?? '';
+    createdBy = json['createdBy'] ?? '';
+    updated = json['updated'] ?? '';
+    updatedBy = json['updatedBy'] ?? '';
+    active = json['active'] ?? true;
+    houseName = json['houseName'] ?? '';
+    street = json['street'] ?? '';
+    userId = json['userId'] ?? 0;
+    state = json['state'] ?? '';
+    country = json['country'] ?? '';
+    lat = json['latitude'] == null ? "" : json['latitude'].toString();
+    long = json['longitude'] == null ? "" : json['longitude'].toString();
+    cityname = json['cityname'] ?? '';
+    zipCode = json['zipCode'] ?? '';
+    landmark = json['landmark'] ?? '';
+    garrageAddress = json['garrageAddress'] ?? false;
   }
 
   Map<String, dynamic> toJson() {
@@ -105,4 +105,3 @@ class AddressClass {
     return _data;
   }
 }
-

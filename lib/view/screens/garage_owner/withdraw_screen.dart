@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/withdrawal_provider.dart';
@@ -177,9 +176,9 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
             final w = p.withdrawals[i];
             return Card(
               child: ListTile(
-                title: Text("₹ ${w.requestedAmount}"),
+                title: Text("\$ ${w.requestedAmount}"),
                 subtitle: Text(
-                  "Commission: ₹${w.adminCommission} | Net: ₹${w.garageAmount}",
+                  "Commission: \$ ${w.adminCommission} | Net: \$ ${w.garageAmount}",
                 ),
                 trailing: Chip(
                   label: Text(w.status ?? ""),

@@ -9,7 +9,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +25,7 @@ class ViewAddress extends StatefulWidget {
 
 class _ViewAddressState extends State<ViewAddress> {
   TextEditingController streetController = TextEditingController();
-  TextEditingController subLocalityController =  TextEditingController();
+  TextEditingController subLocalityController = TextEditingController();
   TextEditingController localityController = new TextEditingController();
   TextEditingController zipCodeController = new TextEditingController();
   TextEditingController cityController = new TextEditingController();
@@ -35,7 +34,6 @@ class _ViewAddressState extends State<ViewAddress> {
   TextEditingController nameController = new TextEditingController();
   TextEditingController latController = new TextEditingController();
   TextEditingController longController = new TextEditingController();
-
 
   final authProvider = locator<AuthProvider>();
 
@@ -64,17 +62,21 @@ class _ViewAddressState extends State<ViewAddress> {
     }
     if (permission == LocationPermission.deniedForever) {
       return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
     }
     return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+      desiredAccuracy: LocationAccuracy.high,
+    );
   }
 
   Placemark? place;
 
   Future<void> GetAddressFromLatLong(Position position) async {
-    List<Placemark> placemarks =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
     print(placemarks);
     place = placemarks[0];
     Address =
@@ -95,7 +97,8 @@ class _ViewAddressState extends State<ViewAddress> {
   fetchValue() {
     streetController.text = addressProvider.addressObj!.street.toString();
     localityController.text = addressProvider.addressObj!.houseName.toString();
-    subLocalityController.text = addressProvider.addressObj!.landmark.toString();
+    subLocalityController.text = addressProvider.addressObj!.landmark
+        .toString();
     nameController.text = addressProvider.addressObj!.houseName.toString();
     zipCodeController.text = addressProvider.addressObj!.zipCode.toString();
     cityController.text = addressProvider.addressObj!.cityname.toString();
@@ -115,9 +118,12 @@ class _ViewAddressState extends State<ViewAddress> {
               "Please Fill Address Details",
               style: TextStyle(color: Colors.white),
             ),
-            background: Colors.black);
+            background: Colors.black,
+          );
     print("abcd");
-    print("addressProvider:${addressProvider.addressObj!.garrageAddress.toString()}");
+    print(
+      "addressProvider:${addressProvider.addressObj!.garrageAddress.toString()}",
+    );
   }
 
   @override
@@ -136,141 +142,172 @@ class _ViewAddressState extends State<ViewAddress> {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
+    final authProvider = locator<AuthProvider>();
     return Scaffold(
       key: _scaffoldKey,
       appBar: CustomAppBarWidget(context, _scaffoldKey, "Address Details"),
       body: SingleChildScrollView(
         child: Consumer<AddressProvider>(
-          builder: (context, model, child) => model.isLoading==true?Container(child: Center(child: CircularProgressIndicator(),)):Form(
-            key: _formKey,
-            child: Column(
-              children: [
+          builder: (context, model, child) => model.isLoading == true
+              ? Container(child: Center(child: CircularProgressIndicator()))
+              : Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      SizedBox(height: 50),
+                      RegistrationTextFeild(
+                        controller: streetController,
+                        hintText: "Street Name",
+                        textInputType: TextInputType.text,
+                        iconData: Icons.apartment,
+                      ),
+                      RegistrationTextFeild(
+                        controller: subLocalityController,
+                        hintText: "Sub Locality",
+                        textInputType: TextInputType.text,
+                        iconData: Icons.location_pin,
+                      ),
+                      RegistrationTextFeild(
+                        controller: localityController,
+                        hintText: "Locality",
+                        textInputType: TextInputType.phone,
+                        iconData: Icons.apartment,
+                      ),
+                      RegistrationTextFeild(
+                        controller: cityController,
+                        hintText: "City",
+                        textInputType: TextInputType.text,
 
-                RegistrationTextFeild(
-                  controller: streetController,
-                  hintText: "Street Name",
-                  textInputType: TextInputType.text,
-                  iconData: Icons.apartment,
+                        iconData: Icons.location_city,
+                      ),
+                      RegistrationTextFeild(
+                        controller: zipCodeController,
+                        hintText: "Zip Code",
+                        textInputType: TextInputType.text,
+                        iconData: Icons.location_pin,
+                      ),
+                      RegistrationTextFeild(
+                        controller: stateController,
+                        hintText: "State",
+                        textInputType: TextInputType.phone,
 
-                ),
-                RegistrationTextFeild(
-                  controller: subLocalityController,
-                  hintText: "Sub Locality",
-                  textInputType: TextInputType.text,
-                  iconData: Icons.location_pin,
+                        iconData: Icons.location_city,
+                      ),
+                      RegistrationTextFeild(
+                        controller: countryController,
+                        hintText: "Country",
+                        textInputType: TextInputType.emailAddress,
 
-                ),
-                RegistrationTextFeild(
-                  controller: localityController,
-                  hintText: "Locality",
-                  textInputType: TextInputType.phone,
-                  iconData: Icons.apartment,
-
-                ),
-                RegistrationTextFeild(
-                    controller: cityController,
-                    hintText: "City",
-                    textInputType: TextInputType.text,
-
-                    iconData: Icons.location_city),
-                RegistrationTextFeild(
-                  controller: zipCodeController,
-                  hintText: "Zip Code",
-                  textInputType: TextInputType.text,
-                  iconData: Icons.location_pin,
-                ),
-                RegistrationTextFeild(
-                    controller: stateController,
-                    hintText: "State",
-                    textInputType: TextInputType.phone,
-
-                    iconData: Icons.location_city),
-                RegistrationTextFeild(
-                    controller: countryController,
-                    hintText: "Country",
-                    textInputType: TextInputType.emailAddress,
-
-                    iconData: Icons.location_pin),
-                addressProvider.addressObj!.garrageAddress?RegistrationTextFeild(
-                    controller: latController,
-                    hintText: "Latitude",
-                    textInputType: TextInputType.text,
-                    isValidator: true,
-                    ):SizedBox(),
-                addressProvider.addressObj!.garrageAddress?RegistrationTextFeild(
-                  controller: longController,
-                  hintText: "Longitude",
-                  textInputType: TextInputType.text,
-                  isValidator: true,
-                ):SizedBox(),
-                Center(
-                  child: CustomButton(
-                      onTap: () async {
-      if (_formKey.currentState!.validate()) {
-                        showDialog(
-                            context: context,
-                            builder: (_) => CupertinoAlertDialog(
-                              title: Text(
-                                'Are you sure want to update your Garage Address?',
-                                style: Style.heading,
-                              ),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: Text('yes', style: Style.okButton),
-                                  onPressed: () {
-                                    model.updateAddress(
-
-                                      active:addressProvider.addressObj!.active,
-                                      created: formatter,
-                                      created_by:addressProvider.addressObj!.createdBy,
-                                      updated:formatter,
-                                      updated_by :addressProvider.addressObj!.updatedBy,
-                                      id: addressProvider.addressObj!.id,
-                                      cityname: cityController.text,
-                                      country: countryController.text,
-                                      garrageAddress: addressProvider.addressObj!.garrageAddress,
-                                      houseName: localityController.text,
-                                      landmark: subLocalityController.text,
-                                      latitude:latController.text,
-                                      longitude:longController.text,
-                                      state: stateController.text,
-                                      street: streetController.text,
-                                      userId: addressProvider.addressObj!.userId,
-                                      zipCode: zipCodeController.text,
-                                    ).then((value) => {
-                                      print(value),
-                                      showAnimatedDialog(
-                                          context,
-                                          MyDialog(
-                                            icon: Icons.check,
-                                            title: 'Edit Garage Address',
-                                            description:
-                                            'Your Garage Address Updated Successfully',
-                                            isFailed: false,
-                                          ),
-                                          dismissible: false,
-                                          isFlip: false),
-                                    });
-                                    Navigator.of(context).pop();
-                                    dismissLoader(context);
-
-
-                                  },
+                        iconData: Icons.location_pin,
+                      ),
+                      // addressProvider.addressObj!.garrageAddress
+                      //     ? RegistrationTextFeild(
+                      //         controller: latController,
+                      //         hintText: "Latitude",
+                      //         textInputType: TextInputType.text,
+                      //         isValidator: true,
+                      //       )
+                      //     : SizedBox(),
+                      // addressProvider.addressObj!.garrageAddress
+                      //     ? RegistrationTextFeild(
+                      //         controller: longController,
+                      //         hintText: "Longitude",
+                      //         textInputType: TextInputType.text,
+                      //         isValidator: true,
+                      //       )
+                      //     : SizedBox(),
+                      Center(
+                        child: CustomButton(
+                          onTap: () async {
+                            if (_formKey.currentState!.validate()) {
+                              showDialog(
+                                context: context,
+                                builder: (_) => CupertinoAlertDialog(
+                                  title: Text(
+                                    authProvider.user!.garrageOwner
+                                        ? 'Are you sure want to update your Garage Address?'
+                                        : 'Are you sure want to update your Address?',
+                                    style: Style.heading,
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      child: Text('yes', style: Style.okButton),
+                                      onPressed: () {
+                                        model
+                                            .updateAddress(
+                                              active: addressProvider
+                                                  .addressObj!
+                                                  .active,
+                                              created: formatter,
+                                              created_by: addressProvider
+                                                  .addressObj!
+                                                  .createdBy,
+                                              updated: formatter,
+                                              updated_by: addressProvider
+                                                  .addressObj!
+                                                  .updatedBy,
+                                              id: addressProvider
+                                                  .addressObj!
+                                                  .id,
+                                              cityname: cityController.text,
+                                              country: countryController.text,
+                                              garrageAddress: addressProvider
+                                                  .addressObj!
+                                                  .garrageAddress,
+                                              houseName:
+                                                  localityController.text,
+                                              landmark:
+                                                  subLocalityController.text,
+                                              latitude: latController.text,
+                                              longitude: longController.text,
+                                              state: stateController.text,
+                                              street: streetController.text,
+                                              userId: addressProvider
+                                                  .addressObj!
+                                                  .userId,
+                                              zipCode: zipCodeController.text,
+                                            )
+                                            .then(
+                                              (value) => {
+                                                //print(value),
+                                                showAnimatedDialog(
+                                                  context,
+                                                  MyDialog(
+                                                    icon: Icons.check,
+                                                    title: 'Edit Address',
+                                                    description:
+                                                        'Your Address Updated Successfully',
+                                                    isFailed: false,
+                                                  ),
+                                                  dismissible: false,
+                                                  isFlip: false,
+                                                ),
+                                              },
+                                            );
+                                        Navigator.of(context).pop();
+                                        dismissLoader(context);
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text(
+                                        'no',
+                                        style: Style.cancelButton,
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
                                 ),
-                                TextButton(
-                                  child: Text('no', style: Style.cancelButton),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            ));}
-                      },
-                      buttonText: 'Save'),
-                ),
+                              );
+                            }
+                          },
+                          buttonText: 'Save',
+                          isEnable: true,
+                        ),
+                      ),
 
-                /* CustomButton(
+                      /* CustomButton(
                     onTap: () async {
                       CityModel cityModel =  CityModel(
                           id: 1,
@@ -334,9 +371,9 @@ class _ViewAddressState extends State<ViewAddress> {
                           ));
                     },
                     buttonText: 'Save'),*/
-              ],
-            ),
-          ),
+                    ],
+                  ),
+                ),
         ),
       ),
     );
@@ -349,36 +386,33 @@ class _ViewAddressState extends State<ViewAddress> {
       padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30), color: Colors.white),
+          borderRadius: BorderRadius.circular(30),
+          color: Colors.white,
+        ),
         child: TextFormField(
           obscureText: pass ? _isObscure : false,
           //obscuringCharacter: pass? '*' : '',
           decoration: InputDecoration(
-              hintText: hint,
-              hintStyle: GoogleFonts.ubuntu(color: Colors.grey),
-              contentPadding: EdgeInsets.only(top: 15, bottom: 15),
-              prefixIcon: pass
-                  ? Icon(
-                      Icons.lock_outline,
-                      color: Colors.grey,
-                    )
-                  : Icon(
-                      Icons.person_outline,
-                      color: Colors.grey,
+            hintText: hint,
+            hintStyle: TextStyle(color: Colors.grey),
+            contentPadding: EdgeInsets.only(top: 15, bottom: 15),
+            prefixIcon: pass
+                ? Icon(Icons.lock_outline, color: Colors.grey)
+                : Icon(Icons.person_outline, color: Colors.grey),
+            suffixIcon: pass
+                ? IconButton(
+                    icon: Icon(
+                      _isObscure ? Icons.visibility_off : Icons.visibility,
                     ),
-              suffixIcon: pass
-                  ? IconButton(
-                      icon: Icon(
-                        _isObscure ? Icons.visibility_off : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        /*setState(() {
+                    onPressed: () {
+                      /*setState(() {
                           _isObscure = !_isObscure;
                         });*/
-                      },
-                    )
-                  : null,
-              border: UnderlineInputBorder(borderSide: BorderSide.none)),
+                    },
+                  )
+                : null,
+            border: UnderlineInputBorder(borderSide: BorderSide.none),
+          ),
         ),
       ),
     );
@@ -390,8 +424,14 @@ class DrawClip extends CustomClipper<Path> {
   Path getClip(Size size) {
     Path path = Path();
     path.lineTo(0, size.height * 0.80);
-    path.cubicTo(size.width / 4, size.height, 3 * size.width / 4,
-        size.height / 2, size.width, size.height * 0.8);
+    path.cubicTo(
+      size.width / 4,
+      size.height,
+      3 * size.width / 4,
+      size.height / 2,
+      size.width,
+      size.height * 0.8,
+    );
     path.lineTo(size.width, 0);
     return path;
   }
@@ -407,8 +447,14 @@ class DrawClip2 extends CustomClipper<Path> {
   Path getClip(Size size) {
     Path path = Path();
     path.lineTo(0, size.height * 0.80);
-    path.cubicTo(size.width / 4, size.height, 3 * size.width / 4,
-        size.height / 2, size.width, size.height * 0.9);
+    path.cubicTo(
+      size.width / 4,
+      size.height,
+      3 * size.width / 4,
+      size.height / 2,
+      size.width,
+      size.height * 0.9,
+    );
     path.lineTo(size.width, 0);
     return path;
   }

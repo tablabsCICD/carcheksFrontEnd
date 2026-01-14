@@ -21,14 +21,26 @@ class _CarOwnerDetailsState extends State<CarOwnerDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.blueAccent,
-          leading: IconButton(
-              onPressed: (){
-                Navigator.of(context).pop();
-              },
-              icon: Icon(Icons.arrow_back_ios_rounded,color: Colors.white,size: 30,)),
-          title: Text("Car Owner Details",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.white),)
+        elevation: 0,
+        backgroundColor: Colors.blueAccent,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.white,
+            size: 30,
+          ),
+        ),
+        title: Text(
+          "Car Owner Details",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -46,11 +58,8 @@ class _CarOwnerDetailsState extends State<CarOwnerDetails> {
                   padding: EdgeInsets.all(10),
                   child: Column(
                     children: [
-                      getProfile(
-                        "assets/images/1.jpg",
-                        "KSR Services"
-                      ),
-                      SizedBox(height: 10,),
+                      getProfile("assets/images/1.jpg", "KSR Services"),
+                      SizedBox(height: 10),
                       CustomTextField(
                         controller: addressController,
                         hintText: "Enter Address",
@@ -75,21 +84,25 @@ class _CarOwnerDetailsState extends State<CarOwnerDetails> {
                         lableText: "Enter Email Id",
                         textInputType: TextInputType.text,
                       ),
-                      SizedBox(height: 16,),
+                      SizedBox(height: 16),
                       Center(
                         child: CustomButton(
                           buttonText: "Continue",
-                          onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (builder)=>ZipCode()));
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (builder) => ZipCode(),
+                              ),
+                            );
                           },
+                          isEnable: true,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
               ),
-
-
             ],
           ),
         ),
@@ -106,16 +119,17 @@ class _CarOwnerDetailsState extends State<CarOwnerDetails> {
             children: [
               Center(
                 child: Container(
-                    width: 100.0,
-                    height: 100.0,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey[100],
-                        image: new DecorationImage(
-                            fit: BoxFit.cover,
-                            image: AssetImage('assets/images/1.jpg')
-                        )
-                    )),
+                  width: 100.0,
+                  height: 100.0,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.grey[100],
+                    image: new DecorationImage(
+                      fit: BoxFit.cover,
+                      image: AssetImage('assets/images/1.jpg'),
+                    ),
+                  ),
+                ),
               ),
               Positioned(
                 bottom: 0,
@@ -123,7 +137,7 @@ class _CarOwnerDetailsState extends State<CarOwnerDetails> {
                   width: MediaQuery.of(context).size.width,
                   alignment: Alignment.center,
                   child: Card(
-                   // elevation: 5,
+                    // elevation: 5,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),
                     ),
@@ -133,23 +147,29 @@ class _CarOwnerDetailsState extends State<CarOwnerDetails> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
-                        color: Colors.white
+                        color: Colors.white,
                       ),
                       child: IconButton(
-                        icon: Icon(Icons.edit,),
-                        onPressed: (){},
+                        icon: Icon(Icons.edit),
+                        onPressed: () {},
                       ),
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
-          SizedBox(height: 10,),
-          Text("KSR Services",style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontSize: 20))
+          SizedBox(height: 10),
+          Text(
+            "KSR Services",
+            style: TextStyle(
+              color: Colors.green,
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
         ],
       ),
     );
-
   }
 }

@@ -22,7 +22,7 @@ import 'package:carcheks/view/screens/customer/vehicle/add_vehicle_info.dart';
 import 'package:carcheks/view/screens/customer/vehicle/view_vehicles.dart';
 import 'package:carcheks/view/screens/customer/wallet.dart';
 import 'package:carcheks/view/screens/garage_owner/appointment/all_appointment.dart';
-import 'package:carcheks/view/screens/garage_owner/appointment/view_user_appoinment.dart';
+import 'package:carcheks/view/screens/customer/appointment/view_user_appoinment.dart';
 import 'package:carcheks/view/screens/garage_owner/garage_info.dart';
 import 'package:carcheks/view/screens/garage_owner/garage_services/add_services.dart';
 import 'package:carcheks/view/screens/garage_owner/garage_services/choose_services.dart';
@@ -48,9 +48,10 @@ class RouteGenerator {
       case AppRoutes.register:
         final set = settings.arguments as Set<bool>;
         bool isSelectedCustomer = set.first;
-        bool isSelected = set.last;
-        return buildRoute(RegistrationScreen(isSelectedCustomer, isSelected),
-            settings: settings);
+        return buildRoute(
+          RegistrationScreen(isSelectedCustomer),
+          settings: settings,
+        );
 
       case AppRoutes.login:
         return buildRoute(LoginPage(), settings: settings);
@@ -78,8 +79,10 @@ class RouteGenerator {
         final set = settings.arguments as Set<dynamic>;
         Garage garage = set.first as Garage;
         String notes = set.last as String;
-        return buildRoute(ChooseDate(garage: garage, notes: notes),
-            settings: settings);
+        return buildRoute(
+          ChooseDate(garage: garage, notes: notes),
+          settings: settings,
+        );
 
       case AppRoutes.garage_address:
         return buildRoute(ViewAddress(), settings: settings);
@@ -90,34 +93,34 @@ class RouteGenerator {
       case AppRoutes.garageOwner_profile:
         bool isFromGarage = settings.arguments as bool;
         return buildRoute(
-            ProfilePage(
-              isFromGarage: isFromGarage,
-            ),
-            settings: settings);
+          ProfilePage(isFromGarage: isFromGarage),
+          settings: settings,
+        );
 
       case AppRoutes.edit_service:
         final set = settings.arguments as Set<dynamic>;
         int? garageId = set.first as int;
         GarageService? mainService = set.last as GarageService;
         return buildRoute(
-            EditService(garageId: garageId, mainserviceId: mainService),
-            settings: settings);
+          EditService(garageId: garageId, mainserviceId: mainService),
+          settings: settings,
+        );
 
       case AppRoutes.view_service:
         final set = settings.arguments as Set<dynamic>;
         Vehicle? vehicle = set.first as Vehicle;
         String? from = set.last as String;
         return buildRoute(
-            GetAllServices(
-              vehicle: vehicle,
-              from: from,
-            ),
-            settings: settings);
+          GetAllServices(vehicle: vehicle, from: from),
+          settings: settings,
+        );
 
       case AppRoutes.view_garage_service:
         int? serviceId = settings.arguments as int;
-        return buildRoute(ViewServices(mainServiceId: serviceId),
-            settings: settings);
+        return buildRoute(
+          ViewServices(mainServiceId: serviceId),
+          settings: settings,
+        );
 
       case AppRoutes.add_service:
         MainService service = settings.arguments as MainService;
@@ -126,19 +129,17 @@ class RouteGenerator {
       case AppRoutes.customer_profile:
         bool isFromGarage = settings.arguments as bool;
         return buildRoute(
-            ProfilePage(
-              isFromGarage: isFromGarage,
-            ),
-            settings: settings);
+          ProfilePage(isFromGarage: isFromGarage),
+          settings: settings,
+        );
 
       case AppRoutes.add_vehicle:
         bool isdashboard = settings.arguments as bool;
 
         return buildRoute(
-            AddVehicleInfo(
-              isdashboard: isdashboard,
-            ),
-            settings: settings);
+          AddVehicleInfo(isdashboard: isdashboard),
+          settings: settings,
+        );
 
       case AppRoutes.vehicle_details:
         return buildRoute(ViewVehicles(), settings: settings);
@@ -152,11 +153,7 @@ class RouteGenerator {
 
       case AppRoutes.notes:
         Garage garage = settings.arguments as Garage;
-        return buildRoute(
-            Notes(
-              garage: garage,
-            ),
-            settings: settings);
+        return buildRoute(Notes(garage: garage), settings: settings);
 
       case AppRoutes.service_history:
         return MaterialPageRoute(builder: (_) => const ServiceHistoryScreen());
@@ -168,8 +165,7 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => ContactUsScreen());
 
       case AppRoutes.about_us:
-        return MaterialPageRoute(builder: (_) =>  AboutUsScreen());
-
+        return MaterialPageRoute(builder: (_) => AboutUsScreen());
 
       case AppRoutes.payment:
         Set<dynamic> set = settings.arguments as Set<dynamic>;
@@ -195,13 +191,9 @@ class RouteGenerator {
         });
 
         return buildRoute(
-            Wallet(
-              garage: garage,
-              date: date,
-              time: time,
-              notes: notes,
-            ),
-            settings: settings);
+          Wallet(garage: garage, date: date, time: time, notes: notes),
+          settings: settings,
+        );
 
       case AppRoutes.estimate_details:
         Set<dynamic> set = settings.arguments as Set<dynamic>;
@@ -227,13 +219,9 @@ class RouteGenerator {
         });
 
         return buildRoute(
-            EstimateDetails(
-              garage: garage,
-              date: date,
-              time: time,
-              notes: notes,
-            ),
-            settings: settings);
+          EstimateDetails(garage: garage, date: date, time: time, notes: notes),
+          settings: settings,
+        );
 
       case AppRoutes.appointment:
         String type = settings.arguments as String;
@@ -247,10 +235,14 @@ class RouteGenerator {
     }
   }
 
-  static MaterialPageRoute buildRoute(Widget child,
-      {required RouteSettings settings}) {
+  static MaterialPageRoute buildRoute(
+    Widget child, {
+    required RouteSettings settings,
+  }) {
     return MaterialPageRoute(
-        settings: settings, builder: (BuildContext context) => child);
+      settings: settings,
+      builder: (BuildContext context) => child,
+    );
   }
 
   static Route _createRoute(Widget root) {
@@ -260,53 +252,54 @@ class RouteGenerator {
         var begin = Offset(0.0, 1.0);
         var end = Offset.zero;
         const curve = Curves.ease;
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
+        var tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
+        return SlideTransition(position: animation.drive(tween), child: child);
         ;
       },
     );
   }
 
   static Route<dynamic> _errorRoute() {
-    return MaterialPageRoute(builder: (_) {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const Text(
-            'Exit App',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
+    return MaterialPageRoute(
+      builder: (_) {
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            title: const Text(
+              'Exit App',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            centerTitle: true,
           ),
-          centerTitle: true,
-        ),
-        body: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 450.0,
-                  width: 450.0,
-                  //child: Lottie.asset('assets/lottie/error.json'),
-                ),
-                Text(
-                  'Seems the route you\'ve navigated to doesn\'t exist!!',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w600,
+          body: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 450.0,
+                    width: 450.0,
+                    //child: Lottie.asset('assets/lottie/error.json'),
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                  Text(
+                    'Seems the route you\'ve navigated to doesn\'t exist!!',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }

@@ -1,20 +1,17 @@
-
-
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class LocalNotificationService{
+class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
 
   static void initialize() {
     // initializationSettings  for Android
     const InitializationSettings initializationSettings =
-    InitializationSettings(
-      android: AndroidInitializationSettings("tkd_logo"),
-    );
+        InitializationSettings(
+          android: AndroidInitializationSettings("carchecks"),
+        );
 
     _notificationsPlugin.initialize(
       initializationSettings,
@@ -38,8 +35,7 @@ class LocalNotificationService{
   }
 
   static void createanddisplaynotification(RemoteMessage message) async {
-
-   // print('the notification is ${message.notification!.body}');
+    // print('the notification is ${message.notification!.body}');
     try {
       final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
       const NotificationDetails notificationDetails = NotificationDetails(
@@ -47,10 +43,9 @@ class LocalNotificationService{
           "TKDost",
           "TKDost",
           icon: '@mipmap/ic_launcher',
-          largeIcon:DrawableResourceAndroidBitmap('@mipmap/ic_launcher') ,
+          largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
           importance: Importance.max,
           priority: Priority.high,
-
         ),
       );
 
@@ -63,12 +58,8 @@ class LocalNotificationService{
         notificationDetails,
         payload: message.data['_id'],
       );
-
-
     } on Exception catch (e) {
       print(e);
     }
-
   }
-
 }

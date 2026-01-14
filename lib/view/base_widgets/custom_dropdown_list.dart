@@ -1,99 +1,81 @@
 import 'package:carcheks/util/color-resource.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class CustomDropdownList extends StatelessWidget {
-  //final String controller;
   final String hintText;
-  String selectedType;
-  List<String> items;
-  final TextInputType? textInputType;
-  final int maxLine;
-  final bool isPhoneNumber;
-  final bool isValidator;
-  final TextCapitalization capitalization;
-  final IconData? iconData;
-  final bool? obsecure;
-  final bool? readOnly;
-  final String? validatorMsg;
-  Function? onTap;
-  Function onChange;
+  final String selectedType;
+  final List<String> items;
+  final Function(String) onChange;
+  final Function? onTap;
 
-  CustomDropdownList(
-      {
-        required this.hintText,
-        required this.selectedType,
-        required this.items,
-        this.textInputType,
-        this.maxLine = 1,
-        this.validatorMsg,
-        this.isPhoneNumber = false,
-        this.isValidator = false,
-        this.capitalization = TextCapitalization.none,
-        this.iconData,
-        this.obsecure,
-        this.readOnly,
-        this.onTap,
-        required this.onChange});
+  const CustomDropdownList({
+    Key? key,
+    required this.hintText,
+    required this.selectedType,
+    required this.items,
+    required this.onChange,
+    this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    /// 🔑 Add hint as first fake item
+    final List<String> dropdownItems = [hintText, ...items];
+
     return GestureDetector(
-      onTap: () {
-        onTap!();
-      },
+      onTap: () => onTap?.call(),
       child: Card(
-          elevation: 0,
-          margin: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(2),
+        elevation: 0,
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        child: FormBuilderDropdown<String>(
+          name: hintText,
+
+          /// ✅ Initial value shows hint
+          initialValue: selectedType.isNotEmpty ? selectedType : hintText,
+
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: ColorResources.TEXTFEILD_COLOR,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 14,
+            ),
           ),
-          child: FormBuilderDropdown(
-              name: hintText,
-            //  allowClear: true,
-              isDense: false ,
-              decoration: InputDecoration.collapsed(
-                hintText: '',
-                filled: true,
-                fillColor: ColorResources.TEXTFEILD_COLOR,
-                border:OutlineInputBorder(
-                    borderRadius: new BorderRadius.circular(5.0),
-                    borderSide: BorderSide.none
-                ),
+
+          /// ❌ Validation: hint is NOT valid
+          validator: (value) {
+            if (value == null || value == hintText) {
+              return "Please select a valid option";
+            }
+            return null;
+          },
+
+          items: dropdownItems.map((value) {
+            final bool isHint = value == hintText;
+
+            return DropdownMenuItem<String>(
+              value: value,
+              enabled: !isHint, // ❌ hint not selectable
+              child: Text(
+                value,
+                style: TextStyle(color: isHint ? Colors.grey : Colors.black),
               ),
-              disabledHint: Container(
-                height: 60,
-                padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 15),
-                child: Text(
-                  hintText,
-                 // style: Style.searchHint,
-                ),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "This field is required";
-                }
-                return null;
-              },
-              items: items
-                  .map((value) => DropdownMenuItem(
-                value: value,
-                child: Container(
-                  height: 50,
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 15),
-                  child: Text(
-                    '$value',
-                   // style: Style.dropdownValue,
-                  ),
-                ),
-              )
-              )
-                  .toList(),
-              onChanged: (String? value) {
-                onChange(value);
-              })),
+            );
+          }).toList(),
+
+          onChanged: (value) {
+            if (value != null && value != hintText) {
+              onChange(value);
+            }
+          },
+        ),
+      ),
     );
   }
 }

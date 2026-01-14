@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:carcheks/provider/address_provider.dart';
 import 'package:carcheks/provider/auth_provider.dart';
 import 'package:carcheks/provider/fuel_provider.dart';
@@ -6,13 +7,18 @@ import 'package:carcheks/provider/garage_provider.dart';
 import 'package:carcheks/provider/img_provider.dart';
 import 'package:carcheks/provider/vehicle_provider.dart';
 import 'package:carcheks/route/app_routes.dart';
+import 'package:carcheks/util/api_constants.dart';
 import 'package:carcheks/util/app_constants.dart';
+import 'package:carcheks/util/sharepreferences.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'locator.dart';
 import 'model/user_table_model.dart';
+import 'model/version.dart';
 
 class EntryScreen extends StatefulWidget {
   @override
@@ -23,6 +29,7 @@ class EntryState extends State<EntryScreen> with WidgetsBindingObserver {
   final authProvider = locator<AuthProvider>();
   final addressProvider = locator<AddressProvider>();
   final garageProvider = locator<GarageProvider>();
+  bool _isCheckingPermission = false;
 
   FuelProvider fuelTypeProvider = locator<FuelProvider>();
   VehicleProvider vehicleProvider = locator<VehicleProvider>();
@@ -45,8 +52,8 @@ class EntryState extends State<EntryScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _checkPermission(); // Re-check when returning from settings
+    if (state == AppLifecycleState.resumed && !_isCheckingPermission) {
+      _checkPermission();
     }
   }
 
@@ -59,29 +66,34 @@ class EntryState extends State<EntryScreen> with WidgetsBindingObserver {
   // ⿡ CHECK LOCATION PERMISSION
   // ------------------------------------------------------------
   Future<void> _checkPermission() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (_isCheckingPermission) return; // ⛔ prevent double call
+    _isCheckingPermission = true;
 
-    if (!serviceEnabled) {
-      await Geolocator.openLocationSettings();
-      return _showForcedPopup();
-    }
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        await Geolocator.openLocationSettings();
+        _showForcedPopup();
+        return;
+      }
 
-    LocationPermission permission = await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
+      LocationPermission permission = await Geolocator.checkPermission();
 
       if (permission == LocationPermission.denied) {
-        return _showForcedPopup(); // user denied → show important dialog
+        permission = await Geolocator.requestPermission();
       }
-    }
 
-    if (permission == LocationPermission.deniedForever) {
-      return _showForcedPopup();
-    }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        _showForcedPopup();
+        return;
+      }
 
-    // Permission Granted
-    await _getLocation();
+      // ✅ Permission granted
+      await _getLocation();
+    } finally {
+      _isCheckingPermission = false; // 🔓 unlock
+    }
   }
 
   // ------------------------------------------------------------
@@ -96,37 +108,45 @@ class EntryState extends State<EntryScreen> with WidgetsBindingObserver {
       AppConstants.CurrentLatitude = pos.latitude;
       AppConstants.CurrentLongtitude = pos.longitude;
 
-      List<Placemark> placemarks =
-      await placemarkFromCoordinates(pos.latitude, pos.longitude);
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        pos.latitude,
+        pos.longitude,
+      );
 
       if (placemarks.isNotEmpty) {
         final place = placemarks.first;
         AppConstants.AddressCon =
-        '${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}';
+            '${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
       }
     } catch (e) {
       // If unable to fetch location even after permission
       debugPrint("Location error: $e");
     }
 
-    _goNext();
+    fetchVersionAndNavigate();
   }
 
   // ------------------------------------------------------------
   // ⿣ NAVIGATION LOGIC
   // ------------------------------------------------------------
   Future<void> _goNext() async {
-    User? user = await authProvider.getUserDetails();
+    LocalSharePreferences prefs = LocalSharePreferences();
+    bool isLoggedIn = false;
+    isLoggedIn = await prefs.getBool(AppConstants.isUserLoggedIn);
 
     if (!mounted) return;
-
-    if (user == null) {
-      Navigator.pushReplacementNamed(context, AppRoutes.login);
-    } else if (user.garrageOwner == false) {
-      Navigator.pushReplacementNamed(context, AppRoutes.customer_home);
+    if (isLoggedIn) {
+      User? user = await authProvider.getUserDetails();
+      if (user == null) {
+        Navigator.pushReplacementNamed(context, AppRoutes.login);
+      } else if (user.garrageOwner == false) {
+        Navigator.pushReplacementNamed(context, AppRoutes.customer_home);
+      } else {
+        await garageProvider.getGarageByUserId(user.id);
+        Navigator.pushReplacementNamed(context, AppRoutes.garage_home);
+      }
     } else {
-      await garageProvider.getGarageByUserId(authProvider.user!.id);
-      Navigator.pushReplacementNamed(context, AppRoutes.garage_home);
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
     }
   }
 
@@ -144,40 +164,35 @@ class EntryState extends State<EntryScreen> with WidgetsBindingObserver {
             "Location Permission Required",
             style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
           ),
-          content: const Text.rich(TextSpan(
+          content: const Text.rich(
+            TextSpan(
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.normal,
               ),
               children: [
                 TextSpan(
-                    text: "This app needs your location to ",
-                    style: TextStyle(
-                      fontWeight: FontWeight.normal,
-                    )),
+                  text: "This app needs your location to ",
+                  style: TextStyle(fontWeight: FontWeight.normal),
+                ),
                 TextSpan(
-                    text: "show nearby garages,",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    )),
+                  text: "show nearby garages,",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 TextSpan(
-                    text: " Please enable location permission.",
-                    style: TextStyle(
-                      fontWeight: FontWeight.normal,
-                    ))
-              ])),
+                  text: " Please enable location permission.",
+                  style: TextStyle(fontWeight: FontWeight.normal),
+                ),
+              ],
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(ctx);
-                _goNext(); // continue without location → avoid infinite loader
+                fetchVersionAndNavigate(); // continue without location → avoid infinite loader
               },
-              child: Text(
-                "cancel",
-                style: TextStyle(
-                  color: Colors.red[300],
-                ),
-              ),
+              child: Text("cancel", style: TextStyle(color: Colors.red[300])),
             ),
             TextButton(
               onPressed: () async {
@@ -201,8 +216,67 @@ class EntryState extends State<EntryScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(child: CircularProgressIndicator()),
-        );
-   }
+      backgroundColor: Colors.white,
+      body: Center(child: CircularProgressIndicator()),
+    );
+  }
+
+  Future<void> fetchVersionAndNavigate() async {
+    try {
+      String myUrl = "${ApiConstants.BASE_URL}/api/GetLatestVaersion";
+
+      final response = await http.get(Uri.parse(myUrl));
+
+      if (response.statusCode != 200) {
+        debugPrint("Version API failed: ${response.statusCode}");
+        _goNext(); // fail-safe
+        return;
+      }
+
+      if (!response.headers['content-type']!.contains('application/json')) {
+        debugPrint("Invalid response type: ${response.body}");
+        _goNext(); // fail-safe
+        return;
+      }
+
+      final data = jsonDecode(response.body);
+      Version version = Version.fromJson(data);
+
+      debugPrint("Current Version is ${version.version}");
+
+      if (version.version.toString() == AppConstants.APP_VERSION.toString()) {
+        _goNext();
+      } else {
+        showUpdateDialog();
+      }
+    } catch (e, stack) {
+      debugPrint("Version check error: $e");
+      debugPrint("$stack");
+      _goNext(); // NEVER block user
+    }
+  }
+
+  void showUpdateDialog() {
+    showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Carcheks Update'),
+        content: const Text(
+          'A new version of Carcheks is available. Please update the app from the App Store to continue using all features.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: redirectToPlayStore,
+            child: const Text('Update'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void redirectToPlayStore() {
+    final Uri url = Uri.parse(AppConstants.appStoreUrl);
+    launchUrl(url, mode: LaunchMode.externalApplication);
+  }
 }

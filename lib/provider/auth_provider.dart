@@ -1,24 +1,19 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:carcheks/model/user_table_model.dart';
 import 'package:carcheks/response/auth/loginResponse.dart';
+import 'package:carcheks/util/app_constants.dart';
+import 'package:carcheks/util/sharepreferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import '../util/api_constants.dart';
 import 'package:http_parser/http_parser.dart';
-
-extension extString on String {
-  bool get isNotNull {
-    return this != null;
-  }
-}
 
 class AuthProvider extends ChangeNotifier {
   UserDetails? userDetails;
@@ -34,12 +29,14 @@ class AuthProvider extends ChangeNotifier {
     String myUrl =
         '${ApiConstants.LOGIN}mobileNumber?mobilenumber=$mobileNumber&password=$password';
     isLoading = true;
+    print(myUrl);
     var req = await http.post(Uri.parse(myUrl));
+    print(req);
     isLoading = false;
     response = json.decode(req.body);
     if (response['success']) {
-      var res = LoginResponseResponse.fromJson(response);
-      await setUserData(req.body);
+      LoginResponseResponse res = LoginResponseResponse.fromJson(response);
+      setUserData(res.data!);
       user = null;
       user = res.data;
     }
@@ -47,12 +44,25 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<User?> getUserDetails() async {
-    LoginResponseResponse? loginResponseResponse = await getUserData();
-    if (loginResponseResponse == null) {
+    LocalSharePreferences preferences = LocalSharePreferences();
+    User? userData = await preferences.getLoginData();
+    if (userData != null) {
+      String myUrl = ApiConstants.getUserById(userData.id);
+      print(myUrl);
+      var req = await http.get(Uri.parse(myUrl));
+      if (req.statusCode == 200) {
+        response = json.decode(req.body);
+        LoginResponseResponse loginResponseResponse =
+            LoginResponseResponse.fromJson(response);
+        user = loginResponseResponse.data;
+        return user;
+      } else {
+        user = userData;
+        return user;
+      }
+    } else {
       return null;
     }
-    user = loginResponseResponse!.data;
-    return user;
   }
 
   setVisitingFlag(bool flag) async {
@@ -60,8 +70,8 @@ class AuthProvider extends ChangeNotifier {
       user = null;
       notifyListeners();
     }
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.setBool("Already Visited", flag);
+    LocalSharePreferences preferences = LocalSharePreferences();
+    await preferences.setBool(AppConstants.isUserLoggedIn, flag);
     notifyListeners();
   }
 
@@ -70,63 +80,27 @@ class AuthProvider extends ChangeNotifier {
       user = null;
       notifyListeners();
     }
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.setBool("Garage Owner Already Visited", flag);
+    LocalSharePreferences preferences = LocalSharePreferences();
+    await preferences.setBool(AppConstants.isUserLoggedIn, flag);
     notifyListeners();
   }
 
   setUserId(int id) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.setInt("id", id);
-    //preferences.clear();
-  }
-
-  logout() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.clear();
-  }
-
-  setUserName(String uName) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.setString("userName", uName);
-  }
-
-  Future<bool?> getVisitingFlag() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    bool? alreadyVisited =
-        await preferences.getBool("Already Visited") ?? false;
-    return alreadyVisited;
-  }
-
-  Future<bool?> getGarageOwnerVisitingFlag() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    bool? alreadyVisited =
-        await preferences.getBool("Garage Owner Already Visited") ?? false;
-    return alreadyVisited;
+    LocalSharePreferences preferences = LocalSharePreferences();
+    await preferences.setInt(AppConstants.currentUserId, id);
   }
 
   Future<int?> getUserId() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    int? id = await preferences.getInt("id")!;
+    LocalSharePreferences preferences = LocalSharePreferences();
+    int? id = await preferences.getInt(AppConstants.currentUserId);
     return id;
   }
 
-  Future<String> setUserData(String data) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    bool isdone = await preferences.setString("jsonData", data);
-    return data;
-  }
-
-  Future<LoginResponseResponse?> getUserData() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    String? data = await preferences.getString("jsonData");
-    if (data == null) {
-      return null;
-    }
-    dynamic val = await jsonDecode(data!);
-    LoginResponseResponse loginResponseResponse =
-        LoginResponseResponse.fromJson(val);
-    return loginResponseResponse;
+  void setUserData(User data) async {
+    LocalSharePreferences preferences = LocalSharePreferences();
+    String userJson = jsonEncode(data.toJson());
+    print(userJson);
+    await preferences.setString(AppConstants.currentUser, userJson);
   }
 
   String? uploadedProfileImg;
@@ -140,21 +114,35 @@ class AuthProvider extends ChangeNotifier {
     bool isProfile,
   ) async {
     try {
-      ImageSource? source = await _showImageSourceDialog(context);
+      if (!context.mounted) return null;
+
+      final ImageSource? source = await _showImageSourceDialog(context);
       if (source == null) return null;
 
-      final XFile? pickedFile = await _picker.pickImage(
-        source: source,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 85,
-      );
+      // 🔒 Wrap picker with platform safety
+      final XFile? pickedFile;
+      try {
+        pickedFile = await _picker.pickImage(
+          source: source,
+          maxWidth: 1024,
+          maxHeight: 1024,
+          imageQuality: 85,
+        );
+        log('image picked=============?????/');
+      } on PlatformException catch (e) {
+        debugPrint("ImagePicker PlatformException: $e");
+        return null;
+      }
 
-      if (pickedFile == null) return null;
+      // ✅ User cancelled OR MIUI killed activity
+      if (pickedFile == null) {
+        debugPrint("Image picking cancelled");
+        return null;
+      }
 
-      File imageFile = File(pickedFile.path);
+      final File imageFile = File(pickedFile.path);
 
-      // Save locally first for immediate UI update
+      // ✅ Local preview update (safe)
       if (isProfile) {
         localProfileImg = imageFile;
       } else {
@@ -162,11 +150,12 @@ class AuthProvider extends ChangeNotifier {
       }
       notifyListeners();
 
-      // Upload to backend
-      var request = http.MultipartRequest(
+      // 🚀 Upload image
+      final request = http.MultipartRequest(
         'POST',
         Uri.parse(ApiConstants.UPLOAD_IMG),
       );
+
       request.files.add(
         await http.MultipartFile.fromPath(
           'profilePicture',
@@ -175,29 +164,44 @@ class AuthProvider extends ChangeNotifier {
         ),
       );
 
-      var response = await request.send();
+      final streamedResponse = await request.send();
 
-      if (response.statusCode == 200) {
-        var responseBody = await response.stream.bytesToString();
-
-        dynamic jsonResponse = json.decode(responseBody);
-
-        String imageUrl = jsonResponse ?? '';
-
-        if (isProfile) {
-          uploadedProfileImg = imageUrl;
-        } else {
-          uploadedGarageImg = imageUrl;
-        }
-
-        notifyListeners();
-        return imageUrl;
-      } else {
-        debugPrint("❌ Upload failed: ${response.reasonPhrase}");
+      if (streamedResponse.statusCode != 200) {
+        debugPrint("Upload failed: ${streamedResponse.reasonPhrase}");
         return null;
       }
+
+      final responseBody = await streamedResponse.stream.bytesToString();
+      final jsonResponse = json.decode(responseBody);
+
+      if (jsonResponse == null || jsonResponse.toString().isEmpty) {
+        debugPrint("Invalid upload response");
+        return null;
+      }
+
+      final String imageUrl = jsonResponse.toString();
+
+      if (isProfile) {
+        uploadedProfileImg = imageUrl;
+      } else {
+        uploadedGarageImg = imageUrl;
+      }
+
+      notifyListeners();
+      return imageUrl;
     } catch (e, st) {
-      debugPrint("❌ Error picking/uploading image: $e\n$st");
+      debugPrint("pickAndUploadImage fatal error: $e");
+      debugPrint(st.toString());
+
+      // ❌ NEVER crash app
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Failed to pick image. Please try again."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       return null;
     }
   }
@@ -387,8 +391,8 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     isLoading = true;
     String myUrl = ApiConstants.UPDATE_USER_PROFILE;
-    log('Update URL========= $myUrl');
-    log('Profile URL========= ${user!.imageUrl}');
+    //log('Update URL========= $myUrl');
+    //log('Profile URL========= ${user!.imageUrl}');
     Uri uri = Uri.parse(myUrl);
     Map<String, dynamic> data = {
       "active": active ?? user!.active,
@@ -415,7 +419,7 @@ class AuthProvider extends ChangeNotifier {
       headers: {"Content-Type": "application/json"},
       body: body,
     );
-    log("${createResponse.statusCode} --- ${createResponse.body}");
+    //log("${createResponse.statusCode} --- ${createResponse.body}");
     print(
       "${createResponse.statusCode}" + " --- " + createResponse.body.toString(),
     );
@@ -440,11 +444,11 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
 
       String myUrl = ApiConstants.DELETE_USER(user.id);
-      log("DELETE URL → $myUrl");
+      //log("DELETE URL → $myUrl");
 
       final res = await http.put(Uri.parse(myUrl));
 
-      log("API RESPONSE → ${res.body}");
+      //log("API RESPONSE → ${res.body}");
 
       final jsonRes = json.decode(res.body);
 
@@ -465,19 +469,27 @@ class AuthProvider extends ChangeNotifier {
 
       return false;
     } catch (e, st) {
-      log("DELETE ERROR → $e\n$st");
+      //log("DELETE ERROR → $e\n$st");
       toast("Something went wrong. Try again.");
       return false;
     } finally {
       isLoading = false;
       notifyListeners();
     }
-  deleteAccount(User user) async {
-    isLoading = true;
-    String myUrl = ApiConstants.DELETE_USER + 'deleteById?id=${user.id}';
-    var req = await http.delete(Uri.parse(myUrl));
-    isLoading = false;
-    response = json.decode(req.body);
-    notifyListeners();
+  }
+
+  Future<void> restoreSession() async {
+    try {
+      LocalSharePreferences preferences = LocalSharePreferences();
+      final userJson = await preferences.getString(AppConstants.currentUser);
+
+      if (userJson != null && userJson.isNotEmpty) {
+        final Map<String, dynamic> jsonMap = jsonDecode(userJson);
+        user = User.fromJson(jsonMap);
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint("Restore session failed: $e");
+    }
   }
 }

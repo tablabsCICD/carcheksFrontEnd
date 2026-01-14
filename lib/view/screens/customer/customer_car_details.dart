@@ -19,22 +19,27 @@ class _CustomerCarDetailsState extends State<CustomerCarDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.blueAccent,
-          leading: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: Icon(
-                Icons.arrow_back_ios_rounded,
-                color: Colors.white,
-                size: 30,
-              )),
-          title: Text(
-            "Customer Car Details",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-          )),
+        elevation: 0,
+        backgroundColor: Colors.blueAccent,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.white,
+            size: 30,
+          ),
+        ),
+        title: Text(
+          "Customer Car Details",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
           color: Colors.blueAccent,
@@ -74,14 +79,12 @@ class _CustomerCarDetailsState extends State<CustomerCarDetails> {
                         hintText: "Lorem Ipsum",
                         lableText: "Lorem Ipsum",
                         textInputType: TextInputType.text,
-                      )
+                      ),
                     ],
                   ),
                 ),
               ),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
@@ -90,39 +93,37 @@ class _CustomerCarDetailsState extends State<CustomerCarDetails> {
                   padding: EdgeInsets.all(10),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.vignette_sharp,
-                        size: 30,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
+                      Icon(Icons.vignette_sharp, size: 30),
+                      SizedBox(width: 10),
                       Expanded(
-                          child: Text(
-                        "Following are the best Flutter packages which can generate lorem ispum text Lorem Ipsum is simply dummy text used in many programming language.",
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.normal),
-                      ))
+                        child: Text(
+                          "Following are the best Flutter packages which can generate lorem ispum text Lorem Ipsum is simply dummy text used in many programming language.",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
-              SizedBox(
-                height: 16,
-              ),
+              SizedBox(height: 16),
               Center(
                 child: CustomButton(
                   buttonText: "Save",
                   onTap: () {
                     Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (builder) => AddVehicleInfo(
-                                  isdashboard: false,
-                                )));
+                      context,
+                      MaterialPageRoute(
+                        builder: (builder) =>
+                            AddVehicleInfo(isdashboard: false),
+                      ),
+                    );
                   },
+                  isEnable: true,
                 ),
-              )
+              ),
             ],
           ),
         ),

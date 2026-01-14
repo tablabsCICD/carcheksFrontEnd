@@ -7,7 +7,6 @@ import 'package:carcheks/view/base_widgets/custom_textfield.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:carcheks/locator.dart';
 import 'package:provider/provider.dart';
 
@@ -37,27 +36,38 @@ class _GarageInfoState extends State<GarageInfo> {
   TextEditingController garageemailController = new TextEditingController();
   TextEditingController garagemobileController = new TextEditingController();
   TextEditingController garageRatingController = new TextEditingController();
-  TextEditingController garageOpeningTimeController = new TextEditingController();
-  TextEditingController garageClosingTimeController = new TextEditingController();
+  TextEditingController garageOpeningTimeController =
+      new TextEditingController();
+  TextEditingController garageClosingTimeController =
+      new TextEditingController();
   TextEditingController garageLatitudeController = new TextEditingController();
   TextEditingController garageLongitudeController = new TextEditingController();
-  TextEditingController garageRatingCountController = new TextEditingController();
+  TextEditingController garageRatingCountController =
+      new TextEditingController();
   TextEditingController garageAddressController = new TextEditingController();
 
   final garageProvider = locator<GarageProvider>();
   final authProvider = locator<AuthProvider>();
 
   List<ImageCarousel> _imageUrls = [
-    ImageCarousel('assets/images/1.jpg', "Grow your business",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing\nelit. Suspendisse arcu dui."),
-    ImageCarousel('assets/images/2.jpg', "Grow your own business",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing\nelit. Suspendisse arcu dui."),
-    ImageCarousel('assets/images/3.jpg', "Grow your tkd business",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing\nelit. Suspendisse arcu dui."),
+    ImageCarousel(
+      'assets/images/1.jpg',
+      "Grow your business",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing\nelit. Suspendisse arcu dui.",
+    ),
+    ImageCarousel(
+      'assets/images/2.jpg',
+      "Grow your own business",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing\nelit. Suspendisse arcu dui.",
+    ),
+    ImageCarousel(
+      'assets/images/3.jpg',
+      "Grow your tkd business",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing\nelit. Suspendisse arcu dui.",
+    ),
   ];
   int _current = 0;
   int index = -1;
-
 
   @override
   void initState() {
@@ -89,18 +99,20 @@ class _GarageInfoState extends State<GarageInfo> {
           ),
           items: _imageUrls.map((i) {
             index++;
-            return Builder(builder: (BuildContext context) {
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: AssetImage(
-                          "assets/images/1.jpg",
-                        ))),
-              );
-            });
+                      fit: BoxFit.cover,
+                      image: AssetImage("assets/images/1.jpg"),
+                    ),
+                  ),
+                );
+              },
+            );
           }).toList(),
         ),
         Positioned(
@@ -126,300 +138,330 @@ class _GarageInfoState extends State<GarageInfo> {
               }).toList(),
             ),
           ),
-        )
+        ),
       ],
     );
   }
 
-  String? openingTime,closeingTime;
+  String? openingTime, closeingTime;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBarWidget(context,_scaffoldKey,"Garage Details"),
-      body:
-      SingleChildScrollView(
+      appBar: CustomAppBarWidget(context, _scaffoldKey, "Business Details"),
+      body: SingleChildScrollView(
         child: Consumer<GarageProvider>(
-          builder: (context, model, child) =>
-              Container(
-                  padding: EdgeInsets.all(10),
-                  child: Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        getImageSlider(),
-                        Divider(),
-                        RegistrationTextFeild(
-                          controller: garagenameController,
-                          hintText: "Garage Name",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.person,
-                        ),
-                        RegistrationTextFeild(
-                          controller: garagemobileController,
-                          hintText: "Garage Contact Number",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.person,
-                        ),
-                        RegistrationTextFeild(
-                          controller: garageemailController,
-                          hintText: "Garage Email",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.person,
-                        ),
-                        RegistrationTextFeild(
-                          controller: garagewebsiteController,
-                          hintText: "Garage Website",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.person,
-                        ),
-                        RegistrationTextFeild(
-                          controller: garageRatingController,
-                          hintText: "Garage Rating",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.person,
-                        ),
-                        RegistrationTextFeild(
-                          onTap: () async {
-                            openingTime =
-                            await DateTimePickerDialog()
-                                .selectTime(context);
-                            if (openingTime==null) {
-                              garageOpeningTimeController.text =
-                              "Select Opening Time";
-                            }else{
-                              garageOpeningTimeController.text = openingTime!;
-                            }
-                            setState(() {});
-                          },
-                          controller: garageOpeningTimeController,
-                          hintText: "Garage Opening Time",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.person,
-                        ),
-                        RegistrationTextFeild(
-                          onTap: () async {
-                            closeingTime =
-                            await DateTimePickerDialog()
-                                .selectTime(context);
-                            if (closeingTime==null) {
-                              garageClosingTimeController.text =
-                              "Select Closing Time";
-                            }else{
-                              garageClosingTimeController.text = closeingTime!;
-                            }
-                            setState(() {});
-                          },
-                          controller: garageClosingTimeController,
-                          hintText: "Garage Closing Time",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.person,
-                        ),
-                        RegistrationTextFeild(
-                          controller: garageLatitudeController,
-                          hintText: "Latitude",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.person,
-                        ),
-                        RegistrationTextFeild(
-                          controller: garageLongitudeController,
-                          hintText: "Longitude",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.person,
-                        ),
-                        RegistrationTextFeild(
-                          controller: garageRatingCountController,
-                          hintText: "Rating Count",
-                          textInputType: TextInputType.text,
-                          iconData: Icons.person,
-                        ),
+          builder: (context, model, child) => Container(
+            padding: EdgeInsets.all(10),
+            child: Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  getImageSlider(),
+                  Divider(),
+                  RegistrationTextFeild(
+                    controller: garagenameController,
+                    hintText: "Business Name",
+                    textInputType: TextInputType.text,
+                    iconData: Icons.person,
+                  ),
+                  RegistrationTextFeild(
+                    controller: garagemobileController,
+                    hintText: "Business Contact Number",
+                    textInputType: TextInputType.text,
+                    iconData: Icons.person,
+                  ),
+                  RegistrationTextFeild(
+                    controller: garageemailController,
+                    hintText: "Business Email",
+                    textInputType: TextInputType.text,
+                    iconData: Icons.person,
+                  ),
+                  RegistrationTextFeild(
+                    controller: garagewebsiteController,
+                    hintText: "Business Website",
+                    textInputType: TextInputType.text,
+                    iconData: Icons.person,
+                  ),
+                  // RegistrationTextFeild(
+                  //   controller: garageRatingController,
+                  //   hintText: "Business Rating",
+                  //   textInputType: TextInputType.text,
+                  //   iconData: Icons.person,
+                  // ),
+                  RegistrationTextFeild(
+                    onTap: () async {
+                      openingTime = await DateTimePickerDialog().selectTime(
+                        context,
+                      );
+                      if (openingTime == null) {
+                        garageOpeningTimeController.text =
+                            "Select Opening Time";
+                      } else {
+                        garageOpeningTimeController.text = openingTime!;
+                      }
+                      setState(() {});
+                    },
+                    controller: garageOpeningTimeController,
+                    hintText: "Business Opening Time",
+                    textInputType: TextInputType.text,
+                    iconData: Icons.person,
+                  ),
+                  RegistrationTextFeild(
+                    onTap: () async {
+                      closeingTime = await DateTimePickerDialog().selectTime(
+                        context,
+                      );
+                      if (closeingTime == null) {
+                        garageClosingTimeController.text =
+                            "Select Closing Time";
+                      } else {
+                        garageClosingTimeController.text = closeingTime!;
+                      }
+                      setState(() {});
+                    },
+                    controller: garageClosingTimeController,
+                    hintText: "Business Closing Time",
+                    textInputType: TextInputType.text,
+                    iconData: Icons.person,
+                  ),
 
-                        Center(
-                          child: CustomButton(
-                              onTap: () async {
-                                showDialog(
-                                    context: context,
-                                    builder: (_) => new CupertinoAlertDialog(
-                                      title: Text(
-                                        'Are you sure want to update your Garage info?',
-                                        style: Style.heading,
-                                      ),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: Text('yes', style: Style.okButton),
-                                          onPressed: () {
-                                            getLoader(context, isloading);
-                                            model.updateGarageinfo(
-                                              name: garagenameController.text,
-                                              contactNumber: garagemobileController.text,
-                                              emailId: garageemailController.text,
-                                              websiteUrl: garagewebsiteController.text,
-                                              rating: garageRatingController.text,
-                                              openingTime: garageOpeningTimeController.text,
-                                              closingTime: garageClosingTimeController.text,
-                                              latitude: garageLatitudeController.text,
-                                              longitude: garageLongitudeController.text,
-                                              imageUrl: model.ownGarageList[0].imageUrl,
-                                              noOfRating: int.parse(garageRatingCountController.text),
-                                            ).then((value) => {
-                                              print(value),
-                                              showAnimatedDialog(
-                                                  context,
-                                                  MyDialog(
-                                                    icon: Icons.check,
-                                                    title: 'Edit Garage Info',
-                                                    description:
-                                                    'Your Garage Info Updated Successfully',
-                                                    isFailed: false,
-                                                  ),
-                                                  dismissible: false,
-                                                  isFlip: false),
-                                            });
-                                            Navigator.of(context).pop();
-                                            dismissLoader(context);
-
-
-                                          },
+                  // RegistrationTextFeild(
+                  //   controller: garageLatitudeController,
+                  //   hintText: "Latitude",
+                  //   textInputType: TextInputType.text,
+                  //   iconData: Icons.person,
+                  // ),
+                  // RegistrationTextFeild(
+                  //   controller: garageLongitudeController,
+                  //   hintText: "Longitude",
+                  //   textInputType: TextInputType.text,
+                  //   iconData: Icons.person,
+                  // ),
+                  // RegistrationTextFeild(
+                  //   controller: garageRatingCountController,
+                  //   hintText: "Rating Count",
+                  //   textInputType: TextInputType.text,
+                  //   iconData: Icons.person,
+                  // ),
+                  Center(
+                    child: CustomButton(
+                      onTap: () async {
+                        showDialog(
+                          context: context,
+                          builder: (_) => new CupertinoAlertDialog(
+                            title: Text(
+                              'Are you sure want to update your Business info?',
+                              style: Style.heading,
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('yes', style: Style.okButton),
+                                onPressed: () {
+                                  getLoader(context, isloading);
+                                  model
+                                      .updateGarageinfo(
+                                        name: garagenameController.text,
+                                        contactNumber:
+                                            garagemobileController.text,
+                                        emailId: garageemailController.text,
+                                        websiteUrl:
+                                            garagewebsiteController.text,
+                                        rating: garageRatingController.text,
+                                        openingTime:
+                                            garageOpeningTimeController.text,
+                                        closingTime:
+                                            garageClosingTimeController.text,
+                                        latitude: garageLatitudeController.text,
+                                        longitude:
+                                            garageLongitudeController.text,
+                                        imageUrl:
+                                            model.ownGarageList[0].imageUrl,
+                                        noOfRating: int.parse(
+                                          garageRatingCountController.text,
                                         ),
-                                        TextButton(
-                                          child: Text('no', style: Style.cancelButton),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    ));
-                              },
-                              buttonText: 'Save'),
-                        ),
-                        SizedBox(
-                          height: 16,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            InkWell(
-                              child: Text(
-                                "Address Details",
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xffea6935),
-                                  decoration: TextDecoration.underline,
-                                ),
+                                      )
+                                      .then(
+                                        (value) => {
+                                          print(value),
+                                          showAnimatedDialog(
+                                            context,
+                                            MyDialog(
+                                              icon: Icons.check,
+                                              title: 'Edit Business Info',
+                                              description:
+                                                  'Your Business Info Updated Successfully',
+                                              isFailed: false,
+                                            ),
+                                            dismissible: false,
+                                            isFlip: false,
+                                          ),
+                                        },
+                                      );
+                                  Navigator.of(context).pop();
+                                  dismissLoader(context);
+                                },
                               ),
-                              onTap: () {
-                                Navigator.pushNamed(context, AppRoutes.garage_address);
-                                /*Navigator.push(
+                              TextButton(
+                                child: Text('no', style: Style.cancelButton),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      buttonText: 'Save',
+                      isEnable: true,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      InkWell(
+                        child: Text(
+                          "Address Details",
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xffea6935),
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.garage_address,
+                          );
+                          /*Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => ViewAddress()),
                                 );*/
-                              },
-                            ),
+                        },
+                      ),
+                    ],
+                  ),
 
-                          ],
-                        )
-
-                        /*  Row(
+                  /*  Row(
                   children: [
-                    Text("Garage Name: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text(model.ownGarageList[0].name,style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Garage Name: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text(model.ownGarageList[0].name,style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Contact Number: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text(model.ownGarageList[0].contactNumber,style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Contact Number: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text(model.ownGarageList[0].contactNumber,style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("EmailId: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.emailId",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("EmailId: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.emailId",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Website: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.websiteUrl",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Website: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.websiteUrl",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Rating: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.rating".toString(),style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Rating: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.rating".toString(),style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Opening Time: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.openingTime",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Opening Time: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.openingTime",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Closing Time: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.closingTime",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Closing Time: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.closingTime",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Latitude: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.latitude",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Latitude: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.latitude",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Longitude: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.longitude",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Longitude: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.longitude",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Rating Count: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Text("model.garage!.noOfRating.toString()",style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),),
+                    Text("Rating Count: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Text("model.garage!.noOfRating.toString()",style: TextStyle(color: Colors.black,fontSize: 15),),
                   ],
                 ),
                 Divider(),
                 Row(
                   children: [
-                    Text("Address: ",style: GoogleFonts.poppins(color: Colors.black54,fontSize: 12),),
-                    Expanded(child: Text(model.ownGarageList[0].addressDtls.name,maxLines: 3,style: GoogleFonts.poppins(color: Colors.black,fontSize: 15),)),
+                    Text("Address: ",style: TextStyle(color: Colors.black54,fontSize: 12),),
+                    Expanded(child: Text(model.ownGarageList[0].addressDtls.name,maxLines: 3,style: TextStyle(color: Colors.black,fontSize: 15),)),
                   ],
                 ),   */
-                      ],
-                    ),
-                  )
+                ],
               ),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  void getGarageInfo() async{
+  void getGarageInfo() async {
     int? id = await authProvider.getUserId();
     await garageProvider.getGarageByUserId(id!);
 
     garagenameController.text = garageProvider.ownGarageList[0].name.toString();
-    garagewebsiteController.text = garageProvider.ownGarageList[0].websiteUrl.toString();
-    garageemailController.text = garageProvider.ownGarageList[0].emailId.toString();
-    garagemobileController.text = garageProvider.ownGarageList[0].contactNumber.toString();
-    garageRatingController.text = garageProvider.ownGarageList[0].rating.toString();
-    garageOpeningTimeController.text = garageProvider.ownGarageList[0].openingTime.toString();
-    garageClosingTimeController.text = garageProvider.ownGarageList[0].closingTime.toString();
-    garageLatitudeController.text = garageProvider.ownGarageList[0].latitude.toString();
-    garageLongitudeController.text = garageProvider.ownGarageList[0].longitude.toString();
-    garageRatingCountController.text = garageProvider.ownGarageList[0].noOfRating.toString();
-    garageAddressController.text = garageProvider.ownGarageList[0].addressDtls!.houseName.toString();
-
+    garagewebsiteController.text = garageProvider.ownGarageList[0].websiteUrl
+        .toString();
+    garageemailController.text = garageProvider.ownGarageList[0].emailId
+        .toString();
+    garagemobileController.text = garageProvider.ownGarageList[0].contactNumber
+        .toString();
+    garageRatingController.text = garageProvider.ownGarageList[0].rating
+        .toString();
+    garageOpeningTimeController.text = garageProvider
+        .ownGarageList[0]
+        .openingTime
+        .toString();
+    garageClosingTimeController.text = garageProvider
+        .ownGarageList[0]
+        .closingTime
+        .toString();
+    garageLatitudeController.text = garageProvider.ownGarageList[0].latitude
+        .toString();
+    garageLongitudeController.text = garageProvider.ownGarageList[0].longitude
+        .toString();
+    garageRatingCountController.text = garageProvider
+        .ownGarageList[0]
+        .noOfRating
+        .toString();
+    garageAddressController.text = garageProvider
+        .ownGarageList[0]
+        .addressDtls!
+        .houseName
+        .toString();
   }
 }

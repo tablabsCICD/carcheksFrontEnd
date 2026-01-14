@@ -1,38 +1,39 @@
 import 'package:carcheks/provider/appointment_provider.dart';
 import 'package:carcheks/util/style.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../dialog/animated_custom_dialog.dart';
-import '../../../../dialog/my_dialog.dart';
 import '../../../../locator.dart';
 import '../../../../util/color-resource.dart';
 import '../../../base_widgets/custom_dropdown_list.dart';
-import '../../customer/garage/garage_dashboard.dart';
-import 'all_appointment.dart';
 
 class AppointmentStatusChange extends StatefulWidget {
-  AppointmentProvider appointmentProvider = locator<AppointmentProvider>();
+  final AppointmentProvider appointmentProvider =
+      locator<AppointmentProvider>();
+
   final int? garageId;
   final int? appointmentId;
   final int? userId;
   final int? subserviceId;
   final int? vehicleId;
-  final String? availableTime, date;
-  int count = 0;
+  final String? availableTime;
+  final String? date;
 
-  AppointmentStatusChange(
-      {Key? key,
-      @required this.garageId,
-      this.appointmentId,
-      this.userId,
-      this.date,
-      this.availableTime,
-      this.subserviceId,
-      this.vehicleId})
-      : super(key: key);
+  /// 🔴 CURRENT STATUS (IMPORTANT)
+  final String currentStatus;
+
+  AppointmentStatusChange({
+    Key? key,
+    required this.garageId,
+    required this.currentStatus,
+    this.appointmentId,
+    this.userId,
+    this.date,
+    this.availableTime,
+    this.subserviceId,
+    this.vehicleId,
+  }) : super(key: key);
 
   @override
   State<AppointmentStatusChange> createState() =>
@@ -40,119 +41,147 @@ class AppointmentStatusChange extends StatefulWidget {
 }
 
 class _AppointmentStatusChangeState extends State<AppointmentStatusChange> {
-  List<String> statusList = <String>[
-    'New Arrival',
-    'Pending',
-    'In Progress',
-    'Completed',
-    'Canceled',
-    'Delivered',
-  ];
-  String status = '';
   final _formKey = GlobalKey<FormState>();
+
+  /// 🔐 Status flow rules
+  final Map<String, List<String>> statusFlow = {
+    'New Arrival': ['In Progress', 'Cancelled'],
+    'In Progress': ['Completed'],
+    'Completed': [],
+    'Cancelled': [],
+  };
+
+  List<String> statusList = [];
+  String selectedStatus = '';
+  bool isLocked = false;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // status = statusList[0];
+
+    statusList = statusFlow[widget.currentStatus] ?? [];
+
+    if (widget.currentStatus == 'Cancelled' ||
+        widget.currentStatus == 'Completed') {
+      isLocked = true;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    print("This is Garage ID: ${widget.garageId}");
-    print("This is Appointment ID: ${widget.appointmentId}");
-    print("This is Users ID: ${widget.userId}");
     return Form(
       key: _formKey,
       child: Consumer<AppointmentProvider>(
-        builder: (context, model, child) => Container(
-          child: ListView(
+        builder: (context, model, child) {
+          return ListView(
             shrinkWrap: true,
             children: [
-              Text(
-                "Change Appointment Status",
-                style: Style.APOOINTMENT_TITLE,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              CustomDropdownList(
-                hintText: "Select Status",
-                items: statusList,
-                selectedType: status,
-                onChange: (String value) {
-                  setState(() {
-                    status = value;
-                  });
-                },
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if(status==''){
-                    showSimpleNotification(
+              Text("Change Appointment Status", style: Style.APOOINTMENT_TITLE),
+              const SizedBox(height: 12),
+
+              /// ℹ️ Current Status
+              // Text(
+              //   "Current Status: ${widget.currentStatus}",
+              //   style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+              // ),
+              // const SizedBox(height: 12),
+
+              /// 🔒 Locked message
+              if (isLocked)
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    "Status cannot be changed after ${widget.currentStatus}.",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+
+              /// ✅ Dropdown only if allowed
+              if (!isLocked) ...[
+                CustomDropdownList(
+                  hintText: widget.currentStatus,
+                  items: statusList,
+                  selectedType: selectedStatus,
+                  onChange: (String value) {
+                    setState(() {
+                      selectedStatus = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                ElevatedButton(
+                  onPressed: () async {
+                    if (selectedStatus.isEmpty) {
+                      showSimpleNotification(
                         Text(
-                          "Please select status",
+                          "Please select a valid status",
                           style: TextStyle(color: Colors.white),
                         ),
-                        background: Colors.red);
-                  }else{
-                  if (_formKey.currentState!.validate()) {
-                    var result = await widget.appointmentProvider
+                        background: Colors.red,
+                      );
+                      return;
+                    }
+
+                    final result = await widget.appointmentProvider
                         .UpdateAppointmentStatus(
-                            accept: true,
-                            active: true,
-                            availableTime: widget.availableTime,
-                            date: widget.date,
-                            garrageId: widget.garageId,
-                            id: widget.appointmentId,
-                            status: status,
-                            subServiceId: widget.subserviceId,
-                            userId: widget.userId,
-                            vehicleId: widget.vehicleId)
-                        .then((value) => {
-                              if (value == 200)
-                                {
-                                  showSimpleNotification(
-                                      Text(
-                                        "Appointment status changed..",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      background: Colors.green),
-                                  Navigator.of(context).pop(status)
-                                }
-                              else
-                                {
-                                  showSimpleNotification(
-                                      Text(
-                                        "Appointment status not changed..",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      background: Colors.red)
-                                }
-                            });
-                  }}
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorResources.BUTTON_COLOR,
-                  //primary:  widget.appointmentList[index].color,
-                  elevation: 3,
-                  // side: BorderSide(color: Colors.red, width: 1.5),
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                          accept: true,
+                          active: true,
+                          availableTime: widget.availableTime,
+                          date: widget.date,
+                          garrageId: widget.garageId,
+                          id: widget.appointmentId,
+                          status: selectedStatus,
+                          subServiceId: widget.subserviceId,
+                          userId: widget.userId,
+                          vehicleId: widget.vehicleId,
+                        );
+
+                    if (result == 200) {
+                      showSimpleNotification(
+                        Text(
+                          "Appointment status updated successfully",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        background: Colors.green,
+                      );
+                      Navigator.of(context).pop(selectedStatus);
+                    } else {
+                      showSimpleNotification(
+                        Text(
+                          "Failed to update appointment status",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        background: Colors.red,
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorResources.BUTTON_COLOR,
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 12,
+                    ),
+                    child: Text(
+                      "Submit",
+                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                  ),
                 ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 3, horizontal: 5),
-                  child: Text("Submit",
-                      style: TextStyle(fontSize: 14, color: Colors.white)),
-                ),
-              )
+              ],
             ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }

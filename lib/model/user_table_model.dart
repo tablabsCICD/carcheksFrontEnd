@@ -62,7 +62,6 @@ class UserDetails {
 class User {
   User({
     required this.id,
-    required this.userorderDtls,
     required this.firstName,
     required this.lastName,
     required this.emailid,
@@ -82,7 +81,6 @@ class User {
     required this.otp,
   });
   late final int id;
-  late final List<dynamic> userorderDtls;
   late final String firstName;
   late final String lastName;
   late final String emailid;
@@ -101,32 +99,30 @@ class User {
   late final String password;
   late final String otp;
 
-  User.fromJson(Map<String, dynamic> json){
-    id = json['id']??0;
-   // userorderDtls = List.castFrom<dynamic, dynamic>(json['userorder_dtls'])??[];
-    firstName = json['firstName']??'';
-    lastName = json['lastName']??'';
-    emailid = json['emailid']??'';
-    mobilenumber = json['mobilenumber']??'';
-    verified = json['verified']??true;
-    paymentMode = json['payment_mode']??true;
-    garrageOwner = json['garrage_Owner']??true;
-    created = json['created']??'';
-    createdBy = json['createdBy']??'';
-    updated = json['updated']??'';
-    updatedBy = json['updatedBy']??'';
-    active = json['active']??true;
-    operatingSystem = json['operating_system']??'';
-    deviceId = json['device_id']??'';
-    imageUrl = json['image_url']??'';
-    password = json['password']??'';
-    otp = json['otp']??'';
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'] ?? 0;
+    firstName = json['firstName'] ?? '';
+    lastName = json['lastName'] ?? '';
+    emailid = json['emailid'] ?? '';
+    mobilenumber = json['mobilenumber'] ?? '';
+    verified = json['verified'] ?? true;
+    paymentMode = json['payment_mode'] ?? true;
+    garrageOwner = json['garrage_Owner'] ?? true;
+    created = json['created'] ?? '';
+    createdBy = json['createdBy'] ?? '';
+    updated = json['updated'] ?? '';
+    updatedBy = json['updatedBy'] ?? '';
+    active = json['active'] ?? true;
+    operatingSystem = json['operating_system'] ?? '';
+    deviceId = json['device_id'] ?? '';
+    imageUrl = json['image_url'] ?? '';
+    password = json['password'] ?? '';
+    otp = json['otp'] ?? '';
   }
 
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
     _data['id'] = id;
-    _data['userorder_dtls'] = userorderDtls;
     _data['firstName'] = firstName;
     _data['lastName'] = lastName;
     _data['emailid'] = emailid;
@@ -147,4 +143,3 @@ class User {
     return _data;
   }
 }
-

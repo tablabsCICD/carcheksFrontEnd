@@ -1,12 +1,15 @@
-
 import 'package:carcheks/model/fuel_type_model.dart';
 import 'package:carcheks/model/vehicle_manufacturer_model.dart';
 import 'package:carcheks/model/vehicle_model.dart';
 import 'package:carcheks/model/vehicle_type_model.dart';
 
 class AppConstants {
+  static String APP_VERSION = "1.2.0"; //1
 
-  static String APP_VERSION = "1.0.0";//1
+  static String currentUser = "currentUser";
+  static String currentGarage = "currentGarage";
+  static String isUserLoggedIn = "isUserLoggedIN";
+  static String currentUserId = "currentUserId";
 
   static String DEFAULT_SERVICE_IMG =
       "https://cdn.vectorstock.com/i/preview-1x/40/42/car-service-vector-3874042.webp";
@@ -30,43 +33,55 @@ class AppConstants {
   static const String google_api_key =
       "AIzaSyDtAZoTy--RMsfvtQv9lONGZ6ui5kG4vDI";
 
-  static const privacyPolicyUrl = "https://carcheks-img.s3.ap-south-1.amazonaws.com/498f6f93-ce4f-41c7-aa17-f9989a97dfa4-privacy-policy.html";
+  static const privacyPolicyUrl =
+      "https://carcheks-img.s3.ap-south-1.amazonaws.com/498f6f93-ce4f-41c7-aa17-f9989a97dfa4-privacy-policy.html";
 
   static const playStoreUrl =
       "https://play.google.com/store/apps/details?id=com.napesoft.carcheks";
 
   static const appStoreUrl =
-      "https://play.google.com/store/apps/details?id=com.napesoft.carcheks";
+      "https://apps.apple.com/in/app/carcheks/id6747573358";
 
   static String AddressCon = "Getting Your Current Location...";
   static String LocationCon = "";
   static double CurrentLatitude = 0;
   static double CurrentLongtitude = 0;
   static Vehicle vehicle = Vehicle(
+    id: 0,
+    created: "created",
+    createdBy: "createdBy",
+    updated: "updated",
+    updatedBy: "updatedBy",
+    active: true,
+    userId: 0,
+    vehicleManufacturer: VehicleManufacturer(
       id: 0,
-      created: "created",
-      createdBy: "createdBy",
-      updated: "updated",
-      updatedBy: "updatedBy",
+      created: '',
+      createdBy: '',
+      updated: '',
+      updatedBy: '',
       active: true,
-      userId: 0,
-      vehicleManufacturer: VehicleManufacturer(
-          id: 0,
-          created: '',
-          createdBy: '',
-          updated: '',
-          updatedBy: '',
-          active: true,
-          name: ''),
-      vehicleModel: "vehicleModel",
-      fueltype:
-          FuelType(id: 0, created: '', createdBy: '', active: true, name: ''),
-      photosUrl: 'photosUrl',
-      vehicletype: Vehicletype(
-          id: 0, created: '', createdBy: '', active: true, name: '')!,
-      yearOfManufacturing: 'yearOfManufacturing',
-      registrationNo: "registrationNo",
-      lastServiceDate: "lastServiceDate",
-      name: "name");
-
+      name: '',
+    ),
+    vehicleModel: "vehicleModel",
+    fueltype: FuelType(
+      id: 0,
+      created: '',
+      createdBy: '',
+      active: true,
+      name: '',
+    ),
+    photosUrl: 'photosUrl',
+    vehicletype: Vehicletype(
+      id: 0,
+      created: '',
+      createdBy: '',
+      active: true,
+      name: '',
+    )!,
+    yearOfManufacturing: 'yearOfManufacturing',
+    registrationNo: "registrationNo",
+    lastServiceDate: "lastServiceDate",
+    name: "name",
+  );
 }

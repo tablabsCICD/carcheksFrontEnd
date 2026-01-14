@@ -1,3 +1,4 @@
+import 'package:carcheks/util/app_constants.dart';
 import 'package:flutter/services.dart';
 import 'package:wc_form_validators/wc_form_validators.dart';
 import '../../../provider/auth_provider.dart';
@@ -6,11 +7,12 @@ import '../../../util/color-resource.dart';
 import '../../base_widgets/custom_button.dart';
 import '../../base_widgets/loader.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -48,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
                       ClipPath(
                         clipper: DrawClip2(),
                         child: Container(
-                          height: size.height * 0.55,
+                          height: size.height * 0.7,
                           width: size.width,
                           decoration: const BoxDecoration(
                             gradient: LinearGradient(
@@ -64,13 +66,13 @@ class _LoginPageState extends State<LoginPage> {
                       ClipPath(
                         clipper: DrawClip(),
                         child: Container(
-                          height: size.height * 0.55,
+                          height: size.height * 0.7,
                           width: size.width,
                           decoration: const BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
                                 ColorResources.PRIMARY_COLOR,
-                                Color(0xff91c5fc)
+                                Color(0xff91c5fc),
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -84,26 +86,34 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.only(top: 40),
                         child: Column(
                           children: [
+                            CircleAvatar(
+                              radius: 40,
+                              foregroundImage: AssetImage(
+                                "assets/images/carchecks.jpeg",
+                              ),
+                            ),
+                            const SizedBox(height: 10),
                             Text(
                               "Welcome",
-                              style: GoogleFonts.ubuntu(
+                              style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 34,
+                                fontSize: 28,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
 
-                            const SizedBox(height: 25),
+                            const SizedBox(height: 70),
 
                             /// LOGIN TYPE TABS
                             _buildLoginTypeTabs(),
 
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 20),
 
                             /// FORM AREA WITH EXTRA PADDING
                             Padding(
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 20),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
                               child: Form(
                                 key: _formKey,
                                 child: Column(
@@ -111,6 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                                     _mobileField(),
                                     const SizedBox(height: 12),
                                     _passwordField(),
+
                                     const SizedBox(height: 20),
 
                                     /// LOGIN BUTTON
@@ -118,6 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                                       width: size.width * 0.7,
                                       child: CustomButton(
                                         buttonText: "Login",
+                                        isEnable: true,
                                         onTap: () {
                                           if (isCustomerLogin) {
                                             loginUser(model, context);
@@ -125,6 +137,22 @@ class _LoginPageState extends State<LoginPage> {
                                             loginGarage(model, context);
                                           }
                                         },
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: TextButton(
+                                        onPressed: () =>
+                                            _showForgotPasswordSheet(context),
+                                        child: const Text(
+                                          "Forgot Password?",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -166,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
           _tabButton("Customer", isCustomerLogin, () {
             setState(() => isCustomerLogin = true);
           }),
-          _tabButton("Garage Owner", !isCustomerLogin, () {
+          _tabButton("Business Owner", !isCustomerLogin, () {
             setState(() => isCustomerLogin = false);
           }),
         ],
@@ -187,12 +215,309 @@ class _LoginPageState extends State<LoginPage> {
           child: Center(
             child: Text(
               label,
-              style: GoogleFonts.ubuntu(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: active ? Colors.black : Colors.white,
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showForgotPasswordSheet(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = ColorResources.PRIMARY_COLOR;
+
+    final TextEditingController mobileCtrl = TextEditingController();
+    final TextEditingController otpCtrl = TextEditingController();
+
+    bool otpSent = false;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 16,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _bottomSheetHandle(),
+
+                  Text(
+                    "Forgot Password",
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  Text(
+                    "Verify your mobile number",
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  /// MOBILE
+                  _roundedField(
+                    controller: mobileCtrl,
+                    label: "Mobile Number",
+                    icon: Icons.phone,
+                    enabled: !otpSent,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(10),
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                  ),
+
+                  if (otpSent) ...[
+                    const SizedBox(height: 16),
+
+                    /// OTP
+                    _roundedField(
+                      controller: otpCtrl,
+                      label: "OTP",
+                      icon: Icons.lock,
+                      keyboardType: TextInputType.number,
+                    ),
+                  ],
+
+                  const SizedBox(height: 28),
+
+                  /// BUTTON
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (!otpSent) {
+                          if (mobileCtrl.text.length != 10) {
+                            _toast("Enter valid mobile number");
+                            return;
+                          }
+
+                          /// 🔹 SEND OTP API
+                          _toast("OTP sent to mobile");
+                          setState(() => otpSent = true);
+                        } else {
+                          if (otpCtrl.text.isEmpty) {
+                            _toast("Enter valid OTP");
+                            return;
+                          }
+
+                          /// 🔹 VERIFY OTP API
+                          Navigator.pop(context);
+
+                          _showResetPasswordSheet(context);
+                        }
+                      },
+                      child: Text(
+                        otpSent ? "Verify OTP" : "Send OTP",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showResetPasswordSheet(BuildContext context) {
+    final theme = Theme.of(context);
+    final primary = ColorResources.PRIMARY_COLOR;
+
+    final TextEditingController passCtrl = TextEditingController();
+    final TextEditingController confirmCtrl = TextEditingController();
+
+    bool obscure1 = true;
+    bool obscure2 = true;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 16,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _bottomSheetHandle(),
+
+                  Text(
+                    "Reset Password",
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  /// NEW PASSWORD
+                  _roundedField(
+                    controller: passCtrl,
+                    label: "New Password",
+                    icon: Icons.password,
+                    obscureText: obscure1,
+                    suffix: IconButton(
+                      icon: Icon(
+                        obscure1 ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () => setState(() => obscure1 = !obscure1),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  /// CONFIRM PASSWORD
+                  _roundedField(
+                    controller: confirmCtrl,
+                    label: "Confirm Password",
+                    icon: Icons.password,
+                    obscureText: obscure2,
+                    suffix: IconButton(
+                      icon: Icon(
+                        obscure2 ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () => setState(() => obscure2 = !obscure2),
+                    ),
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  /// RESET BUTTON
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (passCtrl.text.length < 6) {
+                          _toast("Password must be at least 6 characters");
+                          return;
+                        }
+
+                        if (passCtrl.text != confirmCtrl.text) {
+                          _toast("Passwords do not match");
+                          return;
+                        }
+
+                        /// 🔹 RESET PASSWORD API
+                        Navigator.pop(context);
+                        _toast("Password reset successful");
+                      },
+                      child: const Text(
+                        "Reset Password",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _bottomSheetHandle() {
+    return Container(
+      height: 4,
+      width: 50,
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade400,
+        borderRadius: BorderRadius.circular(4),
+      ),
+    );
+  }
+
+  Widget _roundedField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool obscureText = false,
+    bool enabled = true,
+    Widget? suffix,
+    TextInputType keyboardType = TextInputType.text,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        enabled: enabled,
+        obscureText: obscureText,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        decoration: InputDecoration(
+          hintText: label,
+          prefixIcon: Icon(icon, color: Colors.grey),
+          suffixIcon: suffix,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 18,
+            vertical: 16,
           ),
         ),
       ),
@@ -220,10 +545,12 @@ class _LoginPageState extends State<LoginPage> {
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.phone_iphone, color: Colors.grey),
           hintText: "Mobile Number",
-          hintStyle: GoogleFonts.ubuntu(color: Colors.grey),
+          hintStyle: TextStyle(color: Colors.grey),
           border: InputBorder.none,
-          contentPadding:
-          const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 15,
+            vertical: 18,
+          ),
         ),
       ),
     );
@@ -243,15 +570,19 @@ class _LoginPageState extends State<LoginPage> {
         decoration: InputDecoration(
           prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
           suffixIcon: IconButton(
-            icon: Icon(_isObscure ? Icons.visibility_off : Icons.visibility,
-                color: Colors.grey),
+            icon: Icon(
+              _isObscure ? Icons.visibility_off : Icons.visibility,
+              color: Colors.grey,
+            ),
             onPressed: () => setState(() => _isObscure = !_isObscure),
           ),
           hintText: "Password",
-          hintStyle: GoogleFonts.ubuntu(color: Colors.grey),
+          hintStyle: TextStyle(color: Colors.grey),
           border: InputBorder.none,
-          contentPadding:
-          const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 15,
+            vertical: 18,
+          ),
         ),
       ),
     );
@@ -263,7 +594,7 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         Text(
           "Don't have an account?",
-          style: GoogleFonts.ubuntu(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 18,
             color: Colors.black87,
@@ -274,13 +605,13 @@ class _LoginPageState extends State<LoginPage> {
           onTap: () => Navigator.pushNamed(context, AppRoutes.select_type),
           child: Text(
             "Sign Up",
-            style: GoogleFonts.ubuntu(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: const Color(0xff5172b4),
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -299,13 +630,16 @@ class _LoginPageState extends State<LoginPage> {
 
       if (result["success"] == true) {
         if (result["data"]["garrage_Owner"]) {
-          _toast("Please switch to Garage Owner login");
+          _toast("Please switch to Business Owner login");
         } else {
           model.setVisitingFlag(true);
           model.setUserId(result["data"]["id"]);
 
           Navigator.pushNamedAndRemoveUntil(
-              context, AppRoutes.entryScreen, (route) => false);
+            context,
+            AppRoutes.entryScreen,
+            (route) => false,
+          );
         }
       } else {
         _toast(result["message"].toString());
@@ -333,7 +667,10 @@ class _LoginPageState extends State<LoginPage> {
           model.setUserId(result["data"]["id"]);
 
           Navigator.pushNamedAndRemoveUntil(
-              context, AppRoutes.entryScreen, (route) => false);
+            context,
+            AppRoutes.entryScreen,
+            (route) => false,
+          );
         } else {
           _toast("Please switch to Customer login");
         }
@@ -357,32 +694,49 @@ class _LoginPageState extends State<LoginPage> {
 //
 // CLIPPERS (Reduced Height to Stop Overflow)
 //
+
 class DrawClip extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    path.lineTo(0, size.height * 0.70);
-    path.cubicTo(size.width / 4, size.height, 3 * size.width / 4,
-        size.height * 0.45, size.width, size.height * 0.70);
+    path.lineTo(0, size.height * 0.80);
+    path.cubicTo(
+      size.width / 4,
+      size.height,
+      3 * size.width / 4,
+      size.height / 2,
+      size.width,
+      size.height * 0.8,
+    );
     path.lineTo(size.width, 0);
     return path;
   }
 
   @override
-  bool shouldReclip(oldClipper) => true;
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return true;
+  }
 }
 
 class DrawClip2 extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    path.lineTo(0, size.height * 0.70);
-    path.cubicTo(size.width / 4, size.height, 3 * size.width / 4,
-        size.height * 0.50, size.width, size.height * 0.75);
+    path.lineTo(0, size.height * 0.80);
+    path.cubicTo(
+      size.width / 4,
+      size.height,
+      3 * size.width / 4,
+      size.height / 2,
+      size.width,
+      size.height * 0.9,
+    );
     path.lineTo(size.width, 0);
     return path;
   }
 
   @override
-  bool shouldReclip(oldClipper) => true;
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return true;
+  }
 }

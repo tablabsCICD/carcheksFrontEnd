@@ -30,7 +30,7 @@ class ApiConstants {
   static String ALL_VEHICLE =
       "${ApiConstants.BASE_URL}/VehicleType/VehicleType/getAll";
   static String GET_NEAR_BY_GARAGES(userId, lat, long) =>
-      "${ApiConstants.BASE_URL}/api/getnearbyGaragesbyuserId?usertableId=$userId&latitude=$lat&longitude=$long";
+      "${ApiConstants.BASE_URL}/api/getnearbyGaragesbyuserIdLocation?usertableId=$userId&latitude=$lat&longitude=$long";
   static String GET_ALL_CITY = "${ApiConstants.BASE_URL}/api/city/getAll";
   static String saveBidding = "${ApiConstants.BASE_URL}/api/bidding/save";
   static String cartGetByUserId(userId) =>
@@ -45,7 +45,7 @@ class ApiConstants {
   static String getVehiclesByUserId(userId) =>
       "${ApiConstants.BASE_URL}/Vehicle/user/getbyuserid?id=$userId";
   static String updateVehicle =
-      "${ApiConstants.BASE_URL}/Vehicle/Vehicle/update";
+      "${ApiConstants.BASE_URL}/Vehicle/Vehicle/Update";
   static String deleteVehicle(id) =>
       "${ApiConstants.BASE_URL}/Vehicle/Vehicle/deleteById?id=$id";
 
@@ -72,4 +72,7 @@ class ApiConstants {
       "$BASE_URL/api/garage/$id/withdrawal/request";
   static String getWithdrawHistory(id) =>
       "$BASE_URL/api/garage/$id/withdrawal/requests";
+
+  static String getUserById(id) =>
+      "$BASE_URL/UserTable/UserTable/getById?id=$id";
 }

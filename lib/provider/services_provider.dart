@@ -30,21 +30,21 @@ class ServiceProvider extends ChangeNotifier {
   bool isLoading = false;
   int count = 0;
   int totalAmt = 0;
+
   Guarage_home guarage_home = Guarage_home(
-      workInProgress: 0,
-      pending: 0,
-      newAppointment: 0,
-      numberOfRequest: 0,
-      completed: 0,
-      cancled: 0,
-      delivered: 0);
+    workInProgress: 0,
+    newAppointment: 0,
+    numberOfRequest: 0,
+    completed: 0,
+    cancled: 0,
+  );
 
   AddressClass? addressClass;
   getAddressByAddressId(int id) async {
     isLoading = true;
     notifyListeners();
     String myUrl = ApiConstants.BASE_URL + "/api/address/getById?id=${id}";
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
     if (req.statusCode == 200) {
@@ -62,7 +62,7 @@ class ServiceProvider extends ChangeNotifier {
     notifyListeners();
     offerList.clear();
     String myUrl = ApiConstants.BASE_URL + "/api/offer/getAll";
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
     if (req.statusCode == 200) {
@@ -72,7 +72,8 @@ class ServiceProvider extends ChangeNotifier {
       offerList.addAll(type.data);
       offerList.forEach((element) {
         imageUrls.add(
-            ImageCarousel(element.imageUrl, element.name, element.discription));
+          ImageCarousel(element.imageUrl, element.name, element.discription),
+        );
       });
 
       // log(offerList[0]);
@@ -88,7 +89,7 @@ class ServiceProvider extends ChangeNotifier {
     }
     String myUrl =
         ApiConstants.BASE_URL + "/garrage_services/GarageServices/getAll";
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
     if (req.statusCode == 200) {
@@ -104,9 +105,10 @@ class ServiceProvider extends ChangeNotifier {
   getServicesByGarageId(int garageId) async {
     isLoading = true;
     notifyListeners();
-    String myUrl = ApiConstants.BASE_URL +
+    String myUrl =
+        ApiConstants.BASE_URL +
         "/Services/service/getbygarages?garrage_id=${garageId}";
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
     if (req.statusCode == 200) {
@@ -114,7 +116,7 @@ class ServiceProvider extends ChangeNotifier {
       var type = ServiceModel.fromJson(response);
       serviceListByGarageId.clear();
       serviceListByGarageId.addAll(type.data);
-      log(serviceListByGarageId[0].toString());
+      //log(serviceListByGarageId[0].toString());
       notifyListeners();
     }
   }
@@ -125,10 +127,11 @@ class ServiceProvider extends ChangeNotifier {
     if (currentPage == 0) {
       garageServiceListByGarageId.clear();
     }
-    String myUrl = ApiConstants.BASE_URL +
+    String myUrl =
+        ApiConstants.BASE_URL +
         "/garrage_services/GarageServices/getAllGSByGarageId?id=${garageId}";
     //  "/garrage_services/GarageServices/getbygarageid?id=${garageId}";
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
     if (req.statusCode == 200) {
@@ -148,9 +151,9 @@ class ServiceProvider extends ChangeNotifier {
       allServices.clear();
     }
     String myUrl = ApiConstants.BASE_URL + "/Services/Services/getAll";
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
-    log('services response:========= ${req.body}');
+    //services response:========= ${req.body}');
 
     if (req.statusCode == 200) {
       var response = json.decode(req.body);
@@ -170,9 +173,10 @@ class ServiceProvider extends ChangeNotifier {
     if (currentPage == 0) {
       subServiceListByServiceId.clear();
     }
-    String myUrl = ApiConstants.BASE_URL +
+    String myUrl =
+        ApiConstants.BASE_URL +
         "/Subservice/Subservice/getbyparentService?id=${serviceId}";
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
 
     if (req.statusCode == 200) {
@@ -221,7 +225,7 @@ class ServiceProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     String myUrl = ApiConstants.BASE_URL +"/garrage_services/getbyvechicletypeid?id=1";
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
     if(req.statusCode == 200) {
@@ -236,9 +240,10 @@ class ServiceProvider extends ChangeNotifier {
   getAllByid(int VehicleTypeId) async {
     isLoading = true;
     notifyListeners();
-    String myUrl = ApiConstants.BASE_URL +
+    String myUrl =
+        ApiConstants.BASE_URL +
         "/garrage_services/services/byVehicleType2?vehicleTypeId=1";
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
     if (req.statusCode == 200) {
@@ -253,8 +258,11 @@ class ServiceProvider extends ChangeNotifier {
 
   getAppointmentData(int id) async {
     isLoading = true;
-    var req = await http.get(Uri.parse(
-        ApiConstants.BASE_URL + "/api/Appointment/getCount?garageId=${id}"));
+    var req = await http.get(
+      Uri.parse(
+        ApiConstants.BASE_URL + "/api/Appointment/getCount?garageId=${id}",
+      ),
+    );
     if (req.statusCode == 200) {
       var response = json.decode(req.body);
       guarage_home = Guarage_home.fromJson(response);

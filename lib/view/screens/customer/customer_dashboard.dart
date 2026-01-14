@@ -12,6 +12,7 @@ import 'package:carcheks/view/base_widgets/custom_navigation_drawer_widget.dart'
 import 'package:carcheks/view/base_widgets/getCart.dart';
 import 'package:carcheks/view/base_widgets/getImage.dart';
 import 'package:carcheks/view/screens/auth/profile_page.dart';
+import 'package:carcheks/view/screens/customer/AddEditAddressPage.dart';
 import 'package:carcheks/view/screens/customer/garage/garage_card.dart';
 import 'package:carcheks/view/screens/customer/garage/near_by_store.dart';
 import 'package:carcheks/view/screens/customer/service/get_all_services.dart';
@@ -46,16 +47,8 @@ class CustomerDashboard extends StatefulWidget {
 
 class _CustomerDashboardState extends State<CustomerDashboard> {
   List<ImageCarousel> staticImgList = [
-    ImageCarousel(
-      'https://images.pexels.com/photos/35967/mini-cooper-auto-model-vehicle.jpg?cs=srgb&dl=pexels-pixabay-35967.jpg&fm=jpg',
-      " ",
-      " ",
-    ),
-    ImageCarousel(
-      'https://media.newyorker.com/photos/5c362cbd13070229940300f2/master/w_2560%2Cc_limit/Saval-The-Return-of-the-Garage.jpg',
-      " ",
-      " ",
-    ),
+    ImageCarousel('assets/images/repair.gif', " ", " "),
+    ImageCarousel('assets/images/repair2.gif', " ", " "),
   ];
   int _current = 0;
   TextEditingController searchTextController = TextEditingController();
@@ -93,10 +86,10 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       AppConstants.CurrentLatitude,
       AppConstants.CurrentLongtitude,
     );
-    log(myUrl);
+    //log(myUrl);
     vehicleProvider.vehicleListDashboard.clear();
     var req = await http.get(Uri.parse(myUrl));
-    log(req.body);
+    //log(req.body);
 
     if (req.statusCode == 200) {
       var response = json.decode(req.body);
@@ -182,6 +175,34 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                         ),
                       ),
                     ),
+                    // Expanded(
+                    //   child: InkWell(
+                    //     onTap: () {
+                    //       showAddressSelector(context, authProvider.user!.id);
+                    //     },
+                    //     child: Consumer<AddressProvider>(
+                    //       builder: (_, model, __) => Row(
+                    //         children: [
+                    //           const Icon(Icons.location_on, color: Colors.red),
+                    //           const SizedBox(width: 8),
+                    //           Expanded(
+                    //             child: Text(
+                    //               model.selectedAddress == null
+                    //                   ? "Select delivery address"
+                    //                   : "${model.selectedAddress!.houseName}, ${model.selectedAddress!.cityname}, ${model.selectedAddress!.country}",
+                    //               maxLines: 2,
+                    //               style: const TextStyle(
+                    //                 fontWeight: FontWeight.bold,
+                    //                 fontSize: 15,
+                    //               ),
+                    //             ),
+                    //           ),
+                    //           const Icon(Icons.keyboard_arrow_down),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -233,11 +254,11 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                   ),
                   InkWell(
                     onTap: () {
-                      log(vehicleProvider.selectedUserVehicle!.name.toString());
-                      log(
-                        "Selected Vehicle:" +
-                            vehicleProvider.selectedUserVehicle!.name!,
-                      );
+                      // log(vehicleProvider.selectedUserVehicle!.name.toString());
+                      // log(
+                      //   "Selected Vehicle:" +
+                      //       vehicleProvider.selectedUserVehicle!.name!,
+                      // );
                       if (vehicleProvider.selectedUserVehicle!.name == "") {
                         const snackBar = SnackBar(
                           content: Text('Please select vehicle'),
@@ -267,7 +288,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               ),
               const SizedBox(height: 15),
               getNearByStore(),
-              const SizedBox(height: 15),
+              const SizedBox(height: 50),
             ],
           ),
         ),
@@ -285,7 +306,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       children: [
         CarouselSlider(
           options: CarouselOptions(
-            height: 160.0,
+            //height: 160.0,
             aspectRatio: 16 / 9,
             enlargeCenterPage: false,
             viewportFraction: 1.0,
@@ -293,7 +314,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
             enableInfiniteScroll: true,
             reverse: false,
             autoPlay: true,
-            autoPlayInterval: const Duration(seconds: 3),
+            autoPlayInterval: const Duration(seconds: 6),
             autoPlayAnimationDuration: const Duration(milliseconds: 800),
             autoPlayCurve: Curves.fastOutSlowIn,
             scrollDirection: Axis.horizontal,
@@ -314,7 +335,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                     borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
                       fit: BoxFit.fill,
-                      image: NetworkImage(
+                      image: AssetImage(
                         serviceProvider.imageUrls[index].image1,
                       ),
                     ),
@@ -398,7 +419,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
         }
 
         return SizedBox(
-          height: 170,
+          height: 200,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: services.length,
@@ -408,7 +429,8 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               final service = services[index];
               debugPrint("Rendering service: ${service.name}");
               return SizedBox(
-                width: 150,
+                height: 190,
+                width: 160,
                 child: ServiceCard(service, cost: false),
               );
             },
@@ -421,7 +443,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
   getNearByStore() {
     return Consumer<GarageProvider>(
       builder: (context, model, child) => Container(
-        height: 180,
+        height: 200,
         child: ListView.builder(
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
@@ -430,7 +452,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               .length, //model.garageListNearByUser.length,
           itemBuilder: (BuildContext context, int index) {
             return Container(
-              height: 170,
+              height: 190,
               width: 160,
               margin: const EdgeInsets.all(5),
               child: CardStore(model.dashboardGarageList[index]),
@@ -530,6 +552,112 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                 },
               ),
       ),
+    );
+  }
+
+  void showAddressSelector(BuildContext context, int userId) {
+    final provider = locator<AddressProvider>();
+    provider.getAllAddresses(userId);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) {
+        return Consumer<AddressProvider>(
+          builder: (_, model, __) {
+            if (model.isLoading) {
+              return const SizedBox(
+                height: 200,
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Select delivery address",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  /// Add new address
+                  ListTile(
+                    leading: const Icon(Icons.add, color: Colors.blue),
+                    title: const Text("Add New Address"),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AddEditAddressPage(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  const Divider(),
+
+                  /// Saved addresses
+                  ...model.addressList.map(
+                    (address) => ListTile(
+                      leading: const Icon(Icons.location_on_outlined),
+                      title: Text(address.houseName),
+                      subtitle: Text(
+                        "${address.street}, ${address.cityname}, ${address.state}",
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (model.selectedAddress?.id == address.id)
+                            const Chip(label: Text("Selected")),
+                          IconButton(
+                            icon: const Icon(Icons.edit, size: 18),
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      AddEditAddressPage(address: address),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        model.selectAddress(address);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

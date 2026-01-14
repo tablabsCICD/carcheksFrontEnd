@@ -19,7 +19,7 @@ class ServiceHistoryScreen extends StatelessWidget {
               leading: const Icon(Icons.car_repair, color: Colors.green),
               title: Text("Service #${index + 1}"),
               subtitle: const Text("Completed successfully"),
-              trailing: const Text("₹ 1200"),
+              trailing: const Text("\$ 1200"),
             ),
           );
         },

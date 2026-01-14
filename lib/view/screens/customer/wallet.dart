@@ -19,8 +19,8 @@ import 'package:provider/provider.dart';
 
 class Wallet extends StatefulWidget {
   Garage? garage;
-  String? date,time,notes;
-  Wallet({this.garage,this.date,this.time,this.notes});
+  String? date, time, notes;
+  Wallet({this.garage, this.date, this.time, this.notes});
 
   @override
   _WalletState createState() => _WalletState();
@@ -33,7 +33,7 @@ class _WalletState extends State<Wallet> {
   @override
   void initState() {
     // TODO: implement initState
-     super.initState();
+    super.initState();
   }
 
   @override
@@ -41,15 +41,15 @@ class _WalletState extends State<Wallet> {
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBarWidget(context,_scaffoldKey,"Wallet"),
+      appBar: CustomAppBarWidget(context, _scaffoldKey, "Wallet"),
       body: Stack(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16,vertical: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-               /* Container(
+                /* Container(
                   padding: EdgeInsets.all(15),
                   height: 150,
                   decoration: BoxDecoration(
@@ -75,25 +75,37 @@ class _WalletState extends State<Wallet> {
                     ],
                   ),
                 ),*/
-                SizedBox(height: 15,),
-                Text("Payment Methods",style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),),
-                SizedBox(height: 15,),
+                SizedBox(height: 15),
+                Text(
+                  "Payment Methods",
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 15),
                 InkWell(
-                  onTap: (){
-
-                    Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context)=>PaypalServices()));
-
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => PaypalServices(),
+                      ),
+                    );
                   },
                   child: Row(
                     children: [
-                      Icon(Icons.add,size: 25,),
-                      SizedBox(width: 10,),
-                      Text("Make Payment Using Paypal",style: TextStyle(fontSize: 16,fontWeight: FontWeight.normal,),maxLines: 2,),
+                      Icon(Icons.add, size: 25),
+                      SizedBox(width: 10),
+                      Text(
+                        "Make Payment Using Paypal",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal,
+                        ),
+                        maxLines: 2,
+                      ),
                     ],
                   ),
                 ),
-                SizedBox(height: 15,),
-               /* Text("Vouchers",style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),),
+                SizedBox(height: 15),
+                /* Text("Vouchers",style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),),
                 SizedBox(height: 15,),
                 InkWell(
                   onTap: (){
@@ -107,7 +119,7 @@ class _WalletState extends State<Wallet> {
                     ],
                   ),
                 ),*/
-                SizedBox(height: 15,),
+                SizedBox(height: 15),
               ],
             ),
           ),
@@ -124,10 +136,7 @@ class _WalletState extends State<Wallet> {
                   ),
                 ],
               ),
-              child: Container(
-                color: ColorResources.PRIMARY_COLOR,
-                height: 80,
-              ),
+              child: Container(color: ColorResources.PRIMARY_COLOR, height: 80),
             ),
           ),
           Positioned(
@@ -136,14 +145,27 @@ class _WalletState extends State<Wallet> {
               width: MediaQuery.of(context).size.width,
               alignment: Alignment.center,
               child: Consumer<TransactionProvider>(
-
                 builder: (context, model, child) => CustomButton(
                   buttonText: "Continue",
+                  isEnable: true,
                   onTap: () {
-
-
-                    model.saveTransactions(created: "${widget.date}",createdBy: "User",active: true,updated: "${widget.date}" ,updatedBy:"User");
-                    Navigator.pushNamed(context, AppRoutes.estimate_details,arguments: {widget.garage,widget.date.toString(),widget.time,widget.notes});
+                    model.saveTransactions(
+                      created: "${widget.date}",
+                      createdBy: "User",
+                      active: true,
+                      updated: "${widget.date}",
+                      updatedBy: "User",
+                    );
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.estimate_details,
+                      arguments: {
+                        widget.garage,
+                        widget.date.toString(),
+                        widget.time,
+                        widget.notes,
+                      },
+                    );
                     /*Navigator.push(context,
                         MaterialPageRoute(builder: (builder) => EstimateDetails(garage: widget.garage,date: widget.date.toString(),time:widget.time,notes: widget.notes,)));*/
                   },
@@ -157,24 +179,25 @@ class _WalletState extends State<Wallet> {
   }
 }
 
-
 class PaypalHelper extends StatelessWidget {
   const PaypalHelper({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return UsePaypal(
-
-      clientId:AppConstants.payPal_ClientId,
+      clientId: AppConstants.payPal_ClientId,
       secretKey: AppConstants.PayPal_SecretKey,
       returnURL: '',
       cancelURL: "",
       onSuccess: (Map params) async {
         print("onSuccess: $params");
-      },onCancel: (params){print("onCancel: $params");}
-      , onError: (error) {
-      print("onError: $error");
-    },
+      },
+      onCancel: (params) {
+        print("onCancel: $params");
+      },
+      onError: (error) {
+        print("onError: $error");
+      },
       transactions: const [
         {
           "amount": {
@@ -183,14 +206,12 @@ class PaypalHelper extends StatelessWidget {
             "details": {
               "subtotal": '10.12',
               "shipping": '0',
-              "shipping_discount": 0
-            }
+              "shipping_discount": 0,
+            },
           },
-          "description":
-          "The payment transaction description.",
-        }
+          "description": "The payment transaction description.",
+        },
       ],
-
     );
   }
 }

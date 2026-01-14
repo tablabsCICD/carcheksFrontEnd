@@ -1,307 +1,162 @@
-
-import 'dart:async';
-
 import 'package:carcheks/locator.dart';
 import 'package:carcheks/model/vehicle_model.dart';
 import 'package:carcheks/provider/services_provider.dart';
-import 'package:carcheks/util/app_constants.dart';
-import 'package:carcheks/util/color-resource.dart';
 import 'package:carcheks/view/base_widgets/custom_appbar.dart';
-import 'package:carcheks/view/base_widgets/custom_button.dart';
-import 'package:carcheks/view/screens/customer/cart/my_cart.dart';
-import 'package:carcheks/view/screens/customer/notes.dart';
-import '../../../base_widgets/CustomAppBar-.dart';
-import 'service_card.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:carcheks/view/screens/customer/service/service_card.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
-
 class GetAllServices extends StatefulWidget {
+  final Vehicle? vehicle;
+  final String from;
 
-   Vehicle? vehicle;
-   String? from="Dashboard";
-   GetAllServices({this.vehicle,this.from}){}
-  // GetAllServices(this.vehicle,this.from){
-  //
-  // }
+  const GetAllServices({super.key, this.vehicle, this.from = "Dashboard"});
 
   @override
-  _GetAllServicesState createState() => _GetAllServicesState();
+  State<GetAllServices> createState() => _GetAllServicesState();
 }
 
 class _GetAllServicesState extends State<GetAllServices> {
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
-  Widget container = Container();
-  bool isMapSelected = false,isPopularSelected = false;
-  ServiceProvider serviceProvider = locator<ServiceProvider>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final ServiceProvider serviceProvider = locator<ServiceProvider>();
 
   @override
   void initState() {
-   // container = getAllData(serviceProvider);
-    if(widget.from==null){
+    super.initState();
+    _loadServices();
+  }
+
+  void _loadServices() {
+    /// Dashboard → all services
+    if (widget.from == "Dashboard") {
       serviceProvider.getAllServices();
       serviceProvider.getSelectedServiceCount();
-    }else{
-      AppConstants.vehicle= widget.vehicle!;
-      serviceProvider.getAllByid(widget.vehicle!.vehicletype!.id!);
-
+      return;
     }
 
+    /// Vehicle-based services
+    final vehicleTypeId = widget.vehicle?.vehicletype?.id;
+    if (vehicleTypeId != null) {
+      serviceProvider.getAllByid(vehicleTypeId);
+    }
+  }
 
+  Future<void> _onRefresh() async {
+    _loadServices();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBarWidget(context,_scaffoldKey,"Book Services"),
-      body:Consumer<ServiceProvider>(
-        /*builder: (context, model, child) => Container(
-          padding: EdgeInsets.all(10),
-          child: getAllData(model),
-         ),*/
-        builder: (context, model, child) =>
-        model.allServices.length==0 && model.isLoading==true?Center(
-          child: CircularProgressIndicator(),
-        ):
-        model.allServices.length==0 && model.isLoading==false?Center(child: Text("No data found "),):
-            Container(
-              padding: EdgeInsets.all(10),
-              child: getAllData(model),
-             ),
+      appBar: CustomAppBarWidget(context, _scaffoldKey, "Book Services"),
+      body: Consumer<ServiceProvider>(
+        builder: (context, model, _) {
+          /// Loader
+          if (model.isLoading) {
+            return const _LoaderView();
+          }
+
+          /// Empty state
+          if (model.allServices.isEmpty) {
+            return _EmptyView(onRetry: _onRefresh);
+          }
+
+          /// Content
+          return SafeArea(
+            child: RefreshIndicator(
+              onRefresh: _onRefresh,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "All Services",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: GridView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: model.allServices.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 200,
+                              childAspectRatio: 1,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                            ),
+                        itemBuilder: (_, index) {
+                          return ServiceCard(model.allServices[index]);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
+}
 
-  /*getAllData(ServiceProvider model){
-    return Expanded(
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: model.allServices.length,
-        itemBuilder: (context, index){
-          return GestureDetector(
-            onTap: (){
-              setState(() {
-                //model.setSelectedService(model.allServices[index]);
-              });
-            },
-            child: Stack(
-              children: [
-                Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                        color:  model.allServices[index].isServiceSelected == true
-                            ? Colors.green[50]
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          model.allServices[index].isServiceSelected == true
-                              ? const BoxShadow(
-                            offset: Offset(1, 1),
-                            blurRadius: 5,
-                            color: Colors.grey,
-                          )
-                              : const BoxShadow()
-                        ]),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Column(
-                              children: [
-                                Container(
-                                    width: 100,
-                                    height: 100,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                        border: Border.all(),
-                                        image: DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: AssetImage("assets/images/1.jpg")),
-                                        borderRadius:
-                                        BorderRadius.circular(5)),
-                                   // child: Icon(Icons.add)
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Container(
-                                    height: 25,
-                                    child: ElevatedButton(
-                                      onPressed: (){
-                                        setState(() {
-                                          model.allServices[index].isServiceSelected = !model.allServices[index].isServiceSelected;
-                                        });
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        primary: ColorResources.BUTTON_COLOR,
-                                        onPrimary: Colors.white,
-                                        elevation: 3,
-                                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                                      ),
-                                      child: Text(model.allServices[index].isServiceSelected == false
-                                          ?"Add To Cart":"Added",),
-                                    ))
-                              ],
-                            ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  model.allServices[index].name,
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(
-                                  height: 9,
-                                ),
-                                Text(
-                                  "* Every 5000 kms/3 Months",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black),
-                                ),
-                                SizedBox(
-                                  height: 7,
-                                ),
-                                Text(
-                                  "* Takes 4 hrs",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black),
-                                ),
-                                SizedBox(
-                                  height: 7,
-                                ),
-                                Text(
-                                  "* 1 Month Warrenty",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black),
-                                ),
-                                SizedBox(
-                                  height: 7,
-                                ),
-                                Text(
-                                  "* Include 9 services",
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black),
-                                ),
-                                SizedBox(
-                                  height: 9,
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      AppConstants.money + "3,399",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          decoration: TextDecoration
-                                              .lineThrough,
-                                          color: Colors.grey),
-                                    ),
-                                    SizedBox(
-                                      width: 7,
-                                    ),
-                                    Text(
-                                      AppConstants.money + "2,399",
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.black,
-                                          fontWeight:
-                                          FontWeight.bold),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                        Divider(
-                          color: Colors.black54,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.local_offer,
-                                size: 15,
-                                color: Colors.green,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                "Save \$100 compaired to other services",
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.normal),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                model.allServices[index].isServiceSelected == true
-                    ? const Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Icon(
-                      Icons.check_circle,
-                      color: Colors.greenAccent,
-                      size: 20,
-                    ),
-                  ),
-                )
-                    : const SizedBox.shrink()
-              ],
-            ),
-          );
-        }
+class _LoaderView extends StatelessWidget {
+  const _LoaderView();
 
-      ),
-    );
-  }*/
-
-  getAllData(ServiceProvider model){
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("All Services",style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold),),
-          SizedBox(height: 15,),
-          GridView.builder(
-            shrinkWrap: true,
-            itemCount: model.allServices.length,
-            itemBuilder: (context, index) => ServiceCard(model.allServices[index]),
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 200,
-              childAspectRatio: 2 / 2,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 20,
-            ),
-          )
+          CircularProgressIndicator(),
+          SizedBox(height: 12),
+          Text("Loading services...", style: TextStyle(color: Colors.grey)),
         ],
       ),
     );
   }
+}
 
+class _EmptyView extends StatelessWidget {
+  final VoidCallback onRetry;
+
+  const _EmptyView({required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.build_circle_outlined,
+              size: 64,
+              color: Colors.grey,
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              "No services available",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              "Please try again later",
+              style: TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(onPressed: onRetry, child: const Text("Retry")),
+          ],
+        ),
+      ),
+    );
+  }
 }

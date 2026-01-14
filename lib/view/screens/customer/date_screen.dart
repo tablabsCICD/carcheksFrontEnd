@@ -9,7 +9,6 @@ import 'package:carcheks/view/base_widgets/custom_button.dart';
 import 'package:carcheks/view/base_widgets/loader.dart';
 import 'package:carcheks/view/screens/customer/wallet.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /*import 'package:flutter_clean_calendar/clean_calendar_event.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';*/
@@ -66,7 +65,9 @@ class _ChooseDateState extends State<ChooseDate> {
     //getGarage();
     //getTimeSlots();
     timeSlots = generateTimeSlots(
-        widget.garage!.openingTime, widget.garage!.closingTime);
+      widget.garage!.openingTime,
+      widget.garage!.closingTime,
+    );
     //  timeSlots = generateTimeSlots("09:30", "05:00");
     super.initState();
   }
@@ -83,27 +84,30 @@ class _ChooseDateState extends State<ChooseDate> {
       height: 425,
       width: 317,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10), color: Colors.white),
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+      ),
       child: TableCalendar(
         headerVisible: true,
         daysOfWeekVisible: true,
         daysOfWeekHeight: 50,
         daysOfWeekStyle: DaysOfWeekStyle(
-            weekendStyle: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              fontFamily: GoogleFonts.poppins().fontFamily,
-            ),
-            weekdayStyle: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              fontFamily: GoogleFonts.poppins().fontFamily,
-            )),
+          weekendStyle: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            fontFamily: TextStyle().fontFamily,
+          ),
+          weekdayStyle: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            fontFamily: TextStyle().fontFamily,
+          ),
+        ),
         headerStyle: HeaderStyle(
           titleTextStyle: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
-            fontFamily: GoogleFonts.poppins().fontFamily,
+            fontFamily: TextStyle().fontFamily,
           ),
           formatButtonVisible: false,
         ),
@@ -111,48 +115,52 @@ class _ChooseDateState extends State<ChooseDate> {
           defaultTextStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            fontFamily: GoogleFonts.poppins().fontFamily,
+            fontFamily: TextStyle().fontFamily,
           ),
           weekendTextStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            fontFamily: GoogleFonts.poppins().fontFamily,
+            fontFamily: TextStyle().fontFamily,
           ),
           selectedTextStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            fontFamily: GoogleFonts.poppins().fontFamily,
+            fontFamily: TextStyle().fontFamily,
           ),
           rangeEndTextStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            fontFamily: GoogleFonts.poppins().fontFamily,
+            fontFamily: TextStyle().fontFamily,
           ),
           rangeStartTextStyle: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
-            fontFamily: GoogleFonts.poppins().fontFamily,
+            fontFamily: TextStyle().fontFamily,
           ),
           todayTextStyle: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              fontFamily: GoogleFonts.poppins().fontFamily,
-              color: Colors.white),
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            fontFamily: TextStyle().fontFamily,
+            color: Colors.white,
+          ),
           outsideTextStyle: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              fontFamily: GoogleFonts.poppins().fontFamily,
-              color: Color(0xFFBFBFBF)),
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            fontFamily: TextStyle().fontFamily,
+            color: Color(0xFFBFBFBF),
+          ),
           withinRangeTextStyle: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              fontFamily: GoogleFonts.poppins().fontFamily,
-              color: Color(0xFFBFBFBF)),
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            fontFamily: TextStyle().fontFamily,
+            color: Color(0xFFBFBFBF),
+          ),
           disabledTextStyle: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              fontFamily: GoogleFonts.poppins().fontFamily,
-              color: Color(0xFFBFBFBF)),
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            fontFamily: TextStyle().fontFamily,
+            color: Color(0xFFBFBFBF),
+          ),
         ),
         rowHeight: 50,
         firstDay: DateTime.utc(2010, 10, 20),
@@ -198,38 +206,38 @@ class _ChooseDateState extends State<ChooseDate> {
     //print("againgprinttimes${times[5]}");
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: ColorResources.PRIMARY_COLOR,
+        title: Text(
+          'Choose Date And Time',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       body: Stack(
         children: [
           Opacity(
-            opacity: 0.5,
+            opacity: 0.9,
             child: Container(
               color: ColorResources.PRIMARY_COLOR,
               child: Column(
                 children: [
-                  SizedBox(
-                    height: 50,
-                  ),
-                  Text(
-                    'Choose Date And Time',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold),
-                  ),
+                  SizedBox(height: 50),
+
                   getCalender(),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   Text(
                     "Garrage Timing Slots",
                     style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  )
+                  SizedBox(height: 20),
                   /*Container(
                     height: 355,
                     child: Padding(
@@ -238,8 +246,10 @@ class _ChooseDateState extends State<ChooseDate> {
                         startOnMonday: true,
                         selectedColor: Colors.blue,
                         todayColor: Colors.red,
-                        */ /* eventColor: Colors.green,
-                          eventDoneColor: Colors.amber,*/ /*
+                        */
+                  /* eventColor: Colors.green,
+                          eventDoneColor: Colors.amber,*/
+                  /*
                         bottomBarColor: Colors.deepOrange,
                         //initialDate: DateTime.now(),
                         initialDate: DateTime.now(),
@@ -271,7 +281,6 @@ class _ChooseDateState extends State<ChooseDate> {
                       ),
                     ),
                   ),*/
-                  ,
                   Container(
                     height: 50,
                     width: MediaQuery.of(context).size.width,
@@ -282,25 +291,29 @@ class _ChooseDateState extends State<ChooseDate> {
                       itemCount: timeSlots.length,
                       itemBuilder: (context, index) {
                         return InkWell(
-                            onTap: () {
-                              selectedIndex = index;
-                              time = timeSlots[index].toString();
-                              setState(() {});
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(10),
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: selectedIndex == index
-                                      ? Colors.green[300]
-                                      : Colors.white24),
-                              child: Text(
-                                timeSlots[index],
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
+                          onTap: () {
+                            selectedIndex = index;
+                            time = timeSlots[index].toString();
+                            setState(() {});
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            margin: EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: selectedIndex == index
+                                  ? Colors.green[300]
+                                  : Colors.white24,
+                            ),
+                            child: Text(
+                              timeSlots[index],
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
                               ),
-                            ));
+                            ),
+                          ),
+                        );
                       },
                     ),
                   ),
@@ -321,10 +334,7 @@ class _ChooseDateState extends State<ChooseDate> {
                   ),
                 ],
               ),
-              child: Container(
-                color: Colors.white,
-                height: 100,
-              ),
+              child: Container(color: Colors.white, height: 100),
             ),
           ),
           Positioned(
@@ -334,6 +344,7 @@ class _ChooseDateState extends State<ChooseDate> {
               alignment: Alignment.center,
               child: CustomButton(
                 buttonText: "Continue",
+                isEnable: true,
                 onTap: () {
                   getLoader(context, isloading);
                   DateTime _currentDate = DateTime.now();
@@ -344,48 +355,59 @@ class _ChooseDateState extends State<ChooseDate> {
                     DateTime? date;
                     if (_selectedDay!.isBefore(DateTime.now())) {
                       date = _selectedDay;
-                      formattedDate = DateFormat("yyyy-MM-dd").format(DateTime.now());
+                      formattedDate = DateFormat(
+                        "yyyy-MM-dd",
+                      ).format(DateTime.now());
                       dismissLoader(context);
                       SnackBar snackBar = SnackBar(
                         content: Text(
-                            "Please Select todays date or a upcoming date"),
+                          "Please Select todays date or a upcoming date",
+                        ),
                         duration: Duration(seconds: 3),
                       );
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     } else {
                       date = _selectedDay;
-                      formattedDate = DateFormat("yyyy-MM-dd").format(_selectedDay!);
-                      if(time==null || time==""){
+                      formattedDate = DateFormat(
+                        "yyyy-MM-dd",
+                      ).format(_selectedDay!);
+                      if (time == null || time == "") {
                         dismissLoader(context);
                         SnackBar snackBar = SnackBar(
                           content: Text(
-                              "Please Select Upcoming time for appointment!"),
+                            "Please Select Upcoming time for appointment!",
+                          ),
                           duration: Duration(seconds: 3),
                         );
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      }else{
+                      } else {
                         dismissLoader(context);
-                      //  model.saveTransactions(created: "$date}",createdBy: "User",active: true,updated: "${date}" ,updatedBy:"User");
-                        Navigator.pushNamed(context, AppRoutes.estimate_details,arguments: {widget.garage,formattedDate.toString(),time,widget.notes});
-                       // Navigator.pushNamed(context,AppRoutes.payment,arguments: {widget.garage,formattedDate.toString(),time,widget.notes});
+                        //  model.saveTransactions(created: "$date}",createdBy: "User",active: true,updated: "${date}" ,updatedBy:"User");
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.estimate_details,
+                          arguments: {
+                            widget.garage,
+                            formattedDate.toString(),
+                            time,
+                            widget.notes,
+                          },
+                        );
+                        // Navigator.pushNamed(context,AppRoutes.payment,arguments: {widget.garage,formattedDate.toString(),time,widget.notes});
                       }
                     }
-                  }else {
+                  } else {
                     dismissLoader(context);
                     SnackBar snackBar = SnackBar(
                       content: Text(
-                          "Please Select todays date or a upcoming date"),
+                        "Please Select todays date or a upcoming date",
+                      ),
                       duration: Duration(seconds: 3),
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
 
-
-
-
-
-
-                 /* if (_selectedDay == null || _selectedDay == "") {
+                  /* if (_selectedDay == null || _selectedDay == "") {
                     dismissLoader(context);
                     SnackBar snackBar = SnackBar(
                       content:
@@ -419,7 +441,7 @@ class _ChooseDateState extends State<ChooseDate> {
                             ampm > currenthour) {
                           dismissLoader(context);
                           Navigator.pushNamed(context,AppRoutes.payment,arguments: {widget.garage,formattedDate.toString(),time,widget.notes});
-                          *//*Navigator.push(
+                          */ /*Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (builder) => Wallet(
@@ -427,14 +449,14 @@ class _ChooseDateState extends State<ChooseDate> {
                                         date: formattedDate.toString(),
                                         time: time,
                                         notes: widget.notes,
-                                      )));*//*
+                                      )));*/ /*
                         } else if (date.year == DateTime.now().year &&
                             date.month >= DateTime.now().month &&
                             date.day > DateTime.now().day) {
                           dismissLoader(context);
                           Navigator.pushNamed(context,AppRoutes.payment,arguments: {widget.garage,formattedDate.toString(),time,widget.notes});
 
-                         *//* Navigator.push(
+                         */ /* Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (builder) => Wallet(
@@ -442,7 +464,7 @@ class _ChooseDateState extends State<ChooseDate> {
                                         date: formattedDate.toString(),
                                         time: time,
                                         notes: widget.notes,
-                                      )));*//*
+                                      )));*/ /*
                         } else {
                           dismissLoader(context);
                           SnackBar snackBar = SnackBar(
@@ -462,7 +484,6 @@ class _ChooseDateState extends State<ChooseDate> {
                       );
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     }*/
-
                 },
               ),
             ),
@@ -474,7 +495,10 @@ class _ChooseDateState extends State<ChooseDate> {
 
   getTimeSlots() {
     Iterable<TimeOfDay> getTimes(
-        TimeOfDay startTime, TimeOfDay endTime, Duration step) sync* {
+      TimeOfDay startTime,
+      TimeOfDay endTime,
+      Duration step,
+    ) sync* {
       var hour = startTime.hour;
       var minute = startTime.minute;
 
@@ -491,7 +515,8 @@ class _ChooseDateState extends State<ChooseDate> {
 
     final garageid = widget.garage!.id;
     print(
-        "garageTimes:, ${widget.garage!.openingTime}, ${widget.garage!.closingTime}");
+      "garageTimes:, ${widget.garage!.openingTime}, ${widget.garage!.closingTime}",
+    );
 
     var garageCtime = widget.garage!.closingTime.split(':');
     var garageOtime = widget.garage!.openingTime.split(':');
@@ -508,20 +533,22 @@ class _ChooseDateState extends State<ChooseDate> {
     }
 
     final startTime = TimeOfDay(
-        hour: opehrs,
-        minute:
-            int.parse(garageOtime![1].replaceAll(new RegExp(r'[^0-9]'), '')));
+      hour: opehrs,
+      minute: int.parse(garageOtime![1].replaceAll(new RegExp(r'[^0-9]'), '')),
+    );
     final endTime = TimeOfDay(
-        hour: clohrs,
-        minute:
-            int.parse(garageCtime![1].replaceAll(new RegExp(r'[^0-9]'), '')));
+      hour: clohrs,
+      minute: int.parse(garageCtime![1].replaceAll(new RegExp(r'[^0-9]'), '')),
+    );
     final step = Duration(minutes: 60);
-    times = getTimes(startTime, endTime, step)
-        .map((tod) => tod.format(context))
-        .toList();
+    times = getTimes(
+      startTime,
+      endTime,
+      step,
+    ).map((tod) => tod.format(context)).toList();
   }
 
-/*void getGarage() async{
+  /*void getGarage() async{
       garage = await garageProvider.getGarageByGarageId(widget.garage!);
 
   }*/

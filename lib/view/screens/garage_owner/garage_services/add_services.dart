@@ -69,22 +69,27 @@ class _AddServicesState extends State<AddServices> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          elevation: 0,
-          backgroundColor: ColorResources.PRIMARY_COLOR,
-          leading: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: const Icon(
-                Icons.arrow_back_ios_rounded,
-                color: Colors.white,
-                size: 30,
-              )),
-          title: Text(
-            widget.mainService.name.toString().toUpperCase(),
-            style: const TextStyle(
-                fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-          )),
+        elevation: 0,
+        backgroundColor: ColorResources.PRIMARY_COLOR,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: const Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.white,
+            size: 30,
+          ),
+        ),
+        title: Text(
+          widget.mainService.name.toString().toUpperCase(),
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
       body: Form(
         key: formKey,
         child: Container(
@@ -100,99 +105,99 @@ class _AddServicesState extends State<AddServices> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Align(alignment: Alignment.center, child: Text(widget.mainService.name.toString(), style: TextStyle( fontSize: 22,fontWeight: FontWeight.bold,color: Colors.black))),
-                      const SizedBox(
-                        height: 15,
-                      ),
+                      const SizedBox(height: 15),
                       const Text("Select SubServices Type"),
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      const SizedBox(height: 5),
 
                       Consumer<ServiceProvider>(
                         builder: (context, model, child) => Container(
-                            child: FormBuilderDropdown(
-                                name: "",
-                                //allowClear: false,
-                                isDense: false,
-                                validator: Validators.required(
-                                    'This field is required'),
-                                decoration: InputDecoration.collapsed(
-                                  hintText: '',
-                                  filled: true,
-                                  border: OutlineInputBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(5.0),
-                                      borderSide: BorderSide.none),
-                                ),
-                                disabledHint: Container(
-                                  // height: 60,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0, vertical: 15),
-                                  child: const Text(
-                                    "Select Service",
-                                  ),
-                                ),
-                                /*validator: FormBuilderValidators.compose(
+                          child: FormBuilderDropdown(
+                            name: "",
+                            //allowClear: false,
+                            isDense: false,
+                            validator: Validators.required(
+                              'This field is required',
+                            ),
+                            decoration: InputDecoration.collapsed(
+                              hintText: '',
+                              filled: true,
+                              border: OutlineInputBorder(
+                                borderRadius: new BorderRadius.circular(5.0),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            disabledHint: Container(
+                              // height: 60,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10.0,
+                                vertical: 15,
+                              ),
+                              child: const Text("Select Service"),
+                            ),
+                            /*validator: FormBuilderValidators.compose(
                                     [FormBuilderValidators.required(context)]),*/
-                                items: model.subServicesNameList
-                                    .map((value) => DropdownMenuItem(
-                                          value: value,
-                                          child: Container(
-                                            // height: 60,
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 10.0, vertical: 15),
-                                            child: Text(
-                                              '$value',
-                                              // style: Style.dropdownValue,
-                                            ),
-                                          ),
-                                        ))
-                                    .toList(),
-                                onChanged: (String? value) {
-                                  selectedSubServicesController.text = value!;
-                                  subService = model.getSelectedGarageServiceId(
-                                      selectedSubServicesController.text);
-                                })),
+                            items: model.subServicesNameList
+                                .map(
+                                  (value) => DropdownMenuItem(
+                                    value: value,
+                                    child: Container(
+                                      // height: 60,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10.0,
+                                        vertical: 15,
+                                      ),
+                                      child: Text(
+                                        '$value',
+                                        // style: Style.dropdownValue,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (String? value) {
+                              selectedSubServicesController.text = value!;
+                              subService = model.getSelectedGarageServiceId(
+                                selectedSubServicesController.text,
+                              );
+                            },
+                          ),
+                        ),
                       ),
 
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       const Text("Add Image"),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       Consumer<ImgProvider>(
                         builder: (context, model, child) => Container(
                           height: 100,
                           padding: const EdgeInsets.only(bottom: 16.0),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: NetworkImage(img == null
-                                      ? ''
-                                      : model.uploadedImage.toString())),
-                              border: Border.all()),
-                          child: GestureDetector(
-                              onTap: () {
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(
                                 img == null
-                                    ? pickProfilePic(model)
-                                    : img = null;
-                              },
-                              child: Icon(
-                                  img == null ? Icons.add : Icons.delete,
-                                  size: 30)),
+                                    ? ''
+                                    : model.uploadedImage.toString(),
+                              ),
+                            ),
+                            border: Border.all(),
+                          ),
+                          child: GestureDetector(
+                            onTap: () {
+                              img == null ? pickProfilePic(model) : img = null;
+                            },
+                            child: Icon(
+                              img == null ? Icons.add : Icons.delete,
+                              size: 30,
+                            ),
+                          ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       const Text("Add Description"),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       Container(
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: TextField(
@@ -205,29 +210,27 @@ class _AddServicesState extends State<AddServices> {
                         ),
                       ),
                       const Text("Price"),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
                       Container(
                         //width: 100,
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: TextFormField(
                           maxLines: 1,
                           keyboardType: TextInputType.number,
-                          validator:
-                              Validators.required('This field is required'),
+                          validator: Validators.required(
+                            'This field is required',
+                          ),
                           controller: priceController,
                           decoration: const InputDecoration(
                             hintText: "\$",
                             border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.grey)),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
                           ),
                         ),
                       ),
                       const Text("Select Vehicle Type"),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                      const SizedBox(height: 10),
 
                       Consumer<VehicleProvider>(
                         builder: (context, model, child) => CustomDropdownList(
@@ -237,9 +240,10 @@ class _AddServicesState extends State<AddServices> {
                           onChange: (String value) {
                             setState(() {
                               selectedVehicleType = value;
-                              vehicleType =
-                                  vehicleProvider.getSelectedVehicleTypeId(
-                                      selectedVehicleType);
+                              vehicleType = vehicleProvider
+                                  .getSelectedVehicleTypeId(
+                                    selectedVehicleType,
+                                  );
                             });
                           },
                         ),
@@ -283,58 +287,56 @@ class _AddServicesState extends State<AddServices> {
                   onTap: () {
                     if (formKey.currentState!.validate()) {
                       showDialog(
-                          context: context,
-                          builder: (_) => CupertinoAlertDialog(
-                                title: const Text(
-                                  'Are you sure want to add service?',
-                                  // style: Style.heading,
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: Text("Yes", style: Style.okButton),
-                                    onPressed: () async {
-                                      var result = await model.addGarageService(
-                                        active: true,
-                                        created: formatter,
-                                        created_by:
-                                            authProvider.user!.firstName,
-                                        cost: priceController.text,
-                                        image_url: img,
-                                        description: addinfoController.text,
-                                        short_desc: addinfoController.text,
-                                        subServiceId: [subService!.id],
-                                        serviceId: widget.mainService.id,
-                                        userId: authProvider.user!.id,
-                                        garageId:
-                                            garageProvider.ownGarageList[0].id,
-                                        vehicletype: vehicleType,
-                                        addressId: garageProvider
-                                            .ownGarageList[0].addressId,
-                                        updated: formatter,
-                                        updated_by:
-                                            authProvider.user!.firstName,
-                                      );
-                                      if (result['data'] == null) {
-                                        showSnackBar(
-                                            context, result['message']);
-                                        Navigator.of(context).pop();
-                                      } else {
-                                        showSnackBar(context,
-                                            "service added successfully");
-                                        Navigator.of(context).pop();
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                  ),
-                                  TextButton(
-                                    child:
-                                        Text("No", style: Style.cancelButton),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              ));
+                        context: context,
+                        builder: (_) => CupertinoAlertDialog(
+                          title: const Text(
+                            'Are you sure want to add service?',
+                            // style: Style.heading,
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text("Yes", style: Style.okButton),
+                              onPressed: () async {
+                                var result = await model.addGarageService(
+                                  active: true,
+                                  created: formatter,
+                                  created_by: authProvider.user!.firstName,
+                                  cost: priceController.text,
+                                  image_url: img,
+                                  description: addinfoController.text,
+                                  short_desc: addinfoController.text,
+                                  subServiceId: [subService!.id],
+                                  serviceId: widget.mainService.id,
+                                  userId: authProvider.user!.id,
+                                  garageId: garageProvider.ownGarageList[0].id,
+                                  vehicletype: vehicleType,
+                                  addressId:
+                                      garageProvider.ownGarageList[0].addressId,
+                                  updated: formatter,
+                                  updated_by: authProvider.user!.firstName,
+                                );
+                                if (result['data'] == null) {
+                                  showSnackBar(context, result['message']);
+                                  Navigator.of(context).pop();
+                                } else {
+                                  showSnackBar(
+                                    context,
+                                    "service added successfully",
+                                  );
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                            ),
+                            TextButton(
+                              child: Text("No", style: Style.cancelButton),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        ),
+                      );
                     }
                   },
                 ),
@@ -363,8 +365,11 @@ class _AddServicesState extends State<AddServices> {
         print(fileName);
         model.setImage(fileName ?? "");
         img = '';
-        img = await model.uploadImage("0",
-            imageBytes: imageBytes, objectFile: objFile);
+        img = await model.uploadImage(
+          "0",
+          imageBytes: imageBytes,
+          objectFile: objFile,
+        );
         debugPrint("service img::" + img!);
       } catch (ex) {
         throw Exception("Exception Occurred ${ex.toString()}");

@@ -47,7 +47,7 @@ class VehicleProvider extends ChangeNotifier {
       vehicleList.clear();
     }
     String myUrl = ApiConstants.ALL_VEHICLE;
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
     if (req.statusCode == 200) {
@@ -70,9 +70,9 @@ class VehicleProvider extends ChangeNotifier {
       vehicleTypeList.clear();
     }
     String myUrl = ApiConstants.allVehicleType;
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
-    log(req.body);
+    //log(req.body);
     isLoading = false;
     if (req.statusCode == 200) {
       var response = json.decode(req.body);
@@ -83,9 +83,10 @@ class VehicleProvider extends ChangeNotifier {
       vehicleTypeList.forEach((element) {
         vehicleTypeNameList.add(element.name!);
       });
-      log(vehicleTypeNameList.length.toString() +
-          'vehical type name list length');
-      log(vehicleTypeList.length.toString() + 'vehical type list length');
+      // log(
+      //   vehicleTypeNameList.length.toString() + 'vehical type name list length',
+      // );
+      // log(vehicleTypeList.length.toString() + 'vehical type list length');
       notifyListeners();
     }
   }
@@ -98,7 +99,7 @@ class VehicleProvider extends ChangeNotifier {
     }
     String myUrl = ApiConstants.allVehicleManufacturer;
 
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
     if (req.statusCode == 200) {
@@ -121,9 +122,9 @@ class VehicleProvider extends ChangeNotifier {
       vehicleListByUserId.clear();
     }
     String myUrl = ApiConstants.getVehiclesByUserId(id);
-    log(myUrl);
+    //log(myUrl);
     var req = await http.get(Uri.parse(myUrl));
-    log('Vehical response ======= ${req.body}');
+    //log('Vehical response ======= ${req.body}');
     isLoading = false;
     if (req.statusCode == 200) {
       var response = json.decode(req.body);
@@ -208,24 +209,25 @@ class VehicleProvider extends ChangeNotifier {
     return vehicleManufacturer;
   }
 
-  Future<Vehicle?> addVehicle(
-      {bool? active,
-      String? created,
-      String? created_by,
-      String? last_servecing_date,
-      String? name,
-      String? vehicle_model,
-      String? year,
-      String? image_url,
-      String? regNumber,
-      int? userId,
-      Vehicletype? vehicleType,
-      VehicleManufacturer? vehicleManufacturer,
-      String? updated,
-      String? updated_by,
-      String? avgRun,
-      String? kiloMeterRun,
-      String? no_Of_servecing}) async {
+  Future<Vehicle?> addVehicle({
+    bool? active,
+    String? created,
+    String? created_by,
+    String? last_servecing_date,
+    String? name,
+    String? vehicle_model,
+    String? year,
+    String? image_url,
+    String? regNumber,
+    int? userId,
+    Vehicletype? vehicleType,
+    VehicleManufacturer? vehicleManufacturer,
+    String? updated,
+    String? updated_by,
+    String? avgRun,
+    String? kiloMeterRun,
+    String? no_Of_servecing,
+  }) async {
     isLoading = true;
     String myUrl = ApiConstants.ADD_VEHICLE;
     Uri uri = Uri.parse(myUrl);
@@ -244,15 +246,18 @@ class VehicleProvider extends ChangeNotifier {
       "vehicleManufacturerId": vehicleManufacturer!.id,
       "vehicle_model": vehicle_model,
       "vehicletypeId": vehicleType!.id,
-      "year_of_manufacturing": year
+      "year_of_manufacturing": year,
     };
     var body = json.encode(data);
-    log(data.toString());
-    var createResponse = await http.post(uri,
-        headers: {"Content-Type": "application/json"}, body: body);
-    log("${createResponse.statusCode}" +
-        " --- " +
-        createResponse.body.toString());
+    //log(data.toString());
+    var createResponse = await http.post(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+    //log("${createResponse.statusCode}" +
+    //   " --- " +
+    //   createResponse.body.toString());
     if (createResponse.statusCode == 200) {
       var response = await json.decode(createResponse.body);
       var list = AddVehicleResponse.fromJson(response);
@@ -266,28 +271,29 @@ class VehicleProvider extends ChangeNotifier {
     }
   }
 
-  updateVehicle(
-      {bool? active,
-      String? created,
-      String? created_by,
-      String? last_servecing_date,
-      String? name,
-      String? vehicle_model,
-      String? year,
-      String? image_url,
-      String? regNumber,
-      int? userId,
-      int? vehicleId,
-      FuelType? fuelType,
-      Vehicletype? vehicleType,
-      VehicleManufacturer? vehicleManufacturer,
-      String? updated,
-      String? updated_by,
-      String? avgRun,
-      String? kiloMeterRun,
-      String? no_Of_servecing}) async {
+  updateVehicle({
+    bool? active,
+    String? created,
+    String? created_by,
+    String? last_servecing_date,
+    String? name,
+    String? vehicle_model,
+    String? year,
+    String? image_url,
+    String? regNumber,
+    int? userId,
+    int? vehicleId,
+    FuelType? fuelType,
+    Vehicletype? vehicleType,
+    VehicleManufacturer? vehicleManufacturer,
+    String? updated,
+    String? updated_by,
+    String? avgRun,
+    String? kiloMeterRun,
+    String? no_Of_servecing,
+  }) async {
     String myUrl = ApiConstants.updateVehicle;
-    log(myUrl);
+    //log(myUrl);
     Uri uri = Uri.parse(myUrl);
     Map<String, dynamic> data = {
       "id": vehicleId,
@@ -299,7 +305,7 @@ class VehicleProvider extends ChangeNotifier {
         "created": "string",
         "createdBy": "string",
         "id": 1,
-        "name": "string"
+        "name": "string",
       },
       "lastServiceDate": last_servecing_date,
       "name": name,
@@ -315,7 +321,7 @@ class VehicleProvider extends ChangeNotifier {
         "id": vehicleManufacturer!.id,
         "name": "string",
         "updated": "string",
-        "updatedBy": "string"
+        "updatedBy": "string",
       },
       "vehicle_model": vehicle_model,
       "vehicletype": {
@@ -323,18 +329,21 @@ class VehicleProvider extends ChangeNotifier {
         "created": "string",
         "createdBy": "string",
         "id": vehicleType!.id,
-        "name": "string"
+        "name": "string",
       },
-      "year_of_manufacturing": year
+      "year_of_manufacturing": year,
     };
     var body = json.encode(data);
-    log(data.toString());
-    var createResponse = await http.put(uri,
-        headers: {"Content-Type": "application/json"}, body: body);
-    log("${createResponse.statusCode}" +
-        " --- " +
-        createResponse.body.toString());
-    log(createResponse.body);
+    //log(data.toString());
+    var createResponse = await http.put(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+    //log(
+    //  "${createResponse.statusCode}" + " --- " + createResponse.body.toString(),
+    //);
+    //log(createResponse.body);
     var response = await json.decode(createResponse.body);
     var res = AddVehicleResponse.fromJson(response);
     vehicleObj = res.data;
@@ -342,26 +351,27 @@ class VehicleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  addUserVehicle(
-      {bool? active,
-      String? created,
-      String? created_by,
-      String? last_servecing_date,
-      String? name,
-      String? vehicle_model,
-      String? year,
-      String? image_url,
-      String? regNumber,
-      int? userId,
-      FuelType? fuelType,
-      Vehicletype? vehicleType,
-      VehicleManufacturer? vehicleManufacturer,
-      String? updated,
-      String? updated_by,
-      String? avgRun,
-      String? kiloMeterRun,
-      String? no_Of_servecing,
-      Vehicle? vehicle}) async {
+  addUserVehicle({
+    bool? active,
+    String? created,
+    String? created_by,
+    String? last_servecing_date,
+    String? name,
+    String? vehicle_model,
+    String? year,
+    String? image_url,
+    String? regNumber,
+    int? userId,
+    FuelType? fuelType,
+    Vehicletype? vehicleType,
+    VehicleManufacturer? vehicleManufacturer,
+    String? updated,
+    String? updated_by,
+    String? avgRun,
+    String? kiloMeterRun,
+    String? no_Of_servecing,
+    Vehicle? vehicle,
+  }) async {
     String myUrl = ApiConstants.ADD_VEHICLE;
     Uri uri = Uri.parse(myUrl);
     Map<String, dynamic> data = {
@@ -373,7 +383,7 @@ class VehicleProvider extends ChangeNotifier {
         "created": "string",
         "createdBy": "string",
         "id": fuelType!.id,
-        "name": "string"
+        "name": "string",
       },
       "lastServiceDate": last_servecing_date,
       "name": name,
@@ -389,7 +399,7 @@ class VehicleProvider extends ChangeNotifier {
         "id": vehicleManufacturer!.id,
         "name": "string",
         "updated": "string",
-        "updatedBy": "string"
+        "updatedBy": "string",
       },
       "vehicle_model": vehicle_model,
       "vehicletype": {
@@ -397,17 +407,20 @@ class VehicleProvider extends ChangeNotifier {
         "created": "string",
         "createdBy": "string",
         "id": vehicleType!.id,
-        "name": "string"
+        "name": "string",
       },
-      "year_of_manufacturing": year
+      "year_of_manufacturing": year,
     };
     var body = json.encode(data);
-    log(data.toString());
-    var createResponse = await http.post(uri,
-        headers: {"Content-Type": "application/json"}, body: body);
-    log("${createResponse.statusCode}" +
-        " --- " +
-        createResponse.body.toString());
+    //log(data.toString());
+    var createResponse = await http.post(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+    // log(
+    //   "${createResponse.statusCode}" + " --- " + createResponse.body.toString(),
+    // );
     var response = await json.decode(createResponse.body);
     var list = UserVehicleModel.fromJson(response);
     userVehicleList = list.data;
@@ -415,16 +428,37 @@ class VehicleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  deleteVehicle(i, index) async {
-    String myUrl =ApiConstants.deleteVehicle(i);
-       ;
-    //log("DELETED VEHICLE");
-    var req = await http.delete(Uri.parse(myUrl));
-    var deleteResponse = json.decode(req.body);
-    vehicleListByUserId.removeAt(index);
-    vehicleListNew.removeAt(index);
+  Future<bool> deleteVehicle(String vehicleId, int index) async {
+    try {
+      final url = ApiConstants.deleteVehicle(vehicleId);
+      //log("DELETE VEHICLE URL => $url");
 
-    notifyListeners();
+      final response = await http.delete(Uri.parse(url));
+
+      //log("DELETE RESPONSE => ${response.body}");
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // Optional: check backend success flag
+        if (data['status'] == true || data['success'] == true) {
+          vehicleListByUserId.removeAt(index);
+          vehicleListNew.removeAt(index);
+          notifyListeners();
+          return true;
+        } else {
+          //log("Delete failed from API");
+          return false;
+        }
+      } else {
+        //log("Delete failed with status ${response.statusCode}");
+        return false;
+      }
+    } catch (e, s) {
+      // log("DELETE VEHICLE ERROR => $e");
+      // log("STACKTRACE => $s");
+      return false;
+    }
   }
 
   void callApi() async {

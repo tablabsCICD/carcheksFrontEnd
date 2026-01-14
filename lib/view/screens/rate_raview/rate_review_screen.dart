@@ -39,10 +39,7 @@ void showRateUsSheet(BuildContext context) {
                 /// TITLE
                 const Text(
                   "Rate CarCheks",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 10),
@@ -99,18 +96,21 @@ void showRateUsSheet(BuildContext context) {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {
-                      const url = AppConstants.playStoreUrl;
+                      const url = AppConstants.appStoreUrl;
 
                       final uri = Uri.parse(url);
-                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      await launchUrl(
+                        uri,
+                        mode: LaunchMode.externalApplication,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorResources.PRIMARY_COLOR,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                     child: const Text(
-                      "Rate on Play Store",
-                      style: TextStyle(fontSize: 16,color: Colors.white),
+                      "Rate on App Store",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ),

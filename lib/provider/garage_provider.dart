@@ -27,7 +27,6 @@ import '../model/services_garage.dart';
 import '../model/viewServicesGarageModel.dart';
 import '../util/api_constants.dart';
 
-
 class GarageProvider extends ChangeNotifier {
   List<Garage> allGarageList = [];
   List<Garage> dashboardGarageList = [];
@@ -47,12 +46,10 @@ class GarageProvider extends ChangeNotifier {
   bool isLoading = false;
   AuthProvider authProvider = locator<AuthProvider>();
 
-
   getAllGarage({int currentPage = 0}) async {
     isLoading = true;
     notifyListeners();
-    String myUrl =
-        ApiConstants.BASE_URL + "/api/garrage/getAll";
+    String myUrl = ApiConstants.BASE_URL + "/api/garrage/getAll";
     print(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
@@ -66,8 +63,7 @@ class GarageProvider extends ChangeNotifier {
       allGarageList.forEach((element) {
         if (element.populer == true) {
           isPopularGarageList.add(element);
-        }
-        else {
+        } else {
           isNotPopularGarageList.add(element);
         }
       });
@@ -75,38 +71,102 @@ class GarageProvider extends ChangeNotifier {
     }
   }
 
-  getAllFilter(int vehicleId, List<int> selctedSubServices) async {
-    isLoading = true;
-    RequestGetGarage getGarage = RequestGetGarage(
-        vehicleTypeId: vehicleId, subserviceId: selctedSubServices);
-    notifyListeners();
-    String myUrl =
-        ApiConstants.BASE_URL +
-            "/garrage_services/getAllGarrages/byVehicleTypeAndSubServices";
-    print(myUrl);
+  // getAllFilter(int vehicleId, List<int> selctedSubServices) async {
+  //   isLoading = true;
+  //   RequestGetGarage getGarage = RequestGetGarage(
+  //     vehicleTypeId: vehicleId,
+  //     subserviceId: selctedSubServices,
+  //   );
+  //   notifyListeners();
+  //   String myUrl =
+  //       ApiConstants.BASE_URL +
+  //       "/garrage_services/getAllGarrages/byVehicleTypeAndSubServices";
+  //   print(myUrl);
 
-    var bodys = jsonEncode(getGarage.toJson());
-    print(bodys);
-    var req = await http.post(Uri.parse(myUrl), body: bodys, headers: {
-      'Content-Type': 'Application/json'
-    });
-    isLoading = false;
-    print('the status code ${req.statusCode}');
-    if (req.statusCode == 200) {
-      var response = json.decode(req.body);
-      var type = GarageModel.fromJson(response);
+  //   var bodys = jsonEncode(getGarage.toJson());
+  //   print(bodys);
+  //   var req = await http.post(
+  //     Uri.parse(myUrl),
+  //     body: bodys,
+  //     headers: {'Content-Type': 'Application/json'},
+  //   );
+  //   isLoading = false;
+  //   print('the status code ${req.statusCode}');
+  //   if (req.statusCode == 200) {
+  //     var response = json.decode(req.body);
+  //     var type = GarageModel.fromJson(response);
+  //     allGarageList.clear();
+  //     isPopularGarageList.clear();
+  //     isNotPopularGarageList.clear();
+  //     allGarageList.addAll(type.data as Iterable<Garage>);
+  //     allGarageList.forEach((element) {
+  //       if (element.populer == true) {
+  //         isPopularGarageList.add(element);
+  //       } else {
+  //         isNotPopularGarageList.add(element);
+  //       }
+  //     });
+  //     notifyListeners();
+  //   }
+  //}
+
+  Future<void> nearbyGarageByService(
+    int vehicleId,
+    List<int> selectedSubServices,
+  ) async {
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      final request = RequestGetGarageLatLong(
+        vehicleTypeId: vehicleId,
+        subserviceId: selectedSubServices,
+        userLat: AppConstants.CurrentLatitude,
+        userLng: AppConstants.CurrentLongtitude,
+      );
+
+      final url = Uri.parse(
+        "${ApiConstants.BASE_URL}/garrage_services/getAllGarrages/byVehicleTypeSubServicesAndLocation",
+      );
+
+      final response = await http.post(
+        url,
+        headers: const {'Content-Type': 'application/json'},
+        body: jsonEncode(request.toJson()),
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+
+        allGarageList.clear();
+        isPopularGarageList.clear();
+        isNotPopularGarageList.clear();
+
+        if (decoded['data'] != null && decoded['data'] is List) {
+          final model = GarageModel.fromJson(decoded);
+
+          allGarageList.addAll(model.data as List<Garage>);
+
+          for (final garage in allGarageList) {
+            garage.populer == true
+                ? isPopularGarageList.add(garage)
+                : isNotPopularGarageList.add(garage);
+          }
+        }
+      } else {
+        /// API failed – reset lists
+        allGarageList.clear();
+        isPopularGarageList.clear();
+        isNotPopularGarageList.clear();
+      }
+    } catch (e) {
+      debugPrint("nearbyGarageByService error: $e");
+
       allGarageList.clear();
       isPopularGarageList.clear();
       isNotPopularGarageList.clear();
-      allGarageList.addAll(type.data as Iterable<Garage>);
-      allGarageList.forEach((element) {
-        if (element.populer == true) {
-          isPopularGarageList.add(element);
-        }
-        else {
-          isNotPopularGarageList.add(element);
-        }
-      });
+    } finally {
+      isLoading = false;
       notifyListeners();
     }
   }
@@ -119,9 +179,9 @@ class GarageProvider extends ChangeNotifier {
       garageListNearByUser.clear();
       isPopularGarageList.clear();
     }
-    String myUrl = ApiConstants.BASE_URL +
-        "/api/getnearbyGarages?latitude=${AppConstants
-            .CurrentLatitude}&longitude=${AppConstants.CurrentLongtitude}";
+    String myUrl =
+        ApiConstants.BASE_URL +
+        "/api/getnearbyGarages?latitude=${AppConstants.CurrentLatitude}&longitude=${AppConstants.CurrentLongtitude}";
     print(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
@@ -137,8 +197,7 @@ class GarageProvider extends ChangeNotifier {
         garageListNearByUser.forEach((element) {
           if (element.populer == true) {
             isPopularGarageList.add(element);
-          }
-          else {
+          } else {
             isNotPopularGarageList.add(element);
           }
         });
@@ -147,32 +206,46 @@ class GarageProvider extends ChangeNotifier {
     }
   }
 
-  getAllGarageNearByVehicleType({int currentPage = 0, int? vehicleType}) async {
+  getAllGarageNearByVehicleType({int? vehicleType}) async {
     isLoading = true;
     notifyListeners();
+
     allGarageList.clear();
-    if (currentPage == 0) {
-      garageListNearByUser.clear();
-    }
-    String myUrl = ApiConstants.BASE_URL +
-        "/garrage_services/getbyvechicletypeid?id=${vehicleType}";
-    print(myUrl);
-    var req = await http.get(Uri.parse(myUrl));
-    isLoading = false;
-    if (req.statusCode == 200) {
-      var response = json.decode(req.body);
-      var type = GarageModel.fromJson(response);
-      allGarageList.addAll(type.data as Iterable<Garage>);
-      garageListNearByUser.forEach((element) {
-        if (element.populer == true) {
-          isPopularGarageList.add(element);
-        }
-        else {
-          isNotPopularGarageList.add(element);
-        }
-      });
+    isPopularGarageList.clear();
+    isNotPopularGarageList.clear();
+
+    if (vehicleType == null) {
+      isLoading = false;
       notifyListeners();
+      return;
     }
+
+    final myUrl =
+        ApiConstants.BASE_URL +
+        "/garrage_services/getbyvechicletypeid?id=$vehicleType";
+
+    final req = await http.get(Uri.parse(myUrl));
+    isLoading = false;
+
+    if (req.statusCode == 200) {
+      final response = json.decode(req.body);
+
+      if (response['data'] == null || response['data'].isEmpty) {
+        notifyListeners();
+        return;
+      }
+
+      final type = GarageModel.fromJson(response);
+      allGarageList.addAll(type.data as Iterable<Garage>);
+
+      for (final g in allGarageList) {
+        g.populer == true
+            ? isPopularGarageList.add(g)
+            : isNotPopularGarageList.add(g);
+      }
+    }
+
+    notifyListeners();
   }
 
   getGarageByUserId(int userId) async {
@@ -198,8 +271,7 @@ class GarageProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    String myUrl =
-        ApiConstants.BASE_URL + "/api/grage/getById?id=${userId}";
+    String myUrl = ApiConstants.BASE_URL + "/api/grage/getById?id=${userId}";
     print(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
@@ -211,7 +283,6 @@ class GarageProvider extends ChangeNotifier {
       return garage;
     }
   }
-
 
   getAllGarageServices({int currentPage = 0}) async {
     isLoading = true;
@@ -232,13 +303,14 @@ class GarageProvider extends ChangeNotifier {
     }
   }
 
-  getAllGarageServicesByGarageId({int currentPage = 0, int? garageId }) async {
+  getAllGarageServicesByGarageId({int currentPage = 0, int? garageId}) async {
     isLoading = true;
     notifyListeners();
     if (currentPage == 0) {
       allGarageServiceListByGarageId.clear();
     }
-    String myUrl = ApiConstants.BASE_URL +
+    String myUrl =
+        ApiConstants.BASE_URL +
         "/garrage_services/GarageServices/getAllGSByGarageId?id=${garageId}";
     //  "/garrage_services/GarageServices/getbygarageid?id=${garageId}";
     print(myUrl);
@@ -252,14 +324,18 @@ class GarageProvider extends ChangeNotifier {
     }
   }
 
-  getAllGarageServicesByGarageIdServiceId(
-      {int currentPage = 0, int? garageId, required int mainserviceId}) async {
+  getAllGarageServicesByGarageIdServiceId({
+    int currentPage = 0,
+    int? garageId,
+    required int mainserviceId,
+  }) async {
     isLoading = true;
     notifyListeners();
     if (currentPage == 0) {
       viewallGarageServiceList.clear();
     }
-    String myUrl = ApiConstants.BASE_URL +
+    String myUrl =
+        ApiConstants.BASE_URL +
         "/garrage_services/garageservices/getSubServices?garageId=${garageId}&serviceId=${mainserviceId}";
     //  "/garrage_services/GarageServices/getbygarageid?id=${garageId}";
     print(myUrl);
@@ -269,18 +345,23 @@ class GarageProvider extends ChangeNotifier {
       var response = json.decode(req.body);
       var type = viewServicesGarageModel.fromJson(response);
       viewallGarageServiceList.addAll(
-          type.data as Iterable<ViewGarageServices>);
+        type.data as Iterable<ViewGarageServices>,
+      );
       //print("Size is:${viewallGarageServiceList[in].services?.photosUrl.toString()}");
       notifyListeners();
     }
   }
 
-  getAllGarageSubServicesGarage(
-      {int currentPage = 0, int? garageId, required int mainserviceId}) async {
+  getAllGarageSubServicesGarage({
+    int currentPage = 0,
+    int? garageId,
+    required int mainserviceId,
+  }) async {
     isLoading = true;
     notifyListeners();
 
-    String myUrl = ApiConstants.BASE_URL +
+    String myUrl =
+        ApiConstants.BASE_URL +
         "/garrage_services/garageservices/getByGarrageIdandserviceid?garrageId=${garageId}&ServiceId=${mainserviceId}";
     print(myUrl);
     var req = await http.get(Uri.parse(myUrl));
@@ -353,18 +434,22 @@ class GarageProvider extends ChangeNotifier {
     };
     var body = json.encode(data);
     print(data);
-    var createResponse = await http.post(uri,
-        headers: {"Content-Type": "application/json"}, body: body);
-    print("${createResponse.statusCode}" +
-        " --- " +
-        createResponse.body.toString());
+    var createResponse = await http.post(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+    print(
+      "${createResponse.statusCode}" + " --- " + createResponse.body.toString(),
+    );
     var response = await json.decode(createResponse.body);
     var list = GarageModel.fromJson(response);
     allGarageList.addAll(list.data as Iterable<Garage>);
     notifyListeners();
   }
 
-  addGarageService({bool? active,
+  addGarageService({
+    bool? active,
     String? created,
     String? created_by,
     String? cost,
@@ -378,9 +463,10 @@ class GarageProvider extends ChangeNotifier {
     String? updated,
     String? updated_by,
     String? short_desc,
-    Vehicletype? vehicletype}) async {
-    String myUrl = ApiConstants.BASE_URL +
-        "/garrage_services/GarageServices/save";
+    Vehicletype? vehicletype,
+  }) async {
+    String myUrl =
+        ApiConstants.BASE_URL + "/garrage_services/GarageServices/save";
     Uri uri = Uri.parse(myUrl);
 
     Map<String, dynamic> data = {
@@ -398,12 +484,15 @@ class GarageProvider extends ChangeNotifier {
       "updated": updated,
       "updatedBy": updated_by,
       "usertableId": userId,
-      "vehicleTypeId": vehicletype == null ? 1 : vehicletype.id
+      "vehicleTypeId": vehicletype == null ? 1 : vehicletype.id,
     };
     var body = json.encode(data);
     print(data);
-    var createResponse = await http.post(uri,
-        headers: {"Content-Type": "application/json"}, body: body);
+    var createResponse = await http.post(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
     print("${createResponse.statusCode}");
     var response = await json.decode(createResponse.body);
     /*var list = GarageService.fromJson(response);
@@ -415,17 +504,28 @@ class GarageProvider extends ChangeNotifier {
     return response;
   }
 
-  updateGarageService(
-      {bool? active, String? created, String? created_by, String? cost, String? image_url, String? description,
-        List<
-            int>? subServiceId, int? garageId, int? serviceId, int? userId, String? updated, String? updated_by, String? short_desc,
-        Vehicletype? vehicletype, int? id}) async {
-    String myUrl = ApiConstants.BASE_URL +
-        "/garrage_services/GarageServices/update";
+  updateGarageService({
+    bool? active,
+    String? created,
+    String? created_by,
+    String? cost,
+    String? image_url,
+    String? description,
+    List<int>? subServiceId,
+    int? garageId,
+    int? serviceId,
+    int? userId,
+    String? updated,
+    String? updated_by,
+    String? short_desc,
+    Vehicletype? vehicletype,
+    int? id,
+  }) async {
+    String myUrl =
+        ApiConstants.BASE_URL + "/garrage_services/GarageServices/update";
     Uri uri = Uri.parse(myUrl);
 
     Map<String, dynamic> data = {
-
       "active": true,
       "cost": cost,
       "created": created,
@@ -441,7 +541,8 @@ class GarageProvider extends ChangeNotifier {
       "updated": updated,
       "updatedBy": updated_by,
       "usertableId": userId,
-      "vehicleTypeId": vehicletype!.id
+      "vehicleTypeId": vehicletype!.id,
+
       /* "active": active,
       "cost": cost,
       "created": created,
@@ -458,12 +559,14 @@ class GarageProvider extends ChangeNotifier {
       "updatedBy": updated_by,
       "usertableId": userId,
       "vehicleTypeId": vehicletype==null?1:vehicletype.id*/
-
     };
     var body = json.encode(data);
     print(data);
-    var createResponse = await http.put(uri,
-        headers: {"Content-Type": "application/json"}, body: body);
+    var createResponse = await http.put(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
     print("${createResponse.statusCode}");
     var response = await json.decode(createResponse.body);
     /*var list = GarageService.fromJson(response);
@@ -473,9 +576,9 @@ class GarageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-  deleteGarageService(GarageService gs,) async {
-    String myUrl = ApiConstants.BASE_URL +
+  deleteGarageService(GarageService gs) async {
+    String myUrl =
+        ApiConstants.BASE_URL +
         '/garrage_services/GarageServices/deleteById?id=${gs.id}';
     var req = await http.delete(Uri.parse(myUrl));
     var deleteResponse = json.decode(req.body);
@@ -483,8 +586,9 @@ class GarageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  deleteViewGarageService(ViewGarageServices gs, int gid, int ssid,) async {
-    String myUrl = ApiConstants.BASE_URL +
+  deleteViewGarageService(ViewGarageServices gs, int gid, int ssid) async {
+    String myUrl =
+        ApiConstants.BASE_URL +
         '/garrage_services/delete/subservice?garageId=${gid}&subServiceId=${ssid}';
     print("Delete Url : ${myUrl}");
     var req = await http.delete(Uri.parse(myUrl));
@@ -495,7 +599,8 @@ class GarageProvider extends ChangeNotifier {
   }
 
   deleteGarageSubService(int id, int index) async {
-    String myUrl = ApiConstants.BASE_URL +
+    String myUrl =
+        ApiConstants.BASE_URL +
         '/garrage_services/GarageServices/deleteById?id=${id}';
     print("Delete Url : ${myUrl}");
     var req = await http.delete(Uri.parse(myUrl));
@@ -506,11 +611,35 @@ class GarageProvider extends ChangeNotifier {
   }
 
   updateGarageinfo({
-    bool? active, int? addressId, String? closingTime, String? contactNumber, String? created, String? createdBy,
-    String? discription, String? emailId, int? id, String? imageUrl, String? latitude, int? location, String? longitude, String? name, int? noOfRating,
-    String? openingTime, String? password, String? photos1, String? photos2, String? photos3, bool? populer, String? rating, String? updated,
-    String? updatedBy, int? usertableId, String? verificatiionId, bool? verified,
-    String? websiteUrl,}) async {
+    bool? active,
+    int? addressId,
+    String? closingTime,
+    String? contactNumber,
+    String? created,
+    String? createdBy,
+    String? discription,
+    String? emailId,
+    int? id,
+    String? imageUrl,
+    String? latitude,
+    int? location,
+    String? longitude,
+    String? name,
+    int? noOfRating,
+    String? openingTime,
+    String? password,
+    String? photos1,
+    String? photos2,
+    String? photos3,
+    bool? populer,
+    String? rating,
+    String? updated,
+    String? updatedBy,
+    int? usertableId,
+    String? verificatiionId,
+    bool? verified,
+    String? websiteUrl,
+  }) async {
     String myUrl = ApiConstants.UPDATE_GARAGE;
     Uri uri = Uri.parse(myUrl);
     Map<String, dynamic> data = {
@@ -542,15 +671,17 @@ class GarageProvider extends ChangeNotifier {
       "verificatiionId": verificatiionId ?? ownGarageList[0]!.verificatiionId,
       "verified": verified ?? ownGarageList[0]!.verified,
       "websiteUrl": websiteUrl ?? ownGarageList[0]!.websiteUrl,
-
     };
     var body = json.encode(data);
     print(data);
-    var createResponse = await http.put(uri,
-        headers: {"Content-Type": "application/json"}, body: body);
-    print("${createResponse.statusCode}" +
-        " --- " +
-        createResponse.body.toString());
+    var createResponse = await http.put(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    );
+    print(
+      "${createResponse.statusCode}" + " --- " + createResponse.body.toString(),
+    );
     print(createResponse.body);
     var response = await json.decode(createResponse.body);
     var list = Garage.fromJson(response);
@@ -570,7 +701,7 @@ class GarageProvider extends ChangeNotifier {
 
     String myUrl =
         ApiConstants.BASE_URL +
-            "/api/garageReport/getDetailedGarageReportByEmployeeId?startDate=${fromDate}&endDate=${toDate}&garageId=${garageId}";
+        "/api/garageReport/getDetailedGarageReportByEmployeeId?startDate=${fromDate}&endDate=${toDate}&garageId=${garageId}";
     print(myUrl);
     var req = await http.get(Uri.parse(myUrl));
     isLoading = false;
@@ -578,17 +709,17 @@ class GarageProvider extends ChangeNotifier {
       var response = json.decode(req.body);
       print(response);
       GarageReportResponse garageReportResponse = GarageReportResponse.fromJson(
-          response);
+        response,
+      );
       paypalOrderListByGarage.clear();
       TotalAmt = null;
       TotalAmt = garageReportResponse.data!.totalAmount.toString();
       paypalOrderListByGarage.addAll(
-          garageReportResponse.data!.paypalOrder as Iterable<PaypalOrder>);
+        garageReportResponse.data!.paypalOrder as Iterable<PaypalOrder>,
+      );
       notifyListeners();
     } else {
       notifyListeners();
     }
   }
-
-
 }

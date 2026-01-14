@@ -9,9 +9,9 @@ import 'package:carcheks/view/screens/rate_raview/rate_review_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../util/sharepreferences.dart';
 import '../screens/garage_owner/appointment/all_appointment.dart';
 import '../screens/garage_owner/garage_services/all_garage_services.dart';
 
@@ -88,7 +88,7 @@ class GarageOwnerDrawerWidget extends StatelessWidget {
 
                     // ---------------------- MENU ----------------------
                     _tile(context, Icons.home, "Home", 0),
-                    _tile(context, Icons.info_outline, "Garage Info", 1),
+                    _tile(context, Icons.info_outline, "Business Info", 1),
                     _tile(context, Icons.add_circle_outline, "Add Services", 2),
                     _tile(context, Icons.design_services, "View Services", 3),
                     _tile(context, Icons.calendar_month, "Appointments", 4),
@@ -202,10 +202,10 @@ class GarageOwnerDrawerWidget extends StatelessWidget {
   // LOGOUT FUNCTION
   // -----------------------------------------------------------
   Future<void> _logout(BuildContext context) async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    await preferences.clear();
     authProvider.setGarageOwnerVisitingFlag(false);
     authProvider.setUserId(0);
+    LocalSharePreferences preferences = LocalSharePreferences();
+    preferences.logOut();
 
     Navigator.of(
       context,
@@ -255,7 +255,7 @@ class GarageOwnerDrawerWidget extends StatelessWidget {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const GarageReport()),
+      MaterialPageRoute(builder: (context) => GarageReport()),
     );
   }
 }

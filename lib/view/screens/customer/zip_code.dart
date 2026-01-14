@@ -28,32 +28,30 @@ class _ZipCodeState extends State<ZipCode> {
               "Please provide a Zip Code or address, So we can get you estimates from shops near by.",
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
             ),
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 20),
             SearchWidget(
-                controller: zipCodeController,
-                hintText: "Search Services,Store",
-                onClearPressed: () {},
-                onSubmit: () {}),
-            SizedBox(
-              height: 20,
+              controller: zipCodeController,
+              hintText: "Search Services,Store",
+              onClearPressed: () {},
+              onSubmit: () {},
             ),
+            SizedBox(height: 20),
             Container(
               width: MediaQuery.of(context).size.width,
               alignment: Alignment.center,
               child: CustomButton(
                 buttonText: 'Continue',
+                isEnable: true,
                 onTap: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (builder) => AddVehicleInfo(
-                                isdashboard: false,
-                              )));
+                    context,
+                    MaterialPageRoute(
+                      builder: (builder) => AddVehicleInfo(isdashboard: false),
+                    ),
+                  );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),

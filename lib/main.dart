@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:carcheks/locator.dart';
 import 'package:carcheks/provider/address_provider.dart';
 import 'package:carcheks/provider/auth_provider.dart';
@@ -12,6 +11,7 @@ import 'package:carcheks/provider/img_provider.dart';
 import 'package:carcheks/provider/payment_provider.dart';
 import 'package:carcheks/provider/search_provider.dart';
 import 'package:carcheks/provider/services_provider.dart';
+import 'package:carcheks/provider/settlement_provider.dart';
 import 'package:carcheks/provider/transaction_provider.dart';
 import 'package:carcheks/provider/user_provider.dart';
 import 'package:carcheks/provider/vehicle_provider.dart';
@@ -19,14 +19,11 @@ import 'package:carcheks/provider/withdrawal_provider.dart';
 import 'package:carcheks/route/app_routes.dart';
 import 'package:carcheks/route/routes.dart';
 import 'package:carcheks/view/screens/notification/local_notification.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
-
 import 'provider/appointment_provider.dart';
 import 'provider/review_provider.dart';
 import 'provider/user_order_service_provider.dart';
@@ -36,7 +33,6 @@ Future<void> main() async {
   //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   //LocalNotificationService.initialize();
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -89,6 +85,7 @@ Future<void> main() async {
           ChangeNotifierProvider(create: (_) => locator<SearchProvider>()),
           ChangeNotifierProvider(create: (_) => locator<FeedbackProvider>()),
           ChangeNotifierProvider(create: (_) => locator<WithdrawalProvider>()),
+          ChangeNotifierProvider(create: (_) => SettlementProvider()),
         ],
         child: const MyApp(),
       ),
@@ -126,3 +123,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+// 14 jan 2026

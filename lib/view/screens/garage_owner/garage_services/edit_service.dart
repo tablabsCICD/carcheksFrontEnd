@@ -5,13 +5,10 @@ import 'package:carcheks/model/garage_services_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../../locator.dart';
-import '../../../../model/appointment_model.dart';
 import '../../../../model/fuel_type_model.dart';
-import '../../../../model/services.dart';
 import '../../../../model/subservices_model.dart';
 import '../../../../model/vehicle_type_model.dart';
 import '../../../../provider/auth_provider.dart';
@@ -26,20 +23,17 @@ import '../../../base_widgets/box_button.dart';
 import '../../../base_widgets/cutom_city_textfield.dart';
 
 class EditService extends StatefulWidget {
-
   EditService({required this.garageId, required this.mainserviceId});
 
   final GarageService mainserviceId;
   final int garageId;
-
 
   @override
   State<EditService> createState() => _EditServiceState();
 }
 
 class _EditServiceState extends State<EditService> {
-
-  TextEditingController addinfoController =  TextEditingController();
+  TextEditingController addinfoController = TextEditingController();
   TextEditingController priceController = TextEditingController();
   TextEditingController selectedSubServicesController = TextEditingController();
 
@@ -55,16 +49,17 @@ class _EditServiceState extends State<EditService> {
 
   final now = DateTime.now();
   String formatter = '';
-  int selectedVehicaleTypeIndex=0;
-
+  int selectedVehicaleTypeIndex = 0;
 
   @override
   void initState() {
-//    garageProvider.getAllGarageSubServicesGarage(garageId: garageProvider.ownGarageList[0].id,mainserviceId: widget.mainserviceId);
+    //    garageProvider.getAllGarageSubServicesGarage(garageId: garageProvider.ownGarageList[0].id,mainserviceId: widget.mainserviceId);
     getData();
     getGarageServicesData();
     formatter = DateFormat('yMd').format(now);
-    serviceProvider.getSubServicesByServiceId(serviceId: widget.mainserviceId.id);
+    serviceProvider.getSubServicesByServiceId(
+      serviceId: widget.mainserviceId.id,
+    );
     garageProvider.getGarageByUserId(authProvider.user!.id);
     vehicleProvider.getAllVehicleType();
   }
@@ -73,14 +68,26 @@ class _EditServiceState extends State<EditService> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          elevation: 0,
-          backgroundColor: ColorResources.PRIMARY_COLOR,
-          leading: IconButton(
-              onPressed: (){
-                Navigator.of(context).pop();
-              },
-              icon: Icon(Icons.arrow_back_ios_rounded,color: Colors.white,size: 30,)),
-          title: Text("Update Garage Service",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,color: Colors.white),)
+        elevation: 0,
+        backgroundColor: ColorResources.PRIMARY_COLOR,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Colors.white,
+            size: 30,
+          ),
+        ),
+        title: Text(
+          "Update Garage Service",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -90,7 +97,7 @@ class _EditServiceState extends State<EditService> {
           child: Stack(
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height-150,
+                height: MediaQuery.of(context).size.height - 150,
                 child: SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(10),
@@ -98,8 +105,8 @@ class _EditServiceState extends State<EditService> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Align(alignment: Alignment.center, child: Text(widget.mainService.name.toString(), style: TextStyle( fontSize: 22,fontWeight: FontWeight.bold,color: Colors.black))),
-                        SizedBox(height: 15,),
-                       /* Text("Select SubServices Type"),
+                        SizedBox(height: 15),
+                        /* Text("Select SubServices Type"),
                         SizedBox(height: 5,),
                         Consumer<ServiceProvider>(
                           builder: (context, model, child) =>Container(
@@ -148,7 +155,7 @@ class _EditServiceState extends State<EditService> {
                         SizedBox(height: 10,),*/
                         Text("Sub Service Type"),
 
-                        SizedBox(height: 5,),
+                        SizedBox(height: 5),
                         Container(
                           //width: 100,
                           padding: EdgeInsets.only(bottom: 16.0),
@@ -158,39 +165,49 @@ class _EditServiceState extends State<EditService> {
                             controller: selectedSubServicesController,
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.grey)
+                                borderSide: BorderSide(color: Colors.grey),
                               ),
                             ),
-
                           ),
                         ),
-                        // Text(),
 
-                        SizedBox(height: 10,),
+                        // Text(),
+                        SizedBox(height: 10),
                         Text("Add Image"),
-                        SizedBox(height: 10,),
+                        SizedBox(height: 10),
                         Consumer<ImgProvider>(
                           builder: (context, model, child) => Container(
-                            height:100,
+                            height: 100,
                             padding: EdgeInsets.only(bottom: 16.0),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(img==null?model.uploadedImage:img.toString())
+                              borderRadius: BorderRadius.circular(10),
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(
+                                  img == null
+                                      ? model.uploadedImage
+                                      : img.toString(),
                                 ),
-                                border: Border.all()),
+                              ),
+                              border: Border.all(),
+                            ),
                             child: GestureDetector(
-                                onTap: (){
-                                  img==null?pickProfilePic(model):img=null;
-                                },
-                                child: Icon(img == null?Icons.add:Icons.delete, size: 30)),
+                              onTap: () {
+                                img == null
+                                    ? pickProfilePic(model)
+                                    : img = null;
+                              },
+                              child: Icon(
+                                img == null ? Icons.add : Icons.delete,
+                                size: 30,
+                              ),
+                            ),
                           ),
                         ),
-                        SizedBox(height: 10,),
+                        SizedBox(height: 10),
                         Text("Add Description"),
-                        SizedBox(height: 10,),
+                        SizedBox(height: 10),
                         Container(
                           padding: EdgeInsets.only(bottom: 16.0),
                           child: TextField(
@@ -203,7 +220,7 @@ class _EditServiceState extends State<EditService> {
                           ),
                         ),
                         Text("Price"),
-                        SizedBox(height: 10,),
+                        SizedBox(height: 10),
                         Container(
                           //width: 100,
                           padding: EdgeInsets.only(bottom: 16.0),
@@ -213,131 +230,141 @@ class _EditServiceState extends State<EditService> {
                             decoration: InputDecoration(
                               hintText: "\$",
                               border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.grey)
+                                borderSide: BorderSide(color: Colors.grey),
                               ),
                             ),
                           ),
                         ),
                         Text("Select Vehicle Type"),
-                        SizedBox(height: 10,),
+                        SizedBox(height: 10),
 
                         CustomCityTextField(
                           hintText: 'Select Vehicle Type',
                           controller: selectedVehicleType,
-                          onTap: (){
-                            showDialog(context: context,
-                                builder: (BuildContext context){
-                                  return CustomVehicleTypeDialog(
-                                      onTap : (int value){
-                                        setState(() {
-                                          selectedVehicaleTypeIndex=value;
-                                          vehicleType=vehicleProvider.vehicleTypeList[value];
-                                          selectedVehicleType = vehicleProvider.vehicleTypeList[value].name!;
-                                        });
-                                      }
-                                  );
-                                }
-                            ) ;
-
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CustomVehicleTypeDialog(
+                                  onTap: (int value) {
+                                    setState(() {
+                                      selectedVehicaleTypeIndex = value;
+                                      vehicleType = vehicleProvider
+                                          .vehicleTypeList[value];
+                                      selectedVehicleType = vehicleProvider
+                                          .vehicleTypeList[value]
+                                          .name!;
+                                    });
+                                  },
+                                );
+                              },
+                            );
                           },
                         ),
-
-
-
                       ],
                     ),
                   ),
                 ),
               ),
-
             ],
           ),
         ),
       ),
-      bottomNavigationBar:  Consumer<GarageProvider>(
-        builder: (context, model, child) => model.isLoading==true?Container():Container(
-          color: Colors.white,
-          child: BoxButton(
-            buttonText: "Update",
-            onTap: (){
-              showDialog(
-                  context: context,
-                  builder: (_) =>
-                      CupertinoAlertDialog(
+      bottomNavigationBar: Consumer<GarageProvider>(
+        builder: (context, model, child) => model.isLoading == true
+            ? Container()
+            : Container(
+                color: Colors.white,
+                child: BoxButton(
+                  buttonText: "Update",
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => CupertinoAlertDialog(
                         title: const Text(
                           'Are you sure want to update service?',
                           // style: Style.heading,
                         ),
                         actions: <Widget>[
                           TextButton(
-                            child: Text(
-                                "Yes",
-                                style: Style.okButton),
+                            child: Text("Yes", style: Style.okButton),
                             onPressed: () {
-                              model.updateGarageService(
-                                active: true,
-                                subServiceId: [widget.mainserviceId.subService!.id],
-                                id: widget.mainserviceId.id,
-                                description: addinfoController.text,
-                                cost: priceController.text,
-                                created: formatter,
-                                created_by: authProvider.user!.firstName,
-                                garageId:widget.mainserviceId.garage!.id,
+                              model
+                                  .updateGarageService(
+                                    active: true,
+                                    subServiceId: [
+                                      widget.mainserviceId.subService!.id,
+                                    ],
+                                    id: widget.mainserviceId.id,
+                                    description: addinfoController.text,
+                                    cost: priceController.text,
+                                    created: formatter,
+                                    created_by: authProvider.user!.firstName,
+                                    garageId: widget.mainserviceId.garage!.id,
 
-                                image_url: img,
-                                // serviceId:widget.mainService.id,
-                                short_desc: addinfoController.text,
+                                    image_url: img,
+                                    // serviceId:widget.mainService.id,
+                                    short_desc: addinfoController.text,
 
-                                serviceId: widget.mainserviceId.mainService!.id,
-                                updated: formatter,
-                                updated_by: authProvider.user!.firstName,
-                                userId:authProvider.user!.id,
-                                vehicletype: vehicleType,
-                                //addressId: garageProvider.ownGarageList[0].addressId,
-                              ).then((value) => {
-                                print(value),
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text('Done'),
-                                        content: Text('Services Updated Successfuly'),
-                                        actions: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Center(
-                                              child: BoxButton(onTap: (){
-                                                int count = 0;
-                                                Navigator.of(context).popUntil((_) => count++ >= 2);
-                                              }, buttonText: 'OK',
-
-                                              ),
+                                    serviceId:
+                                        widget.mainserviceId.mainService!.id,
+                                    updated: formatter,
+                                    updated_by: authProvider.user!.firstName,
+                                    userId: authProvider.user!.id,
+                                    vehicletype: vehicleType,
+                                    //addressId: garageProvider.ownGarageList[0].addressId,
+                                  )
+                                  .then(
+                                    (value) => {
+                                      print(value),
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text('Done'),
+                                            content: Text(
+                                              'Services Updated Successfuly',
                                             ),
-                                          ),
-                                        ],
-                                      );
-                                    })
-                              }
-
-                              );
+                                            actions: <Widget>[
+                                              Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
+                                                ),
+                                                child: Center(
+                                                  child: BoxButton(
+                                                    onTap: () {
+                                                      int count = 0;
+                                                      Navigator.of(
+                                                        context,
+                                                      ).popUntil(
+                                                        (_) => count++ >= 2,
+                                                      );
+                                                    },
+                                                    buttonText: 'OK',
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    },
+                                  );
                               Navigator.of(context).pop();
                             },
                           ),
                           TextButton(
-                            child: Text(
-                                "No",
-                                style:
-                                Style.cancelButton
-                            ),
+                            child: Text("No", style: Style.cancelButton),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
                           ),
                         ],
-                      ));
-            },
-          ),
-        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
       ),
     );
   }
@@ -346,11 +373,11 @@ class _EditServiceState extends State<EditService> {
   File? imagefile;
   Uint8List? imageBytes;
   String? fileName;
-  String? img ,ProfilePic;
+  String? img, ProfilePic;
   pickProfilePic(ImgProvider model) async {
     var result = await FilePicker.platform.pickFiles(
       withReadStream:
-      true, // this will return PlatformFile object with read stream
+          true, // this will return PlatformFile object with read stream
     );
     if (result != null) {
       try {
@@ -360,12 +387,14 @@ class _EditServiceState extends State<EditService> {
         imageBytes = result.files.first.bytes;
         objFile = result.files.single;
         print(fileName);
-        model.setImage(fileName??'');
+        model.setImage(fileName ?? '');
         img = '';
-        img = await model.uploadImage("0",
-            imageBytes: imageBytes,
-            objectFile: objFile);
-        debugPrint("service img::"+img!);
+        img = await model.uploadImage(
+          "0",
+          imageBytes: imageBytes,
+          objectFile: objFile,
+        );
+        debugPrint("service img::" + img!);
       } catch (ex) {
         throw Exception("Exception Occurred ${ex.toString()}");
       }
@@ -373,15 +402,13 @@ class _EditServiceState extends State<EditService> {
   }
 
   Garage? garage;
-  void getData() async{
+  void getData() async {
     await garageProvider.getGarageByUserId(authProvider.user!.id);
     //debugPrint(garage!.name.toString());
   }
 
-  void getGarageServicesData()async{
-
-
-   /*// await garageProvider.getAllGarageSubServicesGarage(garageId: garageProvider.ownGarageList[0].id,mainserviceId: widget.mainserviceId);
+  void getGarageServicesData() async {
+    /*// await garageProvider.getAllGarageSubServicesGarage(garageId: garageProvider.ownGarageList[0].id,mainserviceId: widget.mainserviceId);
 
     priceController.text= garageProvider.listSubServicesGarage[0].cost!.toString();
     addinfoController.text= garageProvider.listSubServicesGarage[0].discribtion.toString();
@@ -390,14 +417,15 @@ class _EditServiceState extends State<EditService> {
 
     selectedVehicleType = widget.mainserviceId.vechicletypeid!.name!;
     vehicleType = widget.mainserviceId.vechicletypeid;
-    print("Selected Vehicle Type : "+selectedVehicleType);
-    priceController.text= widget.mainserviceId.cost.toString();
-    addinfoController.text= widget.mainserviceId.discribtion.toString();
-    selectedSubServicesController.text =widget.mainserviceId.subService!.name.toString();
-    subService = serviceProvider.getSelectedGarageServiceId(selectedSubServicesController.text);
+    print("Selected Vehicle Type : " + selectedVehicleType);
+    priceController.text = widget.mainserviceId.cost.toString();
+    addinfoController.text = widget.mainserviceId.discribtion.toString();
+    selectedSubServicesController.text = widget.mainserviceId.subService!.name
+        .toString();
+    subService = serviceProvider.getSelectedGarageServiceId(
+      selectedSubServicesController.text,
+    );
     img = widget.mainserviceId.photosUrl;
-    print("Vehicle Type : "+vehicleType!.id.toString());
-
+    print("Vehicle Type : " + vehicleType!.id.toString());
   }
-
 }
